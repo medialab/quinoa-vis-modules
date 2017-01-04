@@ -2,7 +2,7 @@
   "name": "quinoa-vis-modules",
   "version": "0.0.1",
   "description": "independent visualization modules for the quinoa suite",
-  "main": "dist/main.js",
+  "main": "build/quinoa-vis-modules.js",
   "scripts": {
     "build": "rm -rf build && gulp build",
     "lint": "eslint --fix src",
