@@ -39,7 +39,6 @@
     "react-visjs-timeline": "^1.2.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
-    "gulp-sass": "^3.0.0",
     "gulp-strip-comments": "^2.4.3"
   },
   "devDependencies": {
