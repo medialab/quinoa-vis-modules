@@ -10,13 +10,11 @@
     "test": "mocha --compilers js:babel-core/register -R spec --recursive $(find src -name '*.spec.js')",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "pre-install": "npm run build",
-    "post-install": "npm run build"
+    "postinstall": "npm run build"
   },
   "pre-commit": [
     "lint",
-    "build",
-    "test"
+    "build"
   ],
   "repository": {
     "type": "git",
