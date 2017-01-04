@@ -1,5 +1,6 @@
 node_modules
 build
-.DS-Store
+.DS_Store
 npm-debug.log
 storybook-static
+src/.DS_Store
