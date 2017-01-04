@@ -2,3 +2,4 @@ node_modules
 build
 .DS-Store
 npm-debug.log
+storybook-static
