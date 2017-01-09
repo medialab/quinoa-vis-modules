@@ -9,8 +9,7 @@
     "comb": "csscomb src",
     "test": "mocha --compilers js:babel-core/register -R spec --recursive $(find src -name '*.spec.js')",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
-    "postinstall": "npm run build"
+    "build-storybook": "build-storybook"
   },
   "pre-commit": [
     "lint",
@@ -54,6 +53,7 @@
     "chai": "^3.5.0",
     "css-loader": "^0.23.1",
     "csscomb": "^3.1.7",
+    "dsv-loader": "^2.0.0",
     "enzyme": "^2.4.1",
     "eslint": "^3.7.1",
     "eslint-plugin-react": "^6.3.0",
