@@ -1,0 +1,15 @@
+
+
+$gutter-medium: 1rem;
+$gutter-small: .5rem;
+
+$time-medium : .5s;
+$time-short : .05s;
+
+@mixin transition($args...) {
+  -webkit-transition: $args;
+  -moz-transition: $args;
+  -ms-transition: $args;
+  -o-transition: $args;
+  transition: $args;
+}

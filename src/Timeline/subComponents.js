@@ -9,7 +9,7 @@ export const TimeObject = ({
     title={point.name}
     style={{
       top: scale(point.startDate.getTime()) + '%',
-      height: point.endDate ? scale(point.endDate.getTime()) + '%' : undefined
+      height: point.endDate ? scale(point.endDate.getTime()) - scale(point.startDate.getTime()) + '%' : undefined
     }}>
     <span className="marker" />
     <span className="name">{point.name}</span>

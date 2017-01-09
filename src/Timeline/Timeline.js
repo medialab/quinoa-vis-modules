@@ -2,6 +2,7 @@ import React, {PropTypes} from 'react';
 import {min, max} from 'd3-array';
 import {scaleLinear} from 'd3-scale';
 import {timeFormat} from 'd3-time-format';
+import {debounce} from 'lodash';
 
 import {
   setTicks,
@@ -21,6 +22,8 @@ class Timeline extends React.Component {
     super(props);
     this.mapData = this.mapData.bind(this);
     this.computeBoundaries = this.computeBoundaries.bind(this);
+    this.pan = this.pan.bind(this);
+    this.onViewChange = debounce(this.onViewChange, 100);
 
     // data time boundaries in order to display the mini-timeline
     this.timeBoundaries = {
@@ -33,6 +36,7 @@ class Timeline extends React.Component {
       // padded maximum date
       maximumDateDisplay: Infinity
     };
+    this.viewParameters = props.viewParameters;
     this.miniScale = scaleLinear().range([0, 100]).domain([-Infinity, Infinity]);
 
     this.mapData(this.props.data, this.props.dataMap);
@@ -43,6 +47,23 @@ class Timeline extends React.Component {
     if (this.props.data !== nextProps.data || this.props.dataMap !== nextProps.dataMap) {
       this.mapData(nextProps.data, nextProps.dataMap);
     }
+    if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+      this.viewParameters = nextProps.viewParameters;
+    }
+  }
+
+  onViewChange (lastEventType) {
+    this.props.onViewChange({
+      lastEventType,
+      viewParameters: this.viewParameters
+    });
+  }
+
+  pan (forward, delta) {
+    this.viewParameters.toDate += (forward ? delta : -delta);
+    this.viewParameters.fromDate += (forward ? delta : -delta);
+    this.forceUpdate();
+    this.onViewChange('wheel');
   }
 
   /*
@@ -117,7 +138,6 @@ class Timeline extends React.Component {
 
   render () {
     const {
-      viewParameters = {},
       allowViewChange = true,
       orientation = 'portrait',
       // onViewChange,
@@ -125,7 +145,8 @@ class Timeline extends React.Component {
     const {
       data,
       miniScale,
-      miniTicks
+      miniTicks,
+      viewParameters
     } = this;
     const fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
     const toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
@@ -138,9 +159,38 @@ class Timeline extends React.Component {
     const ticksParams = setTicks(toDate - fromDate);
     const formatDate = timeFormat(ticksParams.format);
     const mainTicks = computeTicks(fromDate, toDate);
+
+    const onMainWheel = (e) => {
+      if (!this.props.allowViewChange) {
+        return;
+      }
+      const delta = (toDate - fromDate) / 30;
+      const forward = e.deltaY > 0;
+      if (forward && toDate + delta <= this.timeBoundaries.maximumDateDisplay) {
+        this.pan(true, delta);
+      }
+      if (!forward && fromDate - delta >= this.timeBoundaries.minimumDateDisplay) {
+        this.pan(false, delta);
+      }
+    };
+
+    const onAsideWheel = (e) => {
+      if (!this.props.allowViewChange) {
+        return;
+      }
+      const delta = (toDate - fromDate) / 2;
+      const forward = e.deltaY > 0;
+      if (forward && toDate + delta <= this.timeBoundaries.maximumDateDisplay) {
+        this.pan(true, delta);
+      }
+      if (!forward && fromDate - delta >= this.timeBoundaries.minimumDateDisplay) {
+        this.pan(false, delta);
+      }
+    };
+
     return (
       <figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
-        <aside className="mini-timeline">
+        <aside onWheel={onAsideWheel} className="mini-timeline">
           <TimeTicks ticks={miniTicks} scale={miniScale} />
           <div
             className="brush"
@@ -154,7 +204,7 @@ class Timeline extends React.Component {
             ))}
           </div>
         </aside>
-        <section className="main-timeline">
+        <section className="main-timeline" onWheel={onMainWheel}>
           <TimeTicks ticks={mainTicks} scale={timelineScale} />
           <div className="time-objects-container">
             {displayedData.map((point, index) => (
@@ -225,7 +275,7 @@ Timeline.propTypes = {
     ]),
   }),
   /*
-   * object describing the current view (some being exposed to user interaction like zoom and pan params, others not - like Timeline spatialization algorithm for instance)
+   * object describing the current view (some being exposed to user interaction like pan and pan params, others not - like Timeline spatialization algorithm for instance)
    */
   viewParameters: PropTypes.shape({
     fromDate: PropTypes.oneOfType([
@@ -239,7 +289,7 @@ Timeline.propTypes = {
     orientation: PropTypes.oneOf(['landscape', 'portrait'])
   }),
   /*
-   * boolean to specify whether the user can pan/zoom/interact or not with the view
+   * boolean to specify whether the user can pan/pan/interact or not with the view
    */
   allowViewChange: PropTypes.bool,
   /*
