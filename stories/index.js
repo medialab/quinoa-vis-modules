@@ -16,6 +16,11 @@ const timelineDataMap = {
   name: (d) => d.content,
   category: 'category',
   endYear: 'end year'
+};
+const timelineBaseViewParameters = {
+  fromDate: new Date().setFullYear(1900),
+  toDate: new Date().setFullYear(1960),
+  orientation: 'portrait'
 }
 
 storiesOf('Welcome', module)
@@ -29,6 +34,7 @@ storiesOf('Timeline', module)
       data={timelineData} 
       dataMap={timelineDataMap}
       onViewChange={(e) => action('on view change', e)}
+      viewParameters = {timelineBaseViewParameters}
     />
   ))
   .add('switch between view states (navigable)', () => (
@@ -36,6 +42,7 @@ storiesOf('Timeline', module)
       data={timelineData} 
       dataMap={timelineDataMap}
       onViewChange={(e) => action('on view change', e)}
+      viewParameters = {timelineBaseViewParameters}
     />
   ))
   .add('switch between view states (locked)', () => (
@@ -43,6 +50,8 @@ storiesOf('Timeline', module)
       data={timelineData} 
       dataMap={timelineDataMap}
       onViewChange={(e) => action('on view change', e)}
+      allowViewChange={false}
+      viewParameters = {timelineBaseViewParameters}
     />
   ))
   .add('very small', () => (
@@ -50,6 +59,7 @@ storiesOf('Timeline', module)
       data={timelineData} 
       dataMap={timelineDataMap}
       onViewChange={(e) => action('on view change', e)}
+      viewParameters = {timelineBaseViewParameters}
     />
   ))
   .add('very big', () => (
@@ -57,6 +67,7 @@ storiesOf('Timeline', module)
       data={timelineData} 
       dataMap={timelineDataMap}
       onViewChange={(e) => action('on view change', e)}
+      viewParameters = {timelineBaseViewParameters}
     />
   ))
 

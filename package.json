@@ -30,15 +30,18 @@
   },
   "homepage": "https://github.com/medialab/quinoa-vis-modules#readme",
   "dependencies": {
+    "d3-scale": "^1.0.4",
+    "d3-time": "^1.0.4",
+    "d3-time-format": "^2.0.3",
     "gexf": "^0.2.5",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-strip-comments": "^2.4.3",
     "leaflet": "^0.7.7",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-leaflet": "^0.12.3",
-    "react-visjs-timeline": "^1.2.0",
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
-    "gulp-strip-comments": "^2.4.3"
+    "react-visjs-timeline": "^1.2.0"
   },
   "devDependencies": {
     "@kadira/storybook": "^2.5.2",
