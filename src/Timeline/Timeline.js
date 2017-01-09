@@ -1,73 +1,89 @@
-import React from 'react';
-import {default as TimelineComponent} from 'react-visjs-timeline';
-import './Timeline.scss';
+import React, {PropTypes} from 'react';
 
-const Timeline = ({
-  data = [],
-  viewParameters = {},
-  updateView
-}) => {
-  let range;
-  if (Object.keys(viewParameters).length) {
-    range = {
-      start: viewParameters && new Date(viewParameters.fromDate),
-      end: viewParameters && new Date(viewParameters.toDate)
-    };
-  }
-  else if (data.length) {
-    const min = Math.min.apply(Math, data.map(point => point.start));
-    const max = Math.max.apply(Math, data.map(point => point.start));
-    const dist = max - min;
-    range = {
-      start: new Date(min - dist / 4),
-      end: new Date(max + dist / 4)
-    };
-  }
-  else {
-    range = {
-      start: new Date(0),
-      end: new Date()
-    };
+class Timeline extends React.Component {
+  constructor (props) {
+    super(props);
+    this.mapData = this.mapData.bind(this);
+    this.mapData(this.props.data, this.props.dataMap);
   }
 
-  const animation = {
-    duration: 100,
-    easingFunction: 'easeInQuint'
-  };
-
-  const options = {
-    width: '100%',
-    height: '100%',
-    stack: true,
-    showMajorLabels: false,
-    showCurrentTime: false,
-
-    type: 'point',
-    format: {
-      minorLabels: {
-        minute: 'h:mma',
-        hour: 'ha'
-      }
-    },
-    start: range.start,
-    end: range.end
-  };
-
-  function onRange(props) {
-    if (props.byUser) {
-      const params = {fromDate: props.start.getTime(), toDate: props.end.getTime()};
-      updateView(params);
+  componentWillUpdate(nextProps) {
+    // remap data if data or datamap will change
+    if (this.props.data !== nextProps.data || this.props.dataMap !== nextProps.dataMap) {
+      this.mapData(nextProps.data, nextProps.dataMap);
     }
   }
 
-  return (
-    <TimelineComponent
-      options={options}
-      rangechangedHandler={onRange}
-      items={data}
-      animation={animation} />
-  );
+  /*
+   * Maps incoming data with provided data map
+   */
+  mapData (data, dataMap) {
+    this.data = data.map(datapoint => {
+      return Object.keys(dataMap).reduce((obj, dataKey) => {
+        return {
+          ...obj,
+          [dataKey]: typeof dataMap[dataKey] === 'function' ?
+                      dataMap[dataKey](datapoint) // case accessor
+                      : datapoint[dataMap[dataKey]] // case prop name
+        };
+      }, {});
+    });
+  }
+
+  render () {
+    const {
+      viewParameters = {},
+      // allowViewChange = true,
+      onViewChange
+    } = this.props;
+    const {data} = this;
+    return (
+      <div>
+        <button onClick={onViewChange()} />
+        {JSON.stringify(viewParameters, null, 2)}
+        {JSON.stringify(data, null, 2)}
+      </div>
+    );
+  }
+}
+
+Timeline.propTypes = {
+  /*
+   * Incoming data in json format
+   */
+  data: PropTypes.oneOfType[
+    PropTypes.array
+  ],
+  /*
+   * Dictionary that specifies how to map vis props to data attributes (key names or accessor funcs)
+   */
+  dataMap: PropTypes.shape({
+    name: PropTypes.string,
+    category: PropTypes.string,
+    year: PropTypes.number,
+    month: PropTypes.number,
+    day: PropTypes.number,
+    time: PropTypes.number,
+    endYear: PropTypes.number,
+    endMonth: PropTypes.number,
+    endDay: PropTypes.number,
+    endTime: PropTypes.number
+  }),
+  /*
+   * object describing the current view (some being exposed to user interaction like zoom and pan params, others not - like Timeline spatialization algorithm for instance)
+   */
+  viewParameters: PropTypes.shape({
+    fromData: PropTypes.date,
+    toDate: PropTypes.instanceOf(Date)
+  }),
+  /*
+   * boolean to specify whether the user can pan/zoom/interact or not with the view
+   */
+  allowViewChange: PropTypes.bool,
+  /*
+   * callback fn triggered when user changes view parameters, callbacks data about the triggering interaction and about the new view parameters
+   */
+  onViewChange: PropTypes.func
 };
 
 export default Timeline;
-
