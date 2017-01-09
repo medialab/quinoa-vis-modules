@@ -1,0 +1,231 @@
+category,year,end year,content
+cartography,-6200,,The oldest known map? (There are several claimants for this honor.)
+cartography,-550,,"The first world map? (No extant copies, but described in books II and IV of Herodotus' ""Histories'' (Robinson:1968)"
+cartography,-366,-335,"The first route map (""carte routière''), showing the whole of the Roman world, a map from Vienna, through Italy, to Carthage; painted on parchment, 34 cm. high, by 7 m. in length. (Named the table of Peutinger, after a 16th century German collector.)"
+cartography,-240,,Calculation of the diameter of the earth by measuring noontime shadows at sites 800 km. apart
+cartography,-170,,Invention of parchment. Parchment was superior to papyrus because it could be printed on both sides and folded.
+cartography,-134,,"Measurement of the year with great accuracy and building of the first comprehensive star chart with 850 stars and a luminosity, or brightness, scale; discovery of the precision of the equinoxes"
+cartography,-100,," The Antikythera Mechanism is a unique Greek geared device, constructed around the end of the second century bc. It is known that it calculated and displayed celestial information, particularly cycles such as the phases of the moon and a luni-solar calendar. "
+cartography,0,,"This palaeolithic map from 13 660 calBP is one of the oldest maps to date. The map is an engraved stone from the cave of Abauntz and it demonstrates actual surrounding landscape, including  mountains, rivers, and ponds. Routes or  avenues of access are also engraved."
+cartography,90,150,Map projections of a spherical earth and use of latitude and longitude to characterize position (first display of longitude)
+cartography,105,,"Invention of paper, replacing (somewhat later) writing and other inscriptions on wood, cloth, stone, etc."
+cartography,950,,"Earliest known attempt to show changing values graphically (positions of the sun, moon, and planets throughout the year)"
+cartography,1280,,"Triangular diagrams of paired comparisons for electoral systems (how to elect a Pope or Mother Superior, when all the candidates are voting)"
+cartography,1305,,"Mechanical diagrams of knowledge, as aids to reasoning (served as an inspiration to Leibnitz in the development of symbolic logic)"
+cartography,1350,,"Proto-bar graph (of a theoretical function), and development of the logical relation between tabulating values, and graphing them (pre-dating Descartes). Oresme proposed the use of a graph for plotting a variable magnitude whose value depends on another, and, implicitly, the idea of a coordinate system"
+cartography,1375,,"Catalan Atlas, an exquisitely beautiful visual cosmography, perpetual calendar, and thematic representation of the known world"
+cartography,1450,,"Graphs of distance vs. speed, presumably of the theoretical relation"
+cartography,1453,,"Invention of moveable type printing press, and printing of the Mazarin bible (leads to a decline in the use of mixed text and graphics)"
+cartography,1500,,Use of rectangular coordinates to analyze velocity of falling objects
+cartography,1530,,Theoretical description of how longitude may be determined using difference of times by a clock and the associated observed change in star positions (not implemented)
+cartography,1533,,"Description of how to determine mapping locations by triangulation, from similar triangles, and with use of angles w.r.t meridians"
+cartography,1545,,"The first published illustration of a camera obscura, used to record an eclipse of the sun, on January 24, 1544."
+cartography,1550,,Trigonometric tables (published 1596 posthumously)
+cartography,1556,,Development of a method to fix position and survey land using compass-bearing and distance. (Tartaglia is better known for discovering a method to solve cubic equations)
+cartography,1562,,"Liber de Ludo Alaea, a practical guide to gambling, containing the first systematic computation of probabilities; written in 1562, but not published until 1663."
+cartography,1569,,"Invention of cylindrical projection for portraying the globe on maps, to preserve straightness of rhumb lines"
+cartography,1570,,"The first modern atlas, Teatrum Orbis Terrarum"
+cartography,1572,,"Improvements in instruments for accurately measuring positions of stars and planets, providing the most accurate catalog on which later discoveries (e.g., Kepler's laws) would be based"
+cartography,1581,,Discovery of isosynchronous property of the pendulum (to be used for clocks and measurement)
+cartography,1701,,"Contour maps showing curves of equal value (an isogonic map, lines of equal magnetic declination for the world, possibly the first contour map of a data-based variable)"
+cartography,1710,,Invention of three-color printing
+cartography,1711,,First test of statistical significance based on deviation between observed data and a null hypothesis (used to show that the guiding hand of a devine being could be discerned in the nearly constant ratio of male to female births in London over 1629--1710)
+cartography,1712,,"Literal line graph, inspired by observation of nature (section of hyperbola, formed by capillary action of colored water between two glass plates)"
+cartography,1724,,"Abstract line graph (of barometric observations), not analyzed"
+cartography,1727,,"Experiments paving the way to the development of photography: Images obtained by action of light on a mixture of chalk, nitric acid, and silver salts"
+cartography,1733,,"The normal distribution, derived as the limit of the binomial distribution"
+cartography,1736,1755,"Development of the use of polar coordinates for the representation of functions. Newton's Method of Fluxions was written about 1671, but not published until 1736. Jacob Bernoulli published a derivation of the idea in 1691 attributes the development of polar coordinates to Fontana, with no date."
+cartography,1741,,Beginnings of the study of population statistics (demography)
+cartography,1748,,"First use of the term ""statistik.'' The word ""statistics'' was first used by Zimmerman in 1787. (For the earlier use of ""statist'', ""statista'' and other terms, see cite{John:1883}.)"
+cartography,1750,1755,"Beginnings of the estimation of $m$ unknown quantities from $n$ emipirical equations (where $n > m$), taking account of the possibility of errors in the observations (later supplanted by the method of least squares)"
+cartography,1752,,"Introduction of a notation which gives a name and address to every possible point in 3D space, $(x,y,z)$."
+cartography,1752,,Contour map
+cartography,1753,,"""Carte chronologique'': An annotated timeline of history (from Creation) on a 54-foot scroll, including names and descriptive events, grouped thematically, with symbols denoting character (martyr, tyrant, heretic, noble, upright, etc.) and profession (painter, theologian, musician, monk, etc.)"
+cartography,1758,1772,"Diagrams developed to represent color systems. In 1758, Mayer developed a system of constructing and naming many of the possible colours. Lambert extended this with a 3D pyramid indicating ""depth'' (saturation)."
+cartography,1760,,Curve-fitting and interpolation from empirical data points
+cartography,1763,,Graph of the beta density
+cartography,1765,,"Theory of measurement error as deviations from regular graphed line. (Lambert made the observation that ""a diagram does incomparably better service here than a table.''cite[p. 204]{Tilling:1975}"
+cartography,1765,,"Historical timeline (life spans of 2,000 famous people, 1200 B.C. to 1750 A.D.), quantitative comparison by means of bars"
+cartography,1767,1796,Repeated systematic application of graphical analysis (line graphs applied to empirical measurements)
+cartography,1776,,"Development of descriptive geometry, that leads to engineering drawing"
+cartography,1778,,"Geological map (distribution of soils, minerals)"
+cartography,1779,,"Graphical analysis of periodic variation (in soil temperature), and the first semi-graphic display combining tabular and graphical formats"
+cartography,1782,,"Statistical map of production in Europe, possibly the first economic and thematic map (shows geographic distribution of 56 commodities produced in Europe)"
+cartography,1782,,First topographical map
+cartography,1782,,"Use of geometric, proportional figures (squares) to compare demographic quantities by superposition, an early ""tableau graphique''"
+cartography,1785,,Superimposed squares to compare areas (of European states)
+cartography,1786,,"Bar chart, line graphs of economic data"
+cartography,1787,,"Visualization of vibration patterns (by spreading a uniform layer of sand on a disk, and observing displacement when vibration is applied)"
+cartography,1794,,"Patenting and sale of printed graph paper, printed with a rectangular coordinate grid, attests to the growing use of Cartesian coordinates"
+cartography,1795,,"Multi-number graphical calculation (proto-nomogram: contours applied to multiplication table, later rectified by Lalanne cite{Lalanne:1846})"
+cartography,1796,,"Automatic recording of bivariate data (pressure vs. volume in steam engine) ""Watt Indicator,'' (invention kept secret until 1822)"
+cartography,1798,,"Invention of lithographic technique for printing of maps and diagrams (""At the time the effect of lithography ... was as great as has been the introduction [of the Xerox machine]'' cite[p. 57]{Robinson:1982}) (published in several translations, 1818--19)"
+cartography,1798,,"First maps of the incidence of disease (yellow fever), using dots and circles to show individual occurrences in waterfront areas of New York"
+cartography,1600,,"Tables of empirical data, published tables of numbers begin to appear. ""Die Tabellen-Statistik,'' as a branch of statistics devoted to the numerical description of facts"
+cartography,1603,,"Tables, and first world map showing lines of geomagnetism (isogons), used in work on finding longitude by means of magnetic variation. The tables give the world distribution of the variation, by latitude, along each of the meridians"
+cartography,1603,,The pantograph was invented for mechanically copying a figure on an enlarged or reduced scale
+cartography,1610,,"The first astronomical pictures ever printed, from observations through a telescope, used to illustrate discoveries of craters on the moon, the 4 staelites of Jupiter and a vast number of stars never seen by unaided eyes"
+cartography,1614,,"Invention of logarithms, and the first published tables of logarithms. "
+cartography,1617,,First use of Frisius' method of trigonometric triangulation to produce locations of major cities in Holland; foundation of geodesy
+cartography,1620,1628,"Invention of a mechanical device, containing a logarithmic scale of equal parts and trigonomic functions which, with the aid of a pair of calipers, could be used as a slide rule. This device, called ""Gunter's scale,'' or the ""gunter'' by seamen, was soon replaced by a true slide rule, containing two parallel logarithmic scales"
+cartography,1623,,"The first known adding machine, a mechanical calculator called the ""Calculating Clock.'' It could add and subtract up to six-digit numbers, based on the movement of six dented wheels geared through a ""mutilated"" wheel which with every full turn allowed the wheel located at the right to rotate 1/10th of a full turn"
+cartography,1626,,"Visual representations used to chart the changes in sunspots over time. Also, the first known use of the idea of ""small multiples'' to show a series of images in a coherent display"
+cartography,1632,,"Statistical analysis of observations on location of Tycho Brahe's star of 1572, based on idea that the most probable hypothesis is the one having the smallest (least absolute value) deviations"
+cartography,1637,,"Coordinate system reintroduced in mathematics, analytic geometry; relationship established between graphed line and equation"
+cartography,1644,,First visual representation of statistical data: variations in determination of longitude between Toledo and Rome
+cartography,1646,,"Invention of the first projection lantern (the magic lantern). [Images were painted on glass and projected on walls. Kirscher, a Jesuit priest, was the last recorded ordained priest openly to concern himself with optics. Henceforth, the art of projecting images was classified as an entertainment and curtailed.]"
+cartography,1654,,Initial statements of the theory of probability
+cartography,1654,,"The first large scale attempt at a scientific, economic survey (of the Irish estates confiscated by Oliver Cromwell), perhaps the first econometric study, leading to development of political arithmetic"
+cartography,1657,,First text on probability
+cartography,1662,,"Founding of demographic statistics: Development of the idea that vital statistics (records of christenings and burials in London) could be used to construct life tables. The average life expectancy in London was 27 years, with 65\% dying by age 16"
+cartography,1663,,Automatic recording device (the weather clock) producing a moving graph of temperature and wind direction (in polar coordinates)
+cartography,1666,,"First modern complete demographic census, a record of each individual by name of the 3215 inhabitants of New France"
+cartography,1669,,"First graph of a continuous distribution function, a graph of Gaunt's life table, and a demonstration of how to find the median remaining lifetime for a person of given age"
+cartography,1671,,"First attempt to determine scientifically what should be the purchase price of annuities, using mortality tables"
+cartography,1679,,A map of England showing distances between cities arranged for the use of travellers.
+cartography,1686,,"Bivariate plot of a theoretical curve derived from observations (barometric pressure vs. altitude), graphical analysis based on empirical data"
+cartography,1686,,"First known weather map, showing prevailing winds on a geographical map of the Earth"
+cartography,1687,,"Use of statistics for international comparisons, e.g., London vs. Rome and London vs. Paris, compared in people, housing, hospitals, etc."
+cartography,1693,,"First real mortality tables, containing the ages at death of a stable sample of individuals under stable conditions (from Breslau Bills of Mortality)"
+cartography,1693,,First use of areas of rectangles to display probabilities of independent binary events
+cartography,1800,,Use of coordinate paper in published research (graph of barometric variations)
+cartography,1800,,"Idea for continuous log of automatically recorded time series graphs (of temperature and barometric pressure), also recording the maximum and minimum"
+cartography,1801,,"Invention of the pie chart, and circle graph, used to show part-whole relations"
+cartography,1801,,"The first large-scale geological map of England and Wales, setting the pattern for geological cartography, and founding stratigraphic geology. Recently called (hyperbolically) ""the map that changed the world'' cite{Winchester:2001}. (Smith's map was first drawn in 1801, but the final version was not published until 1815.)"
+cartography,1809,,Methods of determining an orbit from at least three observations; presentation of the least squares method
+cartography,1810,,The central limit theorem explains why many distributions tend to be close to the normal distribution. The key ingredient is that the random variable being observed should be the sum or mean of many  independent identically distributed random variables.
+cartography,1811,,"Charts using subdivided bar graphs, and superimposed squares, showing the relative size of Mexican territories and populations in the colonies"
+cartography,1816,,"The first weather map was invented by physicist Heinrich Wilhelm Brandes in 1816, based on data collected over several decades."
+cartography,1817,,"First graph of isotherms, showing mean temperature around the world by latitude and longitude. Recognizing that temperature depends more on latitude and altitude, a subscripted graph shows the direct relation of temperature on these two variables"
+cartography,1819,,"Choropleth map with shadings from black to white (distribution and intensity of illiteracy in France), the first (unclassed) choropleth map, and perhaps the first modern statistical map. (This map dates from 1826 cite[Plate 1, vol. 2]{Dupin:1827} according to Robinson cite[p. 232]{Robinson:1982}, rather than 1819 according to Funkhouser cite{Funkhouser:1937})"
+cartography,1820,,"An increasing number of scientific publications begin to contain graphs and diagrams which describe, but do not analyze, natural phenomena (magnetic variation, weather, tides, etc.)"
+cartography,1821,,"Ogive or cumulative frequency curve, inhabitants of Paris by age groupings (shows the number of inhabitants of Paris per 10,000 in 1817 who were of a given age or over. The name ""ogive'' is due to Galton.)"
+cartography,1822,,"Mechanical device for calculating mathematical tables (the Difference Engine) [The beginnings of computing as we know it today. The Difference Engine was steam-powered, and the size of a locomotive.]"
+cartography,1825,,"Gompertz curve, derived to describe expected mortality statistics for a population of organisms whose probability of death increases as a function of time"
+cartography,1826,,"Choropleth map with shadings from black to white (distribution and intensity of illiteracy in France), the first (unclassed) choropleth map, and perhaps the first modern statistical map"
+cartography,1827,,"First successful photograph produced (an 8-hour exposure). [A type of asphalt (bitumen of Judea) was coated on metal plates. After exposure it was washed in solvents, the light areas were shown by the bitumen, dark areas by bare metal. Exposed to iodine, the plate darkened in the shadowed areas.]"
+cartography,1828,,Mortality curves drawn from empirical data (for Belgium and France)
+cartography,1829,,"Polar-area charts (predating those by Florence Nightingale cite{Nightingale:1857}), showing frequency of events for cyclic phenomena"
+cartography,1829,,"The first comparative choropleth thematic maps, showing crimes against persons and crimes against property in relation to level of instruction by departments in France"
+cartography,1830,1835,"Graphical analysis of natural phenomena begins to appear on a regular basis in scientific publications, particularly in England. For example, in 1832, Faraday proposes pictorial representation of electric and magnetic lines of force."
+cartography,1830,,"First simple dot map of population by department, 1 dot = 10,000 people"
+cartography,1832,,"Fitting a smoothed curve to a scatterplot, advocacy of graph paper and graphical methods as standard tools of science. [""The process by which I propose to accomplish this is one essentially graphical; by which term I understand not a mere substitution of geometrical construction and measurement for numerical calculation, but one which has for its object to perform that which no system of calculation can possibly do, by bringing in the aid of the eye and hand to guide the judgment, in a case where judgment only, and not calculation, can be of any avail.'' (p. 178)]"
+cartography,1833,,"The first comprehensive analysis of data on ""moral statistics'' (crimes, suicide, literacy, etc.) shown on thematic unclassed choropleth maps; bar charts (of crime, by age groupings and months)"
+cartography,1833,,"Graphical rank lists, with lines showing shifts in rank order between categories (rank of types of crime from one age group to the next)"
+cartography,1833,,First classed depiction of population density on a world map (using three broad classes in a dasymetric map)
+cartography,1833,,"Invention of the stereoscope, revealing the dependence of visual depth perception upon binocular vision, and allowing production of stereoscopic images"
+cartography,1836,,First broad and general application of principles of graphic representation to national industrial and population data
+cartography,1836,,"Extensive data tabulation, time series, and mapping of prostitutes in Paris"
+cartography,1837,,"First published flow maps, showing transportation by means of shaded lines, widths proportional to amount (passengers)"
+cartography,1838,,"Physical atlas of the distribution of plants, animals, climate, etc., one of the most extensive and detailed thematic atlases; most of the maps contained tables, graphs, pictorial profiles of distributions over altitude, and other visual accompanyments"
+cartography,1839,,"Development of the logistic curve, $ y = k / (1 + C e^)$, to describe the growth of human populations"
+cartography,1839,,"Invention of the first practical photographic process, using coated plates of metal and glass"
+cartography,1843,,"Contour map of a 3D table, temperature x hour x month (published in 1845)"
+cartography,1843,,Use of polar coordinates in a graph(frequency of wind directions)
+cartography,1843,,Ethnographic maps showing distribution of ethnic groups throughout the world
+cartography,1843,,Ada Lovelace was known as the first programmer for her work in 1843 with Charles Babbage. She wrote a series of instructions for his proposed machanical computer.
+cartography,1844,,"""Tableau-graphique'' showing transportation of commercial traffic by variable-width (distance), divided bars (height $sim$ amount), area $sim$ cost of transport [An early form of the mosaic plot.]"
+cartography,1846,,"Logarithmic grid (the first log-log plot, as a nomogram for showing products from the factors)"
+cartography,1846,,"Results of sampling from urns shown as symmetrical histograms, with limiting ""curve of possibility'' (later called the normal curve)"
+cartography,1850,1852,Discovery of time course of muscle action and nerve impulses by graphical methods.
+cartography,1851,,Map incorporating statistical diagrams: circles proportional to coal production (published in 1861)
+cartography,1852,,"Statistical graphics used in a lawsuit. (Reported by Ernst Engel at the 7th meetings of the International Statistical Congress, 1869, The Hague"
+cartography,1853,,First international statistics conference (organized by Quetelet)
+cartography,1854,,Guerry's ordonnateur statistique is arguably the first mechanical device inventedto aid statistical calculation and the assessment of the relationship betweensocial and moral variables.
+cartography,1854,,"An augmented graphic representation of a train schedule for 35 railways stations, between St. Petersburg and Moscow. This was designed by Lt. Sergev in 1854."
+cartography,1854,,"Minard, a visual engineer, was asked to investigate the cause of the collapse of the bridge at Bourg St. Andeol on the Rhone in 1840."
+cartography,1855,,"Use of a dot map to display epidemiological data, leads to discovery of the source of a cholera epidemic."
+cartography,1857,,Discussion of standardization and classification of graphical methods at the Third International Statistical Congress
+cartography,1857,,Exhibition display of graphs and cartograms. Third International Statistical Congress
+cartography,1857,,"Polar area charts, known as ""coxcombs'' (used in a campaign to improve sanitary conditions of army)"
+cartography,1861,,"The modern weather map, a chart showing area of similar air pressure and barometric changes by means of glyphs displayed on a map. These led to the discovery of the anti-cyclonic movement of wind around low-pressure areas"
+cartography,1861,,"Invention of the trichromatic process for making color photographs, by taking three monochrome images through red, green and blue filters"
+cartography,1863,,Semilogarithmic grid (showing percentage changes in commodities)
+cartography,1868,,Statistical diagrams used in a school textbook
+cartography,1869,,"Three-dimensional population surface or ""stereogram,'' with axonometric projection to show curves of various ""slices'' (sometimes known as a ""Zeuner diagram)''"
+cartography,1869,,"Minard's flow map graphic of Napoleon's March on Moscow (called ""the best graphic ever produced)
+        
+        "
+cartography,1869,,"The periodic table used to classify chemical elements according to their properties, and allowing the prediction of new elements that would be discovered later."
+cartography,1870,,"Election map of Paris, showing the breakdown of votes by parties"
+cartography,1872,,Congressional appropriation for graphical treatment of statistics
+cartography,1872,,Use of statistical graphics by USA Government in census reports (cartograms of data from Ninth Census)
+cartography,1872,,"Classification of statistical graphical treatments by form, with consideration of appropriate uses of color, graphical elements, limitations of perception. At the 8th ISI meetings, St. Petersburg."
+cartography,1872,,"Recording of motion (of a running horse) by means of a set of glass-plate cameras, triggered by strings"
+cartography,1873,,"Graphical methods applied to explain fundamental relations in thermodynamics; this includes diagrams of entropy vs. temperature (where work or heat is proportional to area), and the first use of trilinear coordinates (graphs of (x,y,z) where x+y+z=constant)"
+cartography,1873,,First-known use of a semi-graphic table to display a data table by shading levels
+cartography,1874,,"Age pyramid (bilateral histogram), bilateral frequency polygon, and the use of subdivided squares to show the division of population by two variables jointly (an early mosaic display) in the first true U.S. national statistical atlas"
+cartography,1874,,"Population contour map (population density shown by contours), the first statistical use of a contour map"
+cartography,1874,,"Two-variable color map (showing the joint distribution of horses (red, vertical bars) and cattle (green, horizontal bars) in Bavaria, widths of bars $sim$ animals/km$^2$)"
+cartography,1874,,"Galton's first semi-graphic scatterplot and correlation diagram, of head size and height, from his notebook on Special Peculiarities"
+cartography,1875,,"Lexis diagram, showing relations among age, calendar time, and life spans of individuals simultaneously (but the paternity of this diagram is in dispute cite{Vandeschrick:2001})"
+cartography,1875,,"Galton's first illustration of the idea of correlation, using sizes of the seeds of mother and daughter plants"
+cartography,1877,,"First use of proportional, divided square in the modern (mosaic) form for data representation"
+cartography,1877,,First use of polar diagrams and star plots for data representation
+cartography,1877,,"Extensive statistical study of 24,500 children to improve school practice; early ideas of correlation and regression by quoting the ""measure of stoutness'', the ratio of annual increase in pounds weight to annual increase in inches height. Includes six charts, showing curvilinear regresions."
+cartography,1877,,Galton's 1877 (hypothetical) machine for visualizing Bayesian inference using a prior distribution.
+cartography,1878,,"First attempt to survey, describe, and illustrate available graphic methods for experimental data"
+cartography,1878,,"The term ""graph'' introduced, referring to diagrams showing analogies between the chemical bonds in molecules and graphical representations of mathematical invariants (also coined the term ""matrix'')"
+cartography,1879,,"Stereogram (three-dimensional population pyramid) modeled on actual data (Swedish census, 1750--1875)"
+cartography,1879,,Published instructions on how to use graph paper
+cartography,1879,1899,"Album de Statistique Graphique, an annual series over 20 years, using all known graphic forms (map-based pies and stars, mosaic, line graphs, bar charts, and, of course, numerous flow maps) to depict data relevant to planning (railways, canals, ports, tramways, etc.) [This series, under the direction of �mile Cheysson, is regarded as the epitome of the ""Golden Age of Statistical Graphics'']"
+mathematics,1880,,"Representation of logical propositions and relations diagrammatically. [Actually, Liebnitz and, to some degree, Euler had used such diagrams previously.]"
+cartography,1882,,"Invention of precursor of motion-picture camera, recording a series of photographs to study fight of birds, running and walking"
+cartography,1882,,"Statistical reasoning employed to create a new system of bodily measurement, specifically for identifying criminals"
+cartography,1883,,"Patent issued on logarithmic paper (reported to the British Association for the Advancement of Science, in 1898). Also called ""semi-log,'' ""arith-log'' paper and ""ratio charts''"
+cartography,1883,1885,"Combination of many variables into multi-function nomograms, using 3D, juxtaposition of maps, parallel coordinate and hexagonal grids (L'Abaque Triomphe)"
+cartography,1884,,"Pictogram, used to represent data by icons proportional to a number"
+cartography,1884,,Invention of the punched card for use in a machine to tabulate the USA Census (in 1890). Hollerith's company eventually became IBM
+cartography,1884,,"The first alignment diagrams, using sets of parallel axes, rather than axes at right angles; development of the essential ideas used in parallel coordinates plots. [Using the principle of duality from projective geometry, d'Ocagne (1885) showed that a point on a graph with Cartesian coordinates transformed into a line on an alignment chart, that a line transformed into a point, and, finally, that a family of lines or a surface transformed into a single line cite(Hankins:1999)]"
+cartography,1884,,"A literary description of life in a two-dimensional world for people living in a 3D world. By analogy and extension, it suggests the possibile views of fourth and higher dimensions"
+cartography,1885,,"Normal correlation surface and regression, the idea that in a bivariate normal distribution, contours of equal frequency formed concentric ellipses, with the regression line connecting points of vertical tangents"
+cartography,1885,,"Comprehensive review of all available statistical graphics presented to the Statistical Society of London, classified as figures, maps, and solids (3D), perhaps the first mature attempt at a systematic classification of graphical forms"
+cartography,1885,,"Graphic representation of a train schedule showing rate of travel along the route from Paris to Lyon. The method is attributed to the French engineer Ibry, but new evidence suggests that Lt. Sergeev had developed this method approximately 30 years earlier in Russia."
+cartography,1888,,"First anamorphic maps, using a deformation of spatial size to show a quantitative variable (e.g., the decrease in time to travel from Paris to various places in France over 200 years)"
+cartography,1889,,"Street maps of London, showing poverty and wealth by color coding, transforming existing methods of social survey and poverty mapping towards the end of the nineteenth century"
+cartography,1892,,"Social data, diagrams, including regional survey, incorporated in museum"
+cartography,1895,,"First movie, with the cin�matographe, using the principle of intermittent movement of film (16 fps), but producing smooth projection (first public film screening on December 28, 1895 at the Cafe Grand)"
+cartography,1896,,"Use of area rectangles on a map to display two variables and their product (population of arrondisements in Paris, percent foreigners; area = absolute number of foreigners)"
+cartography,1899,,"Idea for ""log-square'' paper, ruled so that normal probability curve appears as a straight line"
+cartography,1901,,"This work by Cheysson and Fontaine, reported by Bertillon, was the first proposal of standards for graphical presentation. The paper ""Proposals to bring uniformity in the preparation of charts"" discusses some key recommendations, including cautious use of symbols and hieroglyphs, and sparing use of comparison by areas.It is proposed that x and y scales be constructed so that the average behaviour corresponds to a curve of 45 degrees. Other attempts to formulate standards for graphical procedures at the  International Statistical Congress are discussed in detail."
+cartography,1901,,"In one of the first statistical textbooks, Arthur Bowley (1901) illustrated an arithmetic and graphical analysis of time-series data using the total value of British and Irish exports from 1855-1899.  He presented a line graph of the time-series data, supplemented by overlaid line graphs of 3-, 5- and 10-year moving averages.  His goal was to show that while the initial series showed wide variability, moving averages made the series progressively smoother."
+cartography,1904,,"Use of the ""butterfly diagram'' to study the variation of sunspots over time, leading to the discovery that they were markedly reduced in frequency from 1645--1715 (the ""Maunder minimum''). [Earlier work, started in 1843 by H. Schwabe, showed that sunspots exhibit an approximately twenty-two year cycle, with each eleven-year cycle of sunspots followed by a reversal of the direction of the sun's magnetic field]"
+cartography,1905,,"Lorenz curve (cumulative distribution by rank order, to facilitate study of concentrations, income distribution)"
+cartography,1910,,"Statistical diagrams begin to appear regularly in USA textbooks (graphs of temperature, population in texts of arithmetic, algebra)"
+cartography,1910,,Textbook in English devoted exclusively to statistical graphics
+cartography,1911,,"First International Hygiene-Exhibition in Dresden, with 259 graphical-statistical figures of 35 national and international exhibitors and more than 5 million visitors. [Roesle also wrote publications which dealt with the structure of graphical-statistical displays cite{Roesle:1913}.]"
+cartography,1911,1913,"The Hertzsprung-Russell diagram, a log-log plot of luminosity as a function of temperature for stars, used to explain the changes as a star evolves. It provided an entirely new way to look at stars, and laid the groundwork for modern stellar physics and evolution, developed independently by"
+cartography,1913,,"Arithmetic probability paper, ruled so that normal ogive appears as straight line"
+cartography,1913,,"Parade of statistical graphics, May 17, 1913, including large graphs on horse-drawn floats, and a photograph with people arranged in a bell-shaped curve"
+cartography,1913,,"Discovery of the concept of atomic number, based largely on graphical analysis (a plot of serial numbers of the elements vs. square root of frequencies from X-ray spectra) The linear relations showed that the periodic table was explained by atomic number rather than, as had been supposed, atomic weight, and predicted the existence of several yet-undiscovered elements"
+cartography,1913,1914,"College course in statistical graphic methods, ""The Graphic Method'' (possibly the first)"
+cartography,1914,,Published standards for graphical presentation (by representatives from several scientific societies)
+cartography,1914,,Pictograms to represent a series of numbers by icons (combining concepts of the bar graph and pictogram of varying size)
+cartography,1915,,Creation of a standing committee on graphics
+cartography,1915,1925,"Beginnings of the development of modern statistical theory (sampling distributions (1915), randomization, likelihood (1921), small sample theory, exact distributions, analysis of variance (1925), etc.)"
+cartography,1916,,"Correspondence course in graphical methods (20 lessons for , supplemented by a book of 100 specimen illustrations of bar, curve, and circle diagrams; entended title includes ""There's an idea in every chart'')"
+cartography,1917,,"Gantt chart, designed to show scheduled and actual progress of projects"
+cartography,1918,1933,Annual college course in statistical graphical methods
+cartography,1919,,"Social statistical chartbook, containing a variety of graphic and semi-graphic displays in a USA Government report. [The image below is a fine early example of a semi-graphic display, showing four variables simultaneously.]"
+cartography,1919,,"Use of ethnographic maps, showing the distribution of mixed nationalities, played an important role in redrawing national boundaries of Central Europe and the Balkans following World War I"
+cartography,1920,,Invention of the path diagram to show relations among a network of endogenous and exogenous variables forming a system of structural equations
+cartography,1920,1926,"Numerous textbooks on graphics, describing principles of graphical presentation of numerical information (published at a rate of about two each year), e.g.,"
+cartography,1923,,Invention of the iconoscope television camera-tube
+cartography,1924,,Museum of Social Statistical Graphics and the ISOTYPE system (International System of Typographic Picture Education)
+cartography,1924,,"The essential idea behind what are now called partial residual plots are discussed in Ezekial's paper: ""A method of handling curvilinear correlation for any number of variables"". Later in history, this is rediscovered by Larsen and McCleary (1972)."
+cartography,1925,,Development of the control chart for statistical control of industrial processes
+statistics,1926,,Experimental test of statistical graphical forms (pie vs. subdivided bar charts)
+statistics,1927,1932,Spate of articles on experimental tests of statistical graphical forms
+statistics,1927,1934,"The birth of psychometrics, including unidimensional scaling (the law of comparative judgment) and multiple factor analysis. This would give rise to visualizations in one or more dimensions of psychological constructs, like attitudes, preferences, and abilities."
+computation,1928,,"Nomogram of chemical concentrations in blood, showing the relations among over 20 components"
+computation,1928,,"Ideograph, a multivariate rectangular glyph, invented to display four variables and their relations (length and width of petals and sepals in iris flowers)"
+computation,1929,,"Electroencephalograph invented, to record electrical signals from the brain via galvanometers that measure electrical signals from electrodes on the scalp. EEGs were printed on multiple-pen, strip-chart recorders, with each channel showing the the amplitude from a given electrode."
+statistics,1930,,Table of historical events drawn on logarithmic paper
+cartography,1931,,"""Log Square'' paper ($log y, log x$, for relations which are linear in log scales)"
+statistics,1933,,"Standard statistical symbols (Neurath's Isotype method) established by government decree (for schools, public posters, etc.)"
+cartography,1933,,Re-design of the routes of the London underground rail system to favor usability
+statistics,1935,1950,"Lapse of interest in statistical graphics, as concern with formal, ""precise'', and numerical methods gained ascendancy (the modern ""dark ages'' of statistical graphics)cite{FriendlyDenis:2001:valois}."
+statistics,1937,,First modern review of the early history of statistical graphics
+computation,1939,,"Description of a memex, an associative information retrieval system which would help someone find information based in association and context rather than strict categorical indexing; conceptual creation of ""hyperlink'' and the ''World Wide Web''"
+computation,1944,,"Harvard's Mark I, the first digital computer, put in service. Officially known as the ""IBM Automatic Sequence Controlled Calculator'' (ASCC), the Mark I was 50 feet long and weighed about 5 tons."
+computation,1944,,"Development of an electro-mechanical machine to aid in the rotation of multidimensional factor analysis solutions to ""simple structure.'' This allowed an analyst to carry out by direct manipulation of dials what one did by plotting pairs of factors, and hand calculation of the rotation matrices in earlier times [(work carried out under the Adjutant General for development of the Armed Forces General Classification Test) cite{Tucker:2002}]"
