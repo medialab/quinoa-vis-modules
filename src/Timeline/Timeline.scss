@@ -129,14 +129,27 @@
                     right: 0;
 
                     pointer-events: all;
-                    .name
-                    {
-                        position: absolute;
-                        top: -$gutter-small/2;
-                        left: $gutter-medium;
+                    .name-container{
+                      width: 30rem;
+                      position: absolute;
+                      .name
+                      {
+                          position: absolute;
+                          top: -$gutter-medium * .8;
+                          left: $gutter-medium;
 
-                        width: 20rem;
+                          max-width: 20rem;
+
+                          .name-underline{
+                            border-top: $gutter-small/4 solid black;
+                            position: absolute;
+                            width: 100%;
+                            left: -$gutter-medium/2;
+                            top: $gutter-medium;
+                          }
+                      }
                     }
+              
                     .marker
                     {
                         position: absolute;

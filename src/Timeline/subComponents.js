@@ -3,6 +3,7 @@ import React from 'react';
 export const TimeObject = ({
   point,
   scale,
+  color = 'grey',
   showLabel = true
 }) => (
   <span
@@ -12,10 +13,21 @@ export const TimeObject = ({
       top: scale(point.startDate.getTime()) + '%',
       height: point.endDate ? scale(point.endDate.getTime()) - scale(point.startDate.getTime()) + '%' : undefined
     }}>
-    <span className="marker" />
-    {showLabel ? <span className="name">
-      {point.name.length > 27 ? point.name.substr(0, 30) + '...' : point.name}
-    </span> : ''}
+    <span className="marker" style={{
+      background: color
+    }} />
+    {showLabel ?
+      <span className="name-container">
+        <span className="name">
+          {point.name.length > 27 ? point.name.substr(0, 30) + '...' : point.name}
+          <span
+            className="name-underline"
+            style={{
+            borderColor: color
+          }} />
+        </span>
+      </span>
+    : ''}
   </span>
 );
 

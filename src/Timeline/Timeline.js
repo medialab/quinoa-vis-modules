@@ -102,8 +102,8 @@ class Timeline extends React.Component {
     const timeSpan = this.viewParameters.toDate - this.viewParameters.fromDate;
     const newTimeSpan = timeSpan / ratio;
     const diff = newTimeSpan - timeSpan;
-    const newFrom = this.viewParameters.fromDate - diff/2;
-    const newTo = this.viewParameters.toDate + diff/2;
+    const newFrom = this.viewParameters.fromDate - diff / 2;
+    const newTo = this.viewParameters.toDate + diff / 2;
     if (newFrom >= this.timeBoundaries.minimumDateDisplay && newTo <= this.timeBoundaries.maximumDateDisplay) {
       this.viewParameters.fromDate = newFrom;
       this.viewParameters.toDate = newTo;
@@ -268,6 +268,9 @@ class Timeline extends React.Component {
       }
     };
 
+    const zoomIn = () => this.zoom(1.1);
+    const zoomOut = () => this.zoom(0.9);
+
     return (
       <figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
         <aside onWheel={onAsideWheel} className="mini-timeline">
@@ -304,6 +307,7 @@ class Timeline extends React.Component {
                         <TimeObject
                           key={index}
                           point={obj}
+                          color={viewParameters.colorsMap[obj.category]}
                           scale={timelineScale} />
                       ))
                     }
@@ -313,7 +317,7 @@ class Timeline extends React.Component {
             </div> : ''}
             {eventsClusters.timeObjects.length ?
               <div className="columns-container">
-              {
+                {
                 eventsClusters.columns.map(column => (
                   <div key={column} className="objects-column">
                     {eventsClusters
@@ -323,25 +327,24 @@ class Timeline extends React.Component {
                         <TimeObject
                           key={index}
                           point={obj}
-                          scale={timelineScale} 
-                          showLabel={!obj.overlapped}
-                        />
+                          scale={timelineScale}
+                          color={viewParameters.colorsMap[obj.category]}
+                          showLabel={!obj.overlapped} />
                       ))
                     }
                   </div>
                 ))
               }
-            </div>: ''}
+              </div> : ''}
 
             {/*displayedData.map((point, index) => (
               <TimeObject scale={timelineScale} point={point} key={index} />
             ))*/}
           </div>
           {allowViewChange ?
-            <Controls 
-              zoomIn={() => this.zoom(1.1)}
-              zoomOut={() => this.zoom(0.9)}
-            />
+            <Controls
+              zoomIn={zoomIn}
+              zoomOut={zoomOut} />
           : ''}
           <div className="time-boundaries-container">
             <div id="from-date">{formatDate(new Date(fromDate))}</div>

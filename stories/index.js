@@ -26,7 +26,13 @@ const timelineBaseViewParameters = {
   fromDate: new Date().setFullYear(1900),
   toDate: new Date().setFullYear(1960),
   orientation: 'portrait',
-  dataMap: timelineDataMap
+  dataMap: timelineDataMap,
+  colorsMap: {
+    cartography: '#F24D98',
+    computation: '#813B7C',
+    mathematics: '#59D044',
+    statistics: '#F3A002'
+  }
 };
 const timelineActiveViewParameters = {...timelineBaseViewParameters}
 
