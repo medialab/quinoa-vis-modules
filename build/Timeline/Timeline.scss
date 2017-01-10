@@ -1,69 +1,88 @@
-@import "./../globals.scss";
+@import './../globals.scss';
 
-.quinoa-timeline {
-    padding: 0;
-    margin: 0;
+.quinoa-timeline
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    overflow: hidden;
+
     width: 100%;
     height: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    overflow: hidden;
-    display: flex;
+    margin: 0;
+    padding: 0;
+
     flex-wrap: nowrap;
-    &.portrait {
+    &.portrait
+    {
         flex-direction: row;
     }
-    &.landscape {
+    &.landscape
+    {
         flex-direction: column;
     }
-    .mini-timeline {
-        flex: 1;
+    .mini-timeline
+    {
         position: relative;
-        .time-object {
-            .name {
+
+        flex: 1;
+        .time-object
+        {
+            .name
+            {
                 display: none;
             }
         }
-        .brush {
+        .brush
+        {
             position: absolute;
+            top: 0;
             left: 0;
+
             width: 100%;
             height: 1%;
-            top: 0;
-            background: lightgrey;
+
             cursor: move;
+
             opacity: .5;
-            &:hover {
+            background: lightgrey;
+            &:hover
+            {
                 opacity: 1;
             }
         }
     }
-    .main-timeline {
-        flex: 5;
+    .main-timeline
+    {
         position: relative;
-        .time-object {
-            .name {
-                display: none;
-            }
-        }
-        .controls-container {
+
+        flex: 5;
+        .controls-container
+        {
             position: absolute;
-            right: $gutter-medium;
             top: $gutter-medium;
+            right: $gutter-medium;
         }
-        .time-boundaries-container {
+        .time-boundaries-container
+        {
             #to-date,
-            #from-date {
+            #from-date
+            {
                 position: absolute;
                 left: $gutter-medium;
+
                 padding: $gutter-small;
+
                 background: lightgrey;
             }
-            #from-date {
+            #from-date
+            {
                 top: 0rem;
             }
-            #to-date {
+            #to-date
+            {
                 bottom: 0rem;
             }
         }
@@ -71,47 +90,101 @@
     /*
      * Mini sub components
      */
-    .time-objects-container {
+    .time-objects-container
+    {
         position: absolute;
-        width: 100%;
-        height: 100%;
-        left: 0;
         top: 0;
+        left: 0;
+
+        display: flex;
+
+        width: 60%;
+        height: 100%;
+
         pointer-events: none;
 
+        flex-flow: row nowrap;
+        .columns-container
+        {
+            /*position: absolute;
+            top: 0;
+            left: 0;*/
+            display: flex;
 
-        .time-object {
+            width: 20%;
+            height: 100%;
+
+            flex: 1;
+            flex-flow: row nowrap;
+            .objects-column
+            {
+                position: relative;
+
+                height: 100%;
+
+                flex: 1;
+            }
+        }
+        .time-object
+        {
             position: absolute;
-            left: 20%;
+            right: 0;
+
             pointer-events: all;
-            .marker {
+            .name
+            {
+                position: absolute;
+                top: -$gutter-small/2;
+                left: $gutter-medium;
+
+                width: 20rem;
+            }
+            .marker
+            {
+                position: absolute;
+
                 width: 10px;
                 height: 10px;
+
                 border-radius: 10px;
                 background: black;
-                position: absolute;
             }
-            &.period {
-                .marker {
-                    background: red;
+            &.period
+            {
+                .name
+                {
+                    left: -$gutter-small;
+                }
+                .marker
+                {
                     right: $gutter-medium;
-                    border-radius: 0;
+
                     height: 100%;
+
+                    border-radius: 0;
+                    background: red;
                 }
             }
         }
     }
-    .time-graduations-container {
+    .time-graduations-container
+    {
         pointer-events: none;
+
         content-selectable: false;
-        .tick {
         @include transition(all $time-short ease);
-            padding: 0;
-            margin: 0;
-            border-top: 1px solid black;
+        .tick
+        {
             position: absolute;
             left: 0;
+
             width: 100%;
+            margin: 0;
+            padding: 0;
+
+            border-top: 1px solid black;
+
+            @include transition(all $time-short ease);
         }
     }
 }

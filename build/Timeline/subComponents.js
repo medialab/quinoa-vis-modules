@@ -29,7 +29,7 @@ var TimeObject = exports.TimeObject = function TimeObject(_ref) {
     _react2.default.createElement(
       'span',
       { className: 'name' },
-      point.name
+      point.name.substr(0, 30)
     )
   );
 };

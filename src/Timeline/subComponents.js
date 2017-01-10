@@ -2,7 +2,8 @@ import React from 'react';
 
 export const TimeObject = ({
   point,
-  scale
+  scale,
+  showLabel = true
 }) => (
   <span
     className={'time-object' + (point.endDate ? ' period' : ' point')}
@@ -12,7 +13,9 @@ export const TimeObject = ({
       height: point.endDate ? scale(point.endDate.getTime()) - scale(point.startDate.getTime()) + '%' : undefined
     }}>
     <span className="marker" />
-    <span className="name">{point.name.substr(0, 30)}</span>
+    {showLabel ? <span className="name">
+      {point.name.length > 27 ? point.name.substr(0, 30) + '...' : point.name}
+    </span> : ''}
   </span>
 );
 
@@ -35,11 +38,13 @@ export const TimeTicks = ({
 );
 
 export const Controls = ({
+  zoomIn,
+  zoomOut
 }) => (
   <div className="controls-container">
     <button id="left">backward</button>
     <button id="right">forward</button>
-    <button id="zoom-in">zoom-in</button>
-    <button id="zoom-out">zoom-out</button>
+    <button onMouseDown={zoomIn} id="zoom-in">zoom-in</button>
+    <button onMouseDown={zoomOut} id="zoom-out">zoom-out</button>
   </div>
 );

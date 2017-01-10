@@ -47,6 +47,7 @@ var Timeline = function (_React$Component) {
     _this.mapData = _this.mapData.bind(_this);
     _this.computeBoundaries = _this.computeBoundaries.bind(_this);
     _this.pan = _this.pan.bind(_this);
+    _this.computePeriods = _this.computePeriods.bind(_this);
     _this.onViewChange = (0, _lodash.debounce)(_this.onViewChange, 100);
 
     // data time boundaries in order to display the mini-timeline
@@ -62,8 +63,8 @@ var Timeline = function (_React$Component) {
     };
     _this.viewParameters = props.viewParameters;
     _this.miniScale = (0, _d3Scale.scaleLinear)().range([0, 100]).domain([-Infinity, Infinity]);
-
-    _this.mapData(_this.props.data, _this.props.dataMap);
+    _this.mapData(_this.props.data, _this.props.viewParameters.dataMap);
+    _this.periodsClusters = _this.computePeriods(_this.data);
     return _this;
   }
 
@@ -71,9 +72,11 @@ var Timeline = function (_React$Component) {
     key: 'componentWillUpdate',
     value: function componentWillUpdate(nextProps) {
       // remap data if data or datamap will change
+      /*
       if (this.props.data !== nextProps.data || this.props.dataMap !== nextProps.dataMap) {
         this.mapData(nextProps.data, nextProps.dataMap);
       }
+      */
       if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
         this.viewParameters = nextProps.viewParameters;
       }
@@ -85,6 +88,36 @@ var Timeline = function (_React$Component) {
         lastEventType: lastEventType,
         viewParameters: this.viewParameters
       });
+    }
+  }, {
+    key: 'computePeriods',
+    value: function computePeriods(data) {
+      var maxColumn = 1;
+      var periodsClusters = data.filter(function (point) {
+        return point.endDate !== undefined;
+      });
+      periodsClusters.forEach(function (period, index) {
+        var previous = void 0;
+        if (index > 0) {
+          previous = periodsClusters[index - 1];
+        }
+        if (previous && period.startDate < previous.endDate) {
+          period.column = previous.column + 1;
+          if (previous.column + 1 > maxColumn) {
+            maxColumn = previous.column + 1;
+          }
+        } else {
+          period.column = 1;
+        }
+      });
+      var clustersColumns = [];
+      for (var count = 0; count < maxColumn; count++) {
+        clustersColumns.push(count + 1);
+      }
+      return {
+        clustersColumns: clustersColumns,
+        timeObjects: periodsClusters
+      };
     }
   }, {
     key: 'pan',
@@ -175,11 +208,41 @@ var Timeline = function (_React$Component) {
       var data = this.data,
           miniScale = this.miniScale,
           miniTicks = this.miniTicks,
-          viewParameters = this.viewParameters;
+          viewParameters = this.viewParameters,
+          periodsClusters = this.periodsClusters;
 
       var fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
       var toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
+      var timeSpan = toDate - fromDate;
       var displayedData = data.filter(function (point) {
+        var start = point.startDate.getTime();
+        var end = point.endDate && point.endDate.getTime();
+        return start >= fromDate && start <= toDate || end && end >= fromDate && end <= toDate;
+      });
+      var displayedEvents = displayedData.filter(function (obj) {
+        return obj.endDate === undefined;
+      });
+      var eventPadding = timeSpan / 2;
+      var eventsClusters = displayedEvents.reduce(function (periods, event) {
+        var previous = void 0;
+        if (periods.timeObjects.length) {
+          previous = periods.timeObjects[periods.timeObjects.length - 1];
+        }
+        if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
+          event.column = previous.column + 1;
+          if (periods.columns[periods.columns.length - 1] < event.column) {
+            periods.columns.push(event.column);
+          }
+        } else {
+          event.column = 1;
+        }
+        periods.timeObjects.push(event);
+        return periods;
+      }, {
+        timeObjects: [],
+        columns: [1]
+      });
+      var displayedPeriods = periodsClusters.timeObjects.filter(function (point) {
         var start = point.startDate.getTime();
         var end = point.endDate && point.endDate.getTime();
         return start >= fromDate && start <= toDate || end && end >= fromDate && end <= toDate;
@@ -190,6 +253,7 @@ var Timeline = function (_React$Component) {
       var mainTicks = (0, _utils.computeTicks)(fromDate, toDate);
 
       var onMainWheel = function onMainWheel(e) {
+        e.stopPropagation();
         if (!_this2.props.allowViewChange) {
           return;
         }
@@ -204,6 +268,7 @@ var Timeline = function (_React$Component) {
       };
 
       var onAsideWheel = function onAsideWheel(e) {
+        e.stopPropagation();
         if (!_this2.props.allowViewChange) {
           return;
         }
@@ -245,9 +310,42 @@ var Timeline = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'time-objects-container' },
-            displayedData.map(function (point, index) {
-              return _react2.default.createElement(_subComponents.TimeObject, { scale: timelineScale, point: point, key: index });
-            })
+            _react2.default.createElement(
+              'div',
+              { className: 'columns-container' },
+              periodsClusters.clustersColumns.map(function (column) {
+                return _react2.default.createElement(
+                  'div',
+                  { key: column, className: 'objects-column' },
+                  displayedPeriods.filter(function (obj) {
+                    return obj.column === column;
+                  }).map(function (obj, index) {
+                    return _react2.default.createElement(_subComponents.TimeObject, {
+                      key: index,
+                      point: obj,
+                      scale: timelineScale });
+                  })
+                );
+              })
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'columns-container' },
+              eventsClusters.columns.map(function (column) {
+                return _react2.default.createElement(
+                  'div',
+                  { key: column, className: 'objects-column' },
+                  eventsClusters.timeObjects.filter(function (obj) {
+                    return obj.column === column;
+                  }).map(function (obj, index) {
+                    return _react2.default.createElement(_subComponents.TimeObject, {
+                      key: index,
+                      point: obj,
+                      scale: timelineScale });
+                  })
+                );
+              })
+            )
           ),
           allowViewChange ? _react2.default.createElement(_subComponents.Controls, null) : '',
           _react2.default.createElement(
@@ -278,24 +376,24 @@ Timeline.propTypes = {
    */
   // data: PropTypes.array,
   /*
-   * Dictionary that specifies how to map vis props to data attributes (key names or accessor funcs)
-   */
-  dataMap: _react.PropTypes.shape({
-    name: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-    category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-    year: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-    month: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-    day: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-    time: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-    endYear: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-    endMonth: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-    endDay: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-    endTime: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func])
-  }),
-  /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not - like Timeline spatialization algorithm for instance)
    */
   viewParameters: _react.PropTypes.shape({
+    /*
+     * Dictionary that specifies how to map vis props to data attributes (key names or accessor funcs)
+     */
+    dataMap: _react.PropTypes.shape({
+      name: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+      category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+      year: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+      month: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+      day: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+      time: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+      endYear: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+      endMonth: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+      endDay: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+      endTime: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func])
+    }),
     fromDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
     toDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
     orientation: _react.PropTypes.oneOf(['landscape', 'portrait'])

@@ -123,46 +123,46 @@
                 height: 100%;
 
                 flex: 1;
-            }
-        }
-        .time-object
-        {
-            position: absolute;
-            right: 0;
-
-            pointer-events: all;
-            .name
-            {
-                position: absolute;
-                top: -$gutter-small/2;
-                left: $gutter-medium;
-
-                width: 20rem;
-            }
-            .marker
-            {
-                position: absolute;
-
-                width: 10px;
-                height: 10px;
-
-                border-radius: 10px;
-                background: black;
-            }
-            &.period
-            {
-                .name
+                .time-object
                 {
-                    left: -$gutter-small;
-                }
-                .marker
-                {
-                    right: $gutter-medium;
+                    position: absolute;
+                    right: 0;
 
-                    height: 100%;
+                    pointer-events: all;
+                    .name
+                    {
+                        position: absolute;
+                        top: -$gutter-small/2;
+                        left: $gutter-medium;
 
-                    border-radius: 0;
-                    background: red;
+                        width: 20rem;
+                    }
+                    .marker
+                    {
+                        position: absolute;
+
+                        width: 10px;
+                        height: 10px;
+
+                        border-radius: 10px;
+                        background: black;
+                    }
+                    &.period
+                    {
+                        .name
+                        {
+                            left: -$gutter-small;
+                        }
+                        .marker
+                        {
+                            right: $gutter-medium;
+
+                            height: 100%;
+
+                            border-radius: 0;
+                            background: red;
+                        }
+                    }
                 }
             }
         }

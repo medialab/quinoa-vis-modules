@@ -23,6 +23,7 @@ class Timeline extends React.Component {
     this.mapData = this.mapData.bind(this);
     this.computeBoundaries = this.computeBoundaries.bind(this);
     this.pan = this.pan.bind(this);
+    this.zoom = this.zoom.bind(this);
     this.computePeriods = this.computePeriods.bind(this);
     this.onViewChange = debounce(this.onViewChange, 100);
 
@@ -95,6 +96,20 @@ class Timeline extends React.Component {
     this.viewParameters.fromDate += (forward ? delta : -delta);
     this.forceUpdate();
     this.onViewChange('wheel');
+  }
+
+  zoom (ratio) {
+    const timeSpan = this.viewParameters.toDate - this.viewParameters.fromDate;
+    const newTimeSpan = timeSpan / ratio;
+    const diff = newTimeSpan - timeSpan;
+    const newFrom = this.viewParameters.fromDate - diff/2;
+    const newTo = this.viewParameters.toDate + diff/2;
+    if (newFrom >= this.timeBoundaries.minimumDateDisplay && newTo <= this.timeBoundaries.maximumDateDisplay) {
+      this.viewParameters.fromDate = newFrom;
+      this.viewParameters.toDate = newTo;
+      this.forceUpdate();
+    }
+    this.onViewChange('zoom');
   }
 
   /*
@@ -189,7 +204,7 @@ class Timeline extends React.Component {
       return (start >= fromDate && start <= toDate) || (end && end >= fromDate && end <= toDate);
     });
     const displayedEvents = displayedData.filter(obj => obj.endDate === undefined);
-    const eventPadding = timeSpan / 2;
+    const eventPadding = timeSpan / 20;
     const eventsClusters = displayedEvents
       .reduce((periods, event) => {
         let previous;
@@ -198,11 +213,13 @@ class Timeline extends React.Component {
         }
         if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
           event.column = previous.column + 1;
+          previous.overlapped = true;
+          event.overlapped = false;
           if (periods.columns[periods.columns.length - 1] < event.column) {
             periods.columns.push(event.column);
           }
         }
- else {
+        else {
           event.column = 1;
         }
         periods.timeObjects.push(event);
@@ -226,7 +243,7 @@ class Timeline extends React.Component {
       if (!this.props.allowViewChange) {
         return;
       }
-      const delta = (toDate - fromDate) / 30;
+      const delta = (toDate - fromDate) / 10;
       const forward = e.deltaY > 0;
       if (forward && toDate + delta <= this.timeBoundaries.maximumDateDisplay) {
         this.pan(true, delta);
@@ -277,7 +294,7 @@ class Timeline extends React.Component {
             - for events : apply displacement strategy to elements
           */}
           <div className="time-objects-container">
-            <div className="columns-container">
+            {displayedPeriods.length ? <div className="columns-container">
               {
                 periodsClusters.clustersColumns.map(column => (
                   <div key={column} className="objects-column">
@@ -293,8 +310,9 @@ class Timeline extends React.Component {
                   </div>
                 ))
               }
-            </div>
-            <div className="columns-container">
+            </div> : ''}
+            {eventsClusters.timeObjects.length ?
+              <div className="columns-container">
               {
                 eventsClusters.columns.map(column => (
                   <div key={column} className="objects-column">
@@ -305,20 +323,25 @@ class Timeline extends React.Component {
                         <TimeObject
                           key={index}
                           point={obj}
-                          scale={timelineScale} />
+                          scale={timelineScale} 
+                          showLabel={!obj.overlapped}
+                        />
                       ))
                     }
                   </div>
                 ))
               }
-            </div>
+            </div>: ''}
 
             {/*displayedData.map((point, index) => (
               <TimeObject scale={timelineScale} point={point} key={index} />
             ))*/}
           </div>
           {allowViewChange ?
-            <Controls />
+            <Controls 
+              zoomIn={() => this.zoom(1.1)}
+              zoomOut={() => this.zoom(0.9)}
+            />
           : ''}
           <div className="time-boundaries-container">
             <div id="from-date">{formatDate(new Date(fromDate))}</div>
