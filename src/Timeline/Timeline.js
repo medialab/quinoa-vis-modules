@@ -23,6 +23,7 @@ class Timeline extends React.Component {
     this.mapData = this.mapData.bind(this);
     this.computeBoundaries = this.computeBoundaries.bind(this);
     this.pan = this.pan.bind(this);
+    this.computePeriods = this.computePeriods.bind(this);
     this.onViewChange = debounce(this.onViewChange, 100);
 
     // data time boundaries in order to display the mini-timeline
@@ -38,15 +39,17 @@ class Timeline extends React.Component {
     };
     this.viewParameters = props.viewParameters;
     this.miniScale = scaleLinear().range([0, 100]).domain([-Infinity, Infinity]);
-
-    this.mapData(this.props.data, this.props.dataMap);
+    this.mapData(this.props.data, this.props.viewParameters.dataMap);
+    this.periodsClusters = this.computePeriods(this.data);
   }
 
   componentWillUpdate(nextProps) {
     // remap data if data or datamap will change
+    /*
     if (this.props.data !== nextProps.data || this.props.dataMap !== nextProps.dataMap) {
       this.mapData(nextProps.data, nextProps.dataMap);
     }
+    */
     if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
       this.viewParameters = nextProps.viewParameters;
     }
@@ -57,6 +60,34 @@ class Timeline extends React.Component {
       lastEventType,
       viewParameters: this.viewParameters
     });
+  }
+
+  computePeriods(data) {
+    let maxColumn = 1;
+    const periodsClusters = data.filter(point => point.endDate !== undefined);
+    periodsClusters.forEach((period, index) => {
+      let previous;
+      if (index > 0) {
+        previous = periodsClusters[index - 1];
+      }
+      if (previous && period.startDate < previous.endDate) {
+        period.column = previous.column + 1;
+        if (previous.column + 1 > maxColumn) {
+          maxColumn = previous.column + 1;
+        }
+      }
+      else {
+        period.column = 1;
+      }
+    });
+    const clustersColumns = [];
+    for (let count = 0; count < maxColumn; count ++) {
+      clustersColumns.push(count + 1);
+    }
+    return {
+      clustersColumns,
+      timeObjects: periodsClusters
+    };
   }
 
   pan (forward, delta) {
@@ -131,7 +162,7 @@ class Timeline extends React.Component {
       if (a.startDate.getTime() > b.startDate.getTime()) {
         return 1;
       }
- else return -1;
+      else return -1;
     });
     this.computeBoundaries();
   }
@@ -146,11 +177,41 @@ class Timeline extends React.Component {
       data,
       miniScale,
       miniTicks,
-      viewParameters
+      viewParameters,
+      periodsClusters
     } = this;
     const fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
     const toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
+    const timeSpan = toDate - fromDate;
     const displayedData = data.filter(point => {
+      const start = point.startDate.getTime();
+      const end = point.endDate && point.endDate.getTime();
+      return (start >= fromDate && start <= toDate) || (end && end >= fromDate && end <= toDate);
+    });
+    const displayedEvents = displayedData.filter(obj => obj.endDate === undefined);
+    const eventPadding = timeSpan / 2;
+    const eventsClusters = displayedEvents
+      .reduce((periods, event) => {
+        let previous;
+        if (periods.timeObjects.length) {
+          previous = periods.timeObjects[periods.timeObjects.length - 1];
+        }
+        if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
+          event.column = previous.column + 1;
+          if (periods.columns[periods.columns.length - 1] < event.column) {
+            periods.columns.push(event.column);
+          }
+        }
+ else {
+          event.column = 1;
+        }
+        periods.timeObjects.push(event);
+        return periods;
+      }, {
+        timeObjects: [],
+        columns: [1]
+      });
+    const displayedPeriods = periodsClusters.timeObjects.filter(point => {
       const start = point.startDate.getTime();
       const end = point.endDate && point.endDate.getTime();
       return (start >= fromDate && start <= toDate) || (end && end >= fromDate && end <= toDate);
@@ -161,6 +222,7 @@ class Timeline extends React.Component {
     const mainTicks = computeTicks(fromDate, toDate);
 
     const onMainWheel = (e) => {
+      e.stopPropagation();
       if (!this.props.allowViewChange) {
         return;
       }
@@ -175,6 +237,7 @@ class Timeline extends React.Component {
     };
 
     const onAsideWheel = (e) => {
+      e.stopPropagation();
       if (!this.props.allowViewChange) {
         return;
       }
@@ -206,10 +269,53 @@ class Timeline extends React.Component {
         </aside>
         <section className="main-timeline" onWheel={onMainWheel}>
           <TimeTicks ticks={mainTicks} scale={timelineScale} />
+          {/*
+            TODO:
+            - separate periods and events into to flexed containers
+            - for periods : regroup them by overlapping groups and stack them in flex
+            - for events : regroup them by overlapping (on what criteria ?) and choose whether to display labels for each groups
+            - for events : apply displacement strategy to elements
+          */}
           <div className="time-objects-container">
-            {displayedData.map((point, index) => (
+            <div className="columns-container">
+              {
+                periodsClusters.clustersColumns.map(column => (
+                  <div key={column} className="objects-column">
+                    {displayedPeriods
+                      .filter(obj => obj.column === column)
+                      .map((obj, index) => (
+                        <TimeObject
+                          key={index}
+                          point={obj}
+                          scale={timelineScale} />
+                      ))
+                    }
+                  </div>
+                ))
+              }
+            </div>
+            <div className="columns-container">
+              {
+                eventsClusters.columns.map(column => (
+                  <div key={column} className="objects-column">
+                    {eventsClusters
+                      .timeObjects
+                      .filter(obj => obj.column === column)
+                      .map((obj, index) => (
+                        <TimeObject
+                          key={index}
+                          point={obj}
+                          scale={timelineScale} />
+                      ))
+                    }
+                  </div>
+                ))
+              }
+            </div>
+
+            {/*displayedData.map((point, index) => (
               <TimeObject scale={timelineScale} point={point} key={index} />
-            ))}
+            ))*/}
           </div>
           {allowViewChange ?
             <Controls />
@@ -230,54 +336,54 @@ Timeline.propTypes = {
    */
   // data: PropTypes.array,
   /*
-   * Dictionary that specifies how to map vis props to data attributes (key names or accessor funcs)
-   */
-  dataMap: PropTypes.shape({
-    name: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func
-    ]),
-    category: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func
-    ]),
-    year: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func
-    ]),
-    month: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func
-    ]),
-    day: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func
-    ]),
-    time: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func
-    ]),
-    endYear: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func
-    ]),
-    endMonth: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func
-    ]),
-    endDay: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func
-    ]),
-    endTime: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func
-    ]),
-  }),
-  /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not - like Timeline spatialization algorithm for instance)
    */
   viewParameters: PropTypes.shape({
+    /*
+     * Dictionary that specifies how to map vis props to data attributes (key names or accessor funcs)
+     */
+    dataMap: PropTypes.shape({
+      name: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func
+      ]),
+      category: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func
+      ]),
+      year: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func
+      ]),
+      month: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func
+      ]),
+      day: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func
+      ]),
+      time: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func
+      ]),
+      endYear: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func
+      ]),
+      endMonth: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func
+      ]),
+      endDay: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func
+      ]),
+      endTime: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func
+      ]),
+    }),
     fromDate: PropTypes.oneOfType([
       PropTypes.instanceOf(Date),
       PropTypes.number

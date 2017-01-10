@@ -12,7 +12,7 @@ export const TimeObject = ({
       height: point.endDate ? scale(point.endDate.getTime()) - scale(point.startDate.getTime()) + '%' : undefined
     }}>
     <span className="marker" />
-    <span className="name">{point.name}</span>
+    <span className="name">{point.name.substr(0, 30)}</span>
   </span>
 );
 

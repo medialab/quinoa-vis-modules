@@ -25,17 +25,25 @@ const timelineDataMap = {
 const timelineBaseViewParameters = {
   fromDate: new Date().setFullYear(1900),
   toDate: new Date().setFullYear(1960),
-  orientation: 'portrait'
+  orientation: 'portrait',
+  dataMap: timelineDataMap
 };
 const timelineActiveViewParameters = {...timelineBaseViewParameters}
 
 storiesOf('Timeline', module)
+  /*.add('default (portrait)', () => (
+    <Timeline 
+      allowViewChange ={true}
+      data={timelineData} 
+      onViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {timelineBaseViewParameters}
+    />
+  ))*/
   .add('default (portrait)', () => (
     <Timeline 
       allowViewChange ={true}
       data={timelineData} 
-      dataMap={timelineDataMap}
-      onViewChange={(e) => console.log('on view change', e)}
+      onViewChange={() => {}}
       viewParameters = {timelineBaseViewParameters}
     />
   ))
@@ -43,10 +51,8 @@ storiesOf('Timeline', module)
     <Timeline 
       allowViewChange ={true}
       data={timelineData} 
-      dataMap={timelineDataMap}
       onViewChange={(e) => console.log('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
-      orientation='landscape'
     />
   ))
   .add('switch between view states (navigable)', () => (
@@ -75,7 +81,6 @@ storiesOf('Timeline', module)
         <Timeline 
           allowViewChange={true}
           data={timelineData} 
-          dataMap={timelineDataMap}
           onViewChange={(e) => action('on view change', e)}
           viewParameters = {timelineActiveViewParameters}
         />
@@ -86,7 +91,6 @@ storiesOf('Timeline', module)
     <Timeline 
       allowViewChange={false}
       data={timelineData} 
-      dataMap={timelineDataMap}
       onViewChange={(e) => action('on view change', e)}
       allowViewChange={false}
       viewParameters = {timelineBaseViewParameters}
@@ -96,7 +100,6 @@ storiesOf('Timeline', module)
     <Timeline 
       allowViewChange={true}
       data={timelineData} 
-      dataMap={timelineDataMap}
       onViewChange={(e) => action('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
     />
@@ -105,7 +108,6 @@ storiesOf('Timeline', module)
     <Timeline 
       allowViewChange={true}
       data={timelineData} 
-      dataMap={timelineDataMap}
       onViewChange={(e) => action('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
     />
