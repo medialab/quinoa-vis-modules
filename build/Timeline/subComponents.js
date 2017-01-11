@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Controls = exports.TimeTicks = exports.TimeObject = undefined;
+exports.ClustersGroup = exports.Controls = exports.TimeTicks = exports.TimeObject = undefined;
 
 var _react = require('react');
 
@@ -17,12 +17,13 @@ var TimeObject = exports.TimeObject = function TimeObject(_ref) {
       _ref$color = _ref.color,
       color = _ref$color === undefined ? 'grey' : _ref$color,
       _ref$showLabel = _ref.showLabel,
-      showLabel = _ref$showLabel === undefined ? true : _ref$showLabel;
+      showLabel = _ref$showLabel === undefined ? true : _ref$showLabel,
+      _ref$showTooltip = _ref.showTooltip,
+      showTooltip = _ref$showTooltip === undefined ? true : _ref$showTooltip;
   return _react2.default.createElement(
     'span',
     {
       className: 'time-object' + (point.endDate ? ' period' : ' point'),
-      title: point.name,
       style: {
         top: scale(point.startDate.getTime()) + '%',
         height: point.endDate ? scale(point.endDate.getTime()) - scale(point.startDate.getTime()) + '%' : undefined
@@ -43,6 +44,15 @@ var TimeObject = exports.TimeObject = function TimeObject(_ref) {
             borderColor: color
           } })
       )
+    ) : '',
+    showTooltip ? _react2.default.createElement(
+      'span',
+      {
+        className: 'tooltip',
+        style: {
+          borderColor: color
+        } },
+      point.name
     ) : ''
   );
 };
@@ -62,7 +72,11 @@ var TimeTicks = exports.TimeTicks = function TimeTicks(_ref2) {
           style: {
             top: scale(tick.time) + '%'
           } },
-        tick.legend
+        _react2.default.createElement(
+          'span',
+          { className: 'legend' },
+          tick.legend
+        )
       );
     })
   );
@@ -94,5 +108,31 @@ var Controls = exports.Controls = function Controls(_ref3) {
       { onMouseDown: zoomOut, id: 'zoom-out' },
       'zoom-out'
     )
+  );
+};
+
+var ClustersGroup = exports.ClustersGroup = function ClustersGroup(_ref4) {
+  var clusters = _ref4.clusters,
+      viewParameters = _ref4.viewParameters,
+      scale = _ref4.scale;
+  return _react2.default.createElement(
+    'div',
+    { className: 'columns-container' },
+    clusters.columns.map(function (column) {
+      return _react2.default.createElement(
+        'div',
+        { key: column, className: 'objects-column' },
+        clusters.timeObjects.filter(function (obj) {
+          return obj.column === column;
+        }).map(function (obj, index) {
+          return _react2.default.createElement(TimeObject, {
+            key: index,
+            point: obj,
+            scale: scale,
+            color: viewParameters.colorsMap[obj.category],
+            showLabel: !obj.overlapped });
+        })
+      );
+    })
   );
 };

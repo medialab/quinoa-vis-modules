@@ -12,6 +12,8 @@ import Timeline from '../src/Timeline/Timeline';
 import Graph from '../src/Graph/Graph';
 import Map from '../src/Map/Map';
 
+import TimelineStoryContainer from './TimelineStoryContainer';
+
 import timelineData from 'dsv!./mock_data/milestones-datavis.csv';
 import graphData from './mock_data/miserables.json';
 import mapData from 'dsv!./mock_data/etablissements-enseignement-fr.csv';
@@ -34,17 +36,9 @@ const timelineBaseViewParameters = {
     statistics: '#F3A002'
   }
 };
-const timelineActiveViewParameters = {...timelineBaseViewParameters}
+
 
 storiesOf('Timeline', module)
-  /*.add('default (portrait)', () => (
-    <Timeline 
-      allowViewChange ={true}
-      data={timelineData} 
-      onViewChange={(e) => console.log('on view change', e)}
-      viewParameters = {timelineBaseViewParameters}
-    />
-  ))*/
   .add('default (portrait)', () => (
     <Timeline 
       allowViewChange ={true}
@@ -53,69 +47,66 @@ storiesOf('Timeline', module)
       viewParameters = {timelineBaseViewParameters}
     />
   ))
-  .add('default (landscape)', () => (
-    <Timeline 
-      allowViewChange ={true}
-      data={timelineData} 
-      onViewChange={(e) => console.log('on view change', e)}
-      viewParameters = {timelineBaseViewParameters}
+  // .add('default (landscape)', () => (
+  //   <span>Todo</span>
+  // ))
+  .add('switch between view states (navigable)', () => (
+    <TimelineStoryContainer
+      timelineData={timelineData}
+      baseParameters={timelineBaseViewParameters}
+      allowViewChange={true}
     />
   ))
-  .add('switch between view states (navigable)', () => (
-    <div style={{
-      display: 'flex',
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-      overflow: 'hidden'
-    }}>
-      <aside>
-        <button onClick={
-          () => {
-            timelineActiveViewParameters.fromDate = new Date(timelineActiveViewParameters.fromDate).setFullYear(1900);
-            timelineActiveViewParameters.toDate = new Date(timelineActiveViewParameters.toDate).setFullYear(1920);
-            console.log('updated', timelineActiveViewParameters.toDate);
-          }
-        }>State 1</button>
-        <button>State 2</button>
-        <button>State 3</button>
-      </aside>
-      <div style={{
-        flex: 5,
-        position: 'relative'
-      }}>
-        <Timeline 
-          allowViewChange ={true}
-      data={timelineData} 
-      onViewChange={(e) => console.log('on view change', e)}
-      viewParameters = {timelineActiveViewParameters}
-        />
-      </div>
-    </div>
-  ))
   .add('switch between view states (locked)', () => (
-    <Timeline 
-      allowViewChange ={false}
-      data={timelineData} 
-      onViewChange={(e) => console.log('on view change', e)}
-      viewParameters = {timelineBaseViewParameters}
+    <TimelineStoryContainer
+      timelineData={timelineData}
+      baseParameters={timelineBaseViewParameters}
+      allowViewChange={false}
     />
   ))
   .add('very small', () => (
-    <Timeline 
-      allowViewChange ={true}
-      data={timelineData} 
-      onViewChange={(e) => console.log('on view change', e)}
-      viewParameters = {timelineBaseViewParameters}
-    />
-  ))
-  .add('very big', () => (
-    <Timeline 
-      allowViewChange ={true}
-      data={timelineData} 
-      onViewChange={(e) => console.log('on view change', e)}
-      viewParameters = {timelineBaseViewParameters}
-    />
+    <div style={{
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      overflow: 'hidden',
+      background: 'yellow',
+      left: '0',
+      top: '0'
+    }}>
+      <div style={{
+        position: 'absolute',
+        height: '88%',
+        overflow: 'hidden',
+        width: '20%',
+        top: '1%',
+        left: '1%',
+        background: 'white'
+      }}>
+      <Timeline 
+        allowViewChange ={true}
+        data={timelineData} 
+        onViewChange={(e) => console.log('on view change', e)}
+        viewParameters = {timelineBaseViewParameters}
+      />
+      </div>
+      <div style={{
+        position: 'absolute',
+        height: '50%',
+        overflow: 'hidden',
+        width: '60%',
+        left: '30%',
+        top: '1%',
+        background: 'white'
+      }}>
+      <Timeline 
+        allowViewChange ={true}
+        data={timelineData} 
+        onViewChange={(e) => console.log('on view change', e)}
+        viewParameters = {timelineBaseViewParameters}
+      />
+      </div>
+    </div>
   ))
 
 /*

@@ -49,6 +49,7 @@ var Timeline = function (_React$Component) {
     _this.pan = _this.pan.bind(_this);
     _this.zoom = _this.zoom.bind(_this);
     _this.computePeriods = _this.computePeriods.bind(_this);
+    _this.computeEvents = _this.computeEvents.bind(_this);
     _this.onViewChange = (0, _lodash.debounce)(_this.onViewChange, 100);
 
     // data time boundaries in order to display the mini-timeline
@@ -66,6 +67,8 @@ var Timeline = function (_React$Component) {
     _this.miniScale = (0, _d3Scale.scaleLinear)().range([0, 100]).domain([-Infinity, Infinity]);
     _this.mapData(_this.props.data, _this.props.viewParameters.dataMap);
     _this.periodsClusters = _this.computePeriods(_this.data);
+    var displaceThreshold = (_this.timeBoundaries.maximumDateDisplay - _this.timeBoundaries.minimumDateDisplay) / 1000;
+    _this.eventsClusters = _this.computeEvents(_this.data, displaceThreshold);
     return _this;
   }
 
@@ -104,6 +107,8 @@ var Timeline = function (_React$Component) {
         }
         if (previous && period.startDate < previous.endDate) {
           period.column = previous.column + 1;
+          previous.overlapped = true;
+          period.overlapped = false;
           if (previous.column + 1 > maxColumn) {
             maxColumn = previous.column + 1;
           }
@@ -116,8 +121,40 @@ var Timeline = function (_React$Component) {
         clustersColumns.push(count + 1);
       }
       return {
-        clustersColumns: clustersColumns,
+        columns: clustersColumns,
         timeObjects: periodsClusters
+      };
+    }
+  }, {
+    key: 'computeEvents',
+    value: function computeEvents(data, thresholdTime) {
+      var maxColumn = 1;
+      var eventsClusters = data.filter(function (point) {
+        return point.endDate === undefined;
+      }).map(function (point) {
+        return Object.assign({}, point);
+      });
+      eventsClusters.forEach(function (event, index) {
+        var previous = void 0;
+        if (index > 0) {
+          previous = eventsClusters[index - 1];
+        }
+        if (previous && event.startDate - previous.startDate <= thresholdTime) {
+          event.column = previous.column + 1;
+          if (previous.column + 1 > maxColumn) {
+            maxColumn = previous.column + 1;
+          }
+        } else {
+          event.column = 1;
+        }
+      });
+      var clustersColumns = [];
+      for (var count = 0; count < maxColumn; count++) {
+        clustersColumns.push(count + 1);
+      }
+      return {
+        columns: clustersColumns,
+        timeObjects: eventsClusters
       };
     }
   }, {
@@ -225,7 +262,8 @@ var Timeline = function (_React$Component) {
           miniScale = this.miniScale,
           miniTicks = this.miniTicks,
           viewParameters = this.viewParameters,
-          periodsClusters = this.periodsClusters;
+          periodsClusters = this.periodsClusters,
+          globalEventsClusters = this.eventsClusters;
 
       var fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
       var toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
@@ -239,27 +277,7 @@ var Timeline = function (_React$Component) {
         return obj.endDate === undefined;
       });
       var eventPadding = timeSpan / 20;
-      var eventsClusters = displayedEvents.reduce(function (periods, event) {
-        var previous = void 0;
-        if (periods.timeObjects.length) {
-          previous = periods.timeObjects[periods.timeObjects.length - 1];
-        }
-        if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
-          event.column = previous.column + 1;
-          previous.overlapped = true;
-          event.overlapped = false;
-          if (periods.columns[periods.columns.length - 1] < event.column) {
-            periods.columns.push(event.column);
-          }
-        } else {
-          event.column = 1;
-        }
-        periods.timeObjects.push(event);
-        return periods;
-      }, {
-        timeObjects: [],
-        columns: [1]
-      });
+      var eventsClusters = (0, _utils.clusterEvents)(displayedEvents, eventPadding);
       var displayedPeriods = periodsClusters.timeObjects.filter(function (point) {
         var start = point.startDate.getTime();
         var end = point.endDate && point.endDate.getTime();
@@ -314,6 +332,7 @@ var Timeline = function (_React$Component) {
           'aside',
           { onWheel: onAsideWheel, className: 'mini-timeline' },
           _react2.default.createElement(_subComponents.TimeTicks, { ticks: miniTicks, scale: miniScale }),
+          _react2.default.createElement('div', { className: 'brush-placeholder' }),
           _react2.default.createElement('div', {
             className: 'brush',
             style: {
@@ -323,9 +342,14 @@ var Timeline = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'time-objects-container' },
-            data.map(function (point, index) {
-              return _react2.default.createElement(_subComponents.TimeObject, { scale: miniScale, point: point, key: index });
-            })
+            _react2.default.createElement(_subComponents.ClustersGroup, {
+              viewParameters: viewParameters,
+              scale: miniScale,
+              clusters: periodsClusters }),
+            _react2.default.createElement(_subComponents.ClustersGroup, {
+              viewParameters: viewParameters,
+              scale: miniScale,
+              clusters: globalEventsClusters })
           )
         ),
         _react2.default.createElement(
@@ -335,45 +359,17 @@ var Timeline = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'time-objects-container' },
-            displayedPeriods.length ? _react2.default.createElement(
-              'div',
-              { className: 'columns-container' },
-              periodsClusters.clustersColumns.map(function (column) {
-                return _react2.default.createElement(
-                  'div',
-                  { key: column, className: 'objects-column' },
-                  displayedPeriods.filter(function (obj) {
-                    return obj.column === column;
-                  }).map(function (obj, index) {
-                    return _react2.default.createElement(_subComponents.TimeObject, {
-                      key: index,
-                      point: obj,
-                      color: viewParameters.colorsMap[obj.category],
-                      scale: timelineScale });
-                  })
-                );
-              })
-            ) : '',
-            eventsClusters.timeObjects.length ? _react2.default.createElement(
-              'div',
-              { className: 'columns-container' },
-              eventsClusters.columns.map(function (column) {
-                return _react2.default.createElement(
-                  'div',
-                  { key: column, className: 'objects-column' },
-                  eventsClusters.timeObjects.filter(function (obj) {
-                    return obj.column === column;
-                  }).map(function (obj, index) {
-                    return _react2.default.createElement(_subComponents.TimeObject, {
-                      key: index,
-                      point: obj,
-                      scale: timelineScale,
-                      color: viewParameters.colorsMap[obj.category],
-                      showLabel: !obj.overlapped });
-                  })
-                );
-              })
-            ) : ''
+            displayedPeriods.length ? _react2.default.createElement(_subComponents.ClustersGroup, {
+              viewParameters: viewParameters,
+              scale: timelineScale,
+              clusters: {
+                columns: periodsClusters.columns,
+                timeObjects: displayedPeriods
+              } }) : '',
+            eventsClusters.timeObjects.length ? _react2.default.createElement(_subComponents.ClustersGroup, {
+              viewParameters: viewParameters,
+              scale: timelineScale,
+              clusters: eventsClusters }) : ''
           ),
           allowViewChange ? _react2.default.createElement(_subComponents.Controls, {
             zoomIn: zoomIn,

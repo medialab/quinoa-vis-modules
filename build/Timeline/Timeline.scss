@@ -2,6 +2,11 @@
 
 .quinoa-timeline
 {
+    user-select: none;
+
+    /*
+     * Layout and layout-specific subcomponents styling
+     */
     position: absolute;
     top: 0;
     left: 0;
@@ -15,6 +20,171 @@
     padding: 0;
 
     flex-wrap: nowrap;
+    /*
+     * Mini sub components
+     */
+    .time-objects-container
+    {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        display: flex;
+
+        width: 100%;
+        height: 100%;
+
+        pointer-events: none;
+
+        flex-flow: row nowrap;
+        .columns-container
+        {
+            /*position: absolute;
+            top: 0;
+            left: 0;*/
+            display: flex;
+
+            width: 20%;
+            height: 100%;
+
+            flex: 1;
+            flex-flow: row nowrap;
+            .objects-column
+            {
+                position: relative;
+
+                height: 100%;
+
+                flex: 1;
+                .time-object
+                {
+                    position: absolute;
+                    right: 0;
+
+                    pointer-events: all;
+                    .name-container
+                    {
+                        position: absolute;
+
+                        width: 30rem;
+                        .name
+                        {
+                            position: absolute;
+                            top: -$gutter-medium * .8;
+                            left: $gutter-medium;
+
+                            max-width: 20rem;
+                            .name-underline
+                            {
+                                position: absolute;
+                                top: $gutter-medium;
+                                left: -$gutter-medium/2;
+
+                                width: 100%;
+
+                                border-top: $gutter-small/4 solid black;
+                            }
+                        }
+                    }
+                    .tooltip
+                    {
+                        position: absolute;
+                        z-index: 2;
+                        top: -$gutter-medium;
+                        left: $gutter-medium;
+
+                        width: 20rem;
+                        padding: $gutter-small;
+
+                        pointer-events: none;
+
+                        opacity: .0000001;
+                        border: $gutter-small/4 solid black;
+                        background: white;
+                        user-select: auto;
+
+                        @include transition(all $time-medium ease);
+                        &:hover
+                        {
+                            opacity: 1;
+                        }
+                    }
+                    .marker
+                    {
+                        position: absolute;
+
+                        width: .5em;
+                        height: .5em;
+
+                        border-radius: .5em;
+                        background: black;
+                    }
+                    &.period
+                    {
+                        .name
+                        {
+                            left: -$gutter-small;
+                        }
+                        .marker
+                        {
+                            right: $gutter-medium;
+
+                            height: 100%;
+
+                            border-radius: 0;
+                            background: red;
+                        }
+                        .tooltip
+                        {
+                            top: -$gutter-medium;
+                            left: -$gutter-small;
+                        }
+                    }
+                    &:hover
+                    {
+                        .name-container
+                        {
+                            opacity: .0000001;
+                        }
+                        .tooltip
+                        {
+                            pointer-events: all;
+
+                            opacity: 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .time-graduations-container
+    {
+        pointer-events: none;
+
+        @include transition(all $time-short ease);
+        opacity: .5;
+        .tick
+        {
+            position: absolute;
+            left: 0;
+
+            width: 100%;
+            margin: 0;
+            padding: 0;
+
+            border-top: 1px solid darkblue;
+            color: darkblue;
+
+            @include transition(all $time-short ease);
+
+            .legend{
+              background: white;
+              position : relative;
+              top : -.5em;
+              padding-right: $gutter-small;
+            }
+        }
+    }
     &.portrait
     {
         flex-direction: row;
@@ -28,12 +198,37 @@
         position: relative;
 
         flex: 1;
-        .time-object
+        .time-objects-container
         {
-            .name
+            .columns-container
             {
-                display: none;
+                .objects-column
+                {
+                    .time-object
+                    {
+                        .name
+                        {
+                            display: none;
+                        }
+                        .marker
+                        {
+                            width: .2em;
+                            height: .2em;
+                        }
+                        &.period{
+                          height: unset;
+                        }
+                    }
+                }
             }
+        }
+        .brush-placeholder{
+          background: yellow;
+          width: 100%;
+          height: 100%;
+          left: 0;
+          top: 0;
+          position: absolute; 
         }
         .brush
         {
@@ -71,133 +266,25 @@
             #from-date
             {
                 position: absolute;
-                left: $gutter-medium;
+                left: $gutter-medium * 3;
 
                 padding: $gutter-small;
 
-                background: lightgrey;
+                background: white;
+                border: 1px solid darkblue;
             }
             #from-date
             {
-                top: 0rem;
+                top: -$gutter-small;
             }
             #to-date
             {
-                bottom: 0rem;
+                bottom: -$gutter-small;
             }
         }
-    }
-    /*
-     * Mini sub components
-     */
-    .time-objects-container
-    {
-        position: absolute;
-        top: 0;
-        left: 0;
-
-        display: flex;
-
-        width: 60%;
-        height: 100%;
-
-        pointer-events: none;
-
-        flex-flow: row nowrap;
-        .columns-container
+        .time-objects-container
         {
-            /*position: absolute;
-            top: 0;
-            left: 0;*/
-            display: flex;
-
-            width: 20%;
-            height: 100%;
-
-            flex: 1;
-            flex-flow: row nowrap;
-            .objects-column
-            {
-                position: relative;
-
-                height: 100%;
-
-                flex: 1;
-                .time-object
-                {
-                    position: absolute;
-                    right: 0;
-
-                    pointer-events: all;
-                    .name-container{
-                      width: 30rem;
-                      position: absolute;
-                      .name
-                      {
-                          position: absolute;
-                          top: -$gutter-medium * .8;
-                          left: $gutter-medium;
-
-                          max-width: 20rem;
-
-                          .name-underline{
-                            border-top: $gutter-small/4 solid black;
-                            position: absolute;
-                            width: 100%;
-                            left: -$gutter-medium/2;
-                            top: $gutter-medium;
-                          }
-                      }
-                    }
-              
-                    .marker
-                    {
-                        position: absolute;
-
-                        width: 10px;
-                        height: 10px;
-
-                        border-radius: 10px;
-                        background: black;
-                    }
-                    &.period
-                    {
-                        .name
-                        {
-                            left: -$gutter-small;
-                        }
-                        .marker
-                        {
-                            right: $gutter-medium;
-
-                            height: 100%;
-
-                            border-radius: 0;
-                            background: red;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    .time-graduations-container
-    {
-        pointer-events: none;
-
-        content-selectable: false;
-        @include transition(all $time-short ease);
-        .tick
-        {
-            position: absolute;
-            left: 0;
-
-            width: 100%;
-            margin: 0;
-            padding: 0;
-
-            border-top: 1px solid black;
-
-            @include transition(all $time-short ease);
+            width: 60%;
         }
     }
 }

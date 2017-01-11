@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.computeTicks = exports.setTicks = exports.computeDate = undefined;
+exports.clusterEvents = exports.computeTicks = exports.setTicks = exports.computeDate = undefined;
 
 var _d3Time = require('d3-time');
 
@@ -193,5 +193,29 @@ var computeTicks = exports.computeTicks = function computeTicks(minimumDateDispl
             time: tick.getTime(),
             legend: formatDate(tick)
         };
+    });
+};
+
+var clusterEvents = exports.clusterEvents = function clusterEvents(events, eventPadding) {
+    return events.reduce(function (periods, event) {
+        var previous = void 0;
+        if (periods.timeObjects.length) {
+            previous = periods.timeObjects[periods.timeObjects.length - 1];
+        }
+        if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
+            event.column = previous.column + 1;
+            previous.overlapped = true;
+            event.overlapped = false;
+            if (periods.columns[periods.columns.length - 1] < event.column) {
+                periods.columns.push(event.column);
+            }
+        } else {
+            event.column = 1;
+        }
+        periods.timeObjects.push(event);
+        return periods;
+    }, {
+        timeObjects: [],
+        columns: [1]
     });
 };

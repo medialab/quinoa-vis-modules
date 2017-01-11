@@ -1,236 +1,172 @@
+/**
+ * This module exports a stateful customizable timeline component
+ * @module Timeline
+ */
+
 import React, {PropTypes} from 'react';
-import {min, max} from 'd3-array';
 import {scaleLinear} from 'd3-scale';
 import {timeFormat} from 'd3-time-format';
 import {debounce} from 'lodash';
 
 import {
   setTicks,
-  computeDate,
   computeTicks,
-  clusterEvents
+  clusterEvents,
+  computeDataRelatedState
 } from './utils';
 
 import {
-  TimeObject,
+  Brush,
   TimeTicks,
   Controls,
   ClustersGroup
 } from './subComponents.js';
 import './Timeline.scss';
 
+/**
+ * Timeline main component
+ */
 class Timeline extends React.Component {
+  /**
+   * constructor
+   */
   constructor (props) {
     super(props);
-    this.mapData = this.mapData.bind(this);
-    this.computeBoundaries = this.computeBoundaries.bind(this);
     this.pan = this.pan.bind(this);
     this.zoom = this.zoom.bind(this);
-    this.computePeriods = this.computePeriods.bind(this);
-    this.computeEvents = this.computeEvents.bind(this);
+    this.jump = this.jump.bind(this);
+    this.setViewSpan = this.setViewSpan.bind(this);
     this.onViewChange = debounce(this.onViewChange, 100);
-
     // data time boundaries in order to display the mini-timeline
-    this.timeBoundaries = {
-      // absolute minimum date
-      minimumDate: -Infinity,
-      // absolute maximum date
-      maximumDate: Infinity,
-      // padded minimum date
-      minimumDateDisplay: - Infinity,
-      // padded maximum date
-      maximumDateDisplay: Infinity
-    };
-    this.viewParameters = props.viewParameters;
-    this.miniScale = scaleLinear().range([0, 100]).domain([-Infinity, Infinity]);
-    this.mapData(this.props.data, this.props.viewParameters.dataMap);
-    this.periodsClusters = this.computePeriods(this.data);
-    const displaceThreshold = (this.timeBoundaries.maximumDateDisplay - this.timeBoundaries.minimumDateDisplay)/1000;
-    this.eventsClusters = this.computeEvents(this.data, displaceThreshold);
+    this.state = computeDataRelatedState(props.data, props.viewParameters.dataMap, props.viewParameters || {});
   }
 
   componentWillUpdate(nextProps) {
-    // remap data if data or datamap will change
-    /*
-    if (this.props.data !== nextProps.data || this.props.dataMap !== nextProps.dataMap) {
-      this.mapData(nextProps.data, nextProps.dataMap);
-    }
-    */
     if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
-      this.viewParameters = nextProps.viewParameters;
+      this.setState({
+        viewParameters: nextProps.viewParameters
+      });
+    }
+
+    if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data) || JSON.stringify(this.props.dataMap) !== JSON.stringify(nextProps.dataMap)) {
+      const newStateParts = computeDataRelatedState(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters);
+      this.setState({
+        ...newStateParts
+      });
     }
   }
 
+  /**
+   * Lets instance parent to know when user has updated view
+   * @param {string} lastEventType - event type of the last event triggered by user
+   */
   onViewChange (lastEventType) {
     this.props.onViewChange({
       lastEventType,
-      viewParameters: this.viewParameters
+      // todo: verify if not next state needed ?
+      viewParameters: this.state.viewParameters
     });
   }
 
-  computePeriods(data) {
-    let maxColumn = 1;
-    const periodsClusters = data.filter(point => point.endDate !== undefined);
-    periodsClusters.forEach((period, index) => {
-      let previous;
-      if (index > 0) {
-        previous = periodsClusters[index - 1];
-      }
-      if (previous && period.startDate < previous.endDate) {
-        period.column = previous.column + 1;
-        previous.overlapped = true;
-        period.overlapped = false;
-        if (previous.column + 1 > maxColumn) {
-          maxColumn = previous.column + 1;
-        }
-      }
-      else {
-        period.column = 1;
-      }
-    });
-    const clustersColumns = [];
-    for (let count = 0; count < maxColumn; count ++) {
-      clustersColumns.push(count + 1);
-    }
-    return {
-      columns: clustersColumns,
-      timeObjects: periodsClusters
-    };
-  }
-
-  computeEvents(data, thresholdTime) {
-    let maxColumn = 1;
-    const eventsClusters = data.filter(point => point.endDate === undefined).map(point => Object.assign({}, point));
-    eventsClusters.forEach((event, index) => {
-      let previous;
-      if (index > 0) {
-        previous = eventsClusters[index - 1];
-      }
-      if (previous && event.startDate - previous.startDate <= thresholdTime) {
-        event.column = previous.column + 1;
-        if (previous.column + 1 > maxColumn) {
-          maxColumn = previous.column + 1;
-        }
-      }
-      else {
-        event.column = 1;
-      }
-    });
-    const clustersColumns = [];
-    for (let count = 0; count < maxColumn; count ++) {
-      clustersColumns.push(count + 1);
-    }
-    return {
-      columns: clustersColumns,
-      timeObjects: eventsClusters
-    };
-  }
-
+  /**
+   * Computes and calls a translation to the timespan being displayed in the main timeline
+   * @param {boolean} forward - whether panning goes forward or backward in time
+   * @param {number} delta - number of miliseconds to pan
+   */
   pan (forward, delta) {
-    this.viewParameters.toDate += (forward ? delta : -delta);
-    this.viewParameters.fromDate += (forward ? delta : -delta);
-    this.forceUpdate();
+    const from = this.state.viewParameters.fromDate + (forward ? delta : -delta);
+    const to = this.state.viewParameters.toDate + (forward ? delta : -delta);
+    this.setViewSpan(from, to, false);
     this.onViewChange('wheel');
   }
 
-  zoom (ratio) {
-    const timeSpan = this.viewParameters.toDate - this.viewParameters.fromDate;
-    const newTimeSpan = timeSpan / ratio;
+  /**
+   * Computes and calls a change of scale to the timespan being displayed in the main timeline - camera center is preserved
+   * @param {number} coefficient - the coefficient to apply to the scaling of view
+   */
+  zoom (coefficient) {
+    const timeSpan = this.state.viewParameters.toDate - this.state.viewParameters.fromDate;
+    const newTimeSpan = timeSpan / coefficient;
     const diff = newTimeSpan - timeSpan;
-    const newFrom = this.viewParameters.fromDate - diff / 2;
-    const newTo = this.viewParameters.toDate + diff / 2;
-    if (newFrom >= this.timeBoundaries.minimumDateDisplay && newTo <= this.timeBoundaries.maximumDateDisplay) {
-      this.viewParameters.fromDate = newFrom;
-      this.viewParameters.toDate = newTo;
-      this.forceUpdate();
+    const newFrom = this.state.viewParameters.fromDate - diff / 2;
+    const newTo = this.state.viewParameters.toDate + diff / 2;
+    if (newFrom >= this.state.timeBoundaries.minimumDateDisplay && newTo <= this.state.timeBoundaries.maximumDateDisplay) {
+      this.setViewSpan(newFrom, newTo, false);
+      this.onViewChange('zoom');
     }
-    this.onViewChange('zoom');
   }
 
-  /*
-   * Registers invariant timeline boundaries
+  /**
+   * Computes and calls a move of the timespan being displayed to a specific central point of time
+   * @param {number|object} param - whether an absolute time or an event position object
+   * @param {boolean} fromEvent - determines whether jump is called from a click-like event or not, thus whether first param is a number of an object
    */
-   computeBoundaries () {
-    const minimumDate = min(this.data, (d) => d.startDate.getTime());
-    const maximumDate = max(this.data, (d) => {
-      return d.endDate ? d.endDate.getTime() : d.startDate.getTime();
-    });
-    // padding max and min of 1% of total time ambitus
-    const ambitus = maximumDate - minimumDate;
-    const displacement = ambitus / 100;
-    const minimumDateDisplay = (minimumDate - displacement);
-    const maximumDateDisplay = (maximumDate + displacement);
-    this.timeBoundaries = {
-      minimumDate,
-      maximumDate,
-      minimumDateDisplay,
-      maximumDateDisplay
-    };
-    this.miniScale.domain([minimumDateDisplay, maximumDateDisplay]);
-    this.miniTicks = computeTicks(minimumDateDisplay, maximumDateDisplay);
-   }
-  /*
-   * Maps incoming data with provided data map
+  jump (param, fromEvent = true) {
+    let toTime;
+    // giving event position as param
+    if (fromEvent) {
+      toTime = this.state.timeBoundaries.minimumDateDisplay + (this.state.timeBoundaries.maximumDateDisplay - this.state.timeBoundaries.minimumDateDisplay) * param.portionY;
+    }
+    // giving time number as param
+    else {
+      toTime = param;
+    }
+    const span = this.state.viewParameters.toDate - this.state.viewParameters.fromDate;
+    this.setViewSpan(toTime - span / 2, toTime + span / 2, false);
+  }
+  /**
+   * Computes and applies a change to the timespan being displayed
+   * @param {number|object} from - whether an absolute time or an event position object
+   * @param {number|object} to - whether an absolute time or an event position object
+   * @param {boolean} fromEvent - determines whether jump is called from a click-like event or not, thus whether first param is a number of an object
    */
-  mapData (data, dataMap) {
-    this.data = data.map(datapoint => {
-      return Object.keys(dataMap).reduce((obj, dataKey) => {
-        return {
-          ...obj,
-          [dataKey]: typeof dataMap[dataKey] === 'function' ?
-                      dataMap[dataKey](datapoint) // case accessor
-                      : datapoint[dataMap[dataKey]] // case prop name
-        };
-      }, {});
-    })
-    // compute dates (timeline specific)
-    .map(datapoint => {
-      const {
-        year,
-        month,
-        day,
-        time
-      } = datapoint;
-
-      const {
-        endYear,
-        endMonth,
-        endDay,
-        endTime
-      } = datapoint;
-
-      const startDate = computeDate(year, month, day, time);
-      const endDate = computeDate(endYear, endMonth, endDay, endTime);
-      return {
-        ...datapoint,
-        startDate,
-        endDate
+  setViewSpan (from, to, fromEvents = true) {
+    let fromTime;
+    let toTime;
+    // giving events positions as params
+    if (fromEvents) {
+      fromTime = this.state.timeBoundaries.minimumDateDisplay + (this.state.timeBoundaries.maximumDateDisplay - this.state.timeBoundaries.minimumDateDisplay) * from.portionY;
+      toTime = this.state.timeBoundaries.minimumDateDisplay + (this.state.timeBoundaries.maximumDateDisplay - this.state.timeBoundaries.minimumDateDisplay) * to.portionY;
+    }
+    // giving time numbers as params
+    else {
+      fromTime = from;
+      toTime = to;
+    }
+    const viewParameters = {
+        ...this.state.viewParameters,
+        fromDate: fromTime,
+        toDate: toTime
       };
-    })
-    // sort by ascending date
-    .sort((a, b) => {
-      if (a.startDate.getTime() > b.startDate.getTime()) {
-        return 1;
-      }
-      else return -1;
+    this.setState({
+      viewParameters
     });
-    this.computeBoundaries();
   }
 
+  /**
+   * Renders the component
+   */
   render () {
     const {
       allowViewChange = true,
       orientation = 'portrait',
-      // onViewChange,
     } = this.props;
+
     const {
       data,
       miniScale,
       miniTicks,
+      // note: viewParameters is present both in component props and in component state to allow temporary displacements between
+      // the view parameters being provided by parent through props and internal viewParameters
       viewParameters,
       periodsClusters,
-      eventsClusters: globalEventsClusters
-    } = this;
+      eventsClusters: globalEventsClusters,
+      timeBoundaries
+    } = this.state;
+
+    /*
+     * Step: filter the elements to display in the main timeline
+     */
     const fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
     const toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
     const timeSpan = toDate - fromDate;
@@ -239,110 +175,129 @@ class Timeline extends React.Component {
       const end = point.endDate && point.endDate.getTime();
       return (start >= fromDate && start <= toDate) || (end && end >= fromDate && end <= toDate);
     });
+    /*
+     * Step: organize events in a series of columns to avoid objects overlapping and allow a maximum number of labels to be rendered
+     */
     const displayedEvents = displayedData.filter(obj => obj.endDate === undefined);
     const eventPadding = timeSpan / 20;
     const eventsClusters = clusterEvents(displayedEvents, eventPadding);
+    /*
+     * Step: organize periods in a series of columns to avoid objects overlapping and allow a maximum number of labels to be rendered
+     */
     const displayedPeriods = periodsClusters.timeObjects.filter(point => {
       const start = point.startDate.getTime();
       const end = point.endDate && point.endDate.getTime();
       return (start >= fromDate && start <= toDate) || (end && end >= fromDate && end <= toDate);
     });
+    /*
+     * Step: compute timeline scale function, time graduations (ticks) and appropriate date formater (fn(timespan))
+     */
     const timelineScale = scaleLinear().range([0, 100]).domain([fromDate, toDate]);
     const ticksParams = setTicks(toDate - fromDate);
     const formatDate = timeFormat(ticksParams.format);
     const mainTicks = computeTicks(fromDate, toDate);
 
+    /*
+     * Step: specify callbacks for user inputs
+     */
     const onMainWheel = (e) => {
       e.stopPropagation();
+      e.preventDefault();
       if (!this.props.allowViewChange) {
         return;
       }
       const delta = (toDate - fromDate) / 10;
       const forward = e.deltaY > 0;
-      if (forward && toDate + delta <= this.timeBoundaries.maximumDateDisplay) {
+      if (forward && toDate + delta <= this.state.timeBoundaries.maximumDateDisplay) {
         this.pan(true, delta);
       }
-      if (!forward && fromDate - delta >= this.timeBoundaries.minimumDateDisplay) {
+      if (!forward && fromDate - delta >= this.state.timeBoundaries.minimumDateDisplay) {
         this.pan(false, delta);
       }
     };
-
     const onAsideWheel = (e) => {
       e.stopPropagation();
+      e.preventDefault();
       if (!this.props.allowViewChange) {
         return;
       }
       const delta = (toDate - fromDate) / 2;
       const forward = e.deltaY > 0;
-      if (forward && toDate + delta <= this.timeBoundaries.maximumDateDisplay) {
+      if (forward && toDate + delta <= timeBoundaries.maximumDateDisplay) {
         this.pan(true, delta);
       }
-      if (!forward && fromDate - delta >= this.timeBoundaries.minimumDateDisplay) {
+      if (!forward && fromDate - delta >= timeBoundaries.minimumDateDisplay) {
         this.pan(false, delta);
       }
     };
-
     const zoomIn = () => this.zoom(1.1);
     const zoomOut = () => this.zoom(0.9);
+    const onBrushClick = (fromInput, toInput) => {
+      if (fromInput && toInput) {
+        this.setViewSpan(fromInput, toInput);
+      }
+      /*
+      const from = fromInput !== undefined ?
+      fromInput
+      : {
+          portionY: Math.abs(viewParameters.fromDate / (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay))
+        };
+      const to = toInput !== undefined ?
+      toInput
+      : {
+          portionY: Math.abs(viewParameters.toDate / (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay))
+        };
+      this.setViewSpan(from, to);
+      */
+    };
 
+    const onBrushManipulation = (from, to) => {
+      this.setViewSpan(from, to, false);
+    };
+
+    /*
+     * Step: render component
+     */
     return (
       <figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
         <aside onWheel={onAsideWheel} className="mini-timeline">
           <TimeTicks ticks={miniTicks} scale={miniScale} />
-          <div
-            className="brush"
-            style={{
-              top: miniScale(fromDate) + '%',
-              height: miniScale(toDate) - miniScale(fromDate) + '%'
-            }} />
+          <Brush
+            onSimpleClick={this.jump}
+            scale={miniScale}
+            fromDate={viewParameters.fromDate}
+            toDate={viewParameters.toDate}
+            onSpanEventDefinition={onBrushClick}
+            onSpanAbsoluteDefinition={onBrushManipulation} />
           <div className="time-objects-container">
-            <ClustersGroup 
-              viewParameters={viewParameters} 
-              scale={miniScale} 
-              clusters={periodsClusters} 
-            />
-            <ClustersGroup 
-              viewParameters={viewParameters} 
-              scale={miniScale} 
-              clusters={globalEventsClusters} 
-            />
-            
+            <ClustersGroup
+              viewParameters={viewParameters}
+              scale={miniScale}
+              clusters={periodsClusters} />
+            <ClustersGroup
+              viewParameters={viewParameters}
+              scale={miniScale}
+              clusters={globalEventsClusters} />
+
           </div>
-          {/*<div className="time-objects-container">
-            {data.map((point, index) => (
-              <TimeObject 
-                scale={miniScale} 
-                point={point} 
-                key={index}
-                showTooltip={false} 
-              />
-            ))}
-          </div>
-        */}
         </aside>
         <section className="main-timeline" onWheel={onMainWheel}>
           <TimeTicks ticks={mainTicks} scale={timelineScale} />
 
           <div className="time-objects-container">
-            {displayedPeriods.length ? 
-              <ClustersGroup 
-                viewParameters={viewParameters} 
-                scale={timelineScale} 
+            {displayedPeriods.length ?
+              <ClustersGroup
+                viewParameters={viewParameters}
+                scale={timelineScale}
                 clusters={{
                   columns: periodsClusters.columns,
                   timeObjects: displayedPeriods
-                }} 
-              /> : ''}
+                }} /> : ''}
             {eventsClusters.timeObjects.length ?
-              <ClustersGroup 
-                viewParameters={viewParameters} 
-                scale={timelineScale} 
-                clusters={eventsClusters} 
-              /> : ''}
-
-            {/*displayedData.map((point, index) => (
-              <TimeObject scale={timelineScale} point={point} key={index} />
-            ))*/}
+              <ClustersGroup
+                viewParameters={viewParameters}
+                scale={timelineScale}
+                clusters={eventsClusters} /> : ''}
           </div>
           {allowViewChange ?
             <Controls
@@ -363,7 +318,7 @@ Timeline.propTypes = {
   /*
    * Incoming data in json format
    */
-  // data: PropTypes.array,
+  // data: PropTypes.array, // commented to avoid angrying eslint that does not like unprecised arrays as proptypes
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not - like Timeline spatialization algorithm for instance)
    */
@@ -421,6 +376,9 @@ Timeline.propTypes = {
       PropTypes.instanceOf(Date),
       PropTypes.number
     ]),
+    /*
+     * parameters specifying whether timeline should be displayed in left-to-right or top-to-bottom style
+     */
     orientation: PropTypes.oneOf(['landscape', 'portrait'])
   }),
   /*
