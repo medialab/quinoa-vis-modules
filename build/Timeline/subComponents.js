@@ -11,11 +11,13 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectDestructuringEmpty(obj) { if (obj == null) throw new TypeError("Cannot destructure undefined"); }
-
 var TimeObject = exports.TimeObject = function TimeObject(_ref) {
   var point = _ref.point,
-      scale = _ref.scale;
+      scale = _ref.scale,
+      _ref$color = _ref.color,
+      color = _ref$color === undefined ? 'grey' : _ref$color,
+      _ref$showLabel = _ref.showLabel,
+      showLabel = _ref$showLabel === undefined ? true : _ref$showLabel;
   return _react2.default.createElement(
     'span',
     {
@@ -25,12 +27,23 @@ var TimeObject = exports.TimeObject = function TimeObject(_ref) {
         top: scale(point.startDate.getTime()) + '%',
         height: point.endDate ? scale(point.endDate.getTime()) - scale(point.startDate.getTime()) + '%' : undefined
       } },
-    _react2.default.createElement('span', { className: 'marker' }),
-    _react2.default.createElement(
+    _react2.default.createElement('span', { className: 'marker', style: {
+        background: color
+      } }),
+    showLabel ? _react2.default.createElement(
       'span',
-      { className: 'name' },
-      point.name.substr(0, 30)
-    )
+      { className: 'name-container' },
+      _react2.default.createElement(
+        'span',
+        { className: 'name' },
+        point.name.length > 27 ? point.name.substr(0, 30) + '...' : point.name,
+        _react2.default.createElement('span', {
+          className: 'name-underline',
+          style: {
+            borderColor: color
+          } })
+      )
+    ) : ''
   );
 };
 
@@ -56,8 +69,8 @@ var TimeTicks = exports.TimeTicks = function TimeTicks(_ref2) {
 };
 
 var Controls = exports.Controls = function Controls(_ref3) {
-  _objectDestructuringEmpty(_ref3);
-
+  var zoomIn = _ref3.zoomIn,
+      zoomOut = _ref3.zoomOut;
   return _react2.default.createElement(
     'div',
     { className: 'controls-container' },
@@ -73,12 +86,12 @@ var Controls = exports.Controls = function Controls(_ref3) {
     ),
     _react2.default.createElement(
       'button',
-      { id: 'zoom-in' },
+      { onMouseDown: zoomIn, id: 'zoom-in' },
       'zoom-in'
     ),
     _react2.default.createElement(
       'button',
-      { id: 'zoom-out' },
+      { onMouseDown: zoomOut, id: 'zoom-out' },
       'zoom-out'
     )
   );

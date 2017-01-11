@@ -7,13 +7,15 @@ import {debounce} from 'lodash';
 import {
   setTicks,
   computeDate,
-  computeTicks
+  computeTicks,
+  clusterEvents
 } from './utils';
 
 import {
   TimeObject,
   TimeTicks,
-  Controls
+  Controls,
+  ClustersGroup
 } from './subComponents.js';
 import './Timeline.scss';
 
@@ -25,6 +27,7 @@ class Timeline extends React.Component {
     this.pan = this.pan.bind(this);
     this.zoom = this.zoom.bind(this);
     this.computePeriods = this.computePeriods.bind(this);
+    this.computeEvents = this.computeEvents.bind(this);
     this.onViewChange = debounce(this.onViewChange, 100);
 
     // data time boundaries in order to display the mini-timeline
@@ -42,6 +45,8 @@ class Timeline extends React.Component {
     this.miniScale = scaleLinear().range([0, 100]).domain([-Infinity, Infinity]);
     this.mapData(this.props.data, this.props.viewParameters.dataMap);
     this.periodsClusters = this.computePeriods(this.data);
+    const displaceThreshold = (this.timeBoundaries.maximumDateDisplay - this.timeBoundaries.minimumDateDisplay)/1000;
+    this.eventsClusters = this.computeEvents(this.data, displaceThreshold);
   }
 
   componentWillUpdate(nextProps) {
@@ -73,6 +78,8 @@ class Timeline extends React.Component {
       }
       if (previous && period.startDate < previous.endDate) {
         period.column = previous.column + 1;
+        previous.overlapped = true;
+        period.overlapped = false;
         if (previous.column + 1 > maxColumn) {
           maxColumn = previous.column + 1;
         }
@@ -86,8 +93,36 @@ class Timeline extends React.Component {
       clustersColumns.push(count + 1);
     }
     return {
-      clustersColumns,
+      columns: clustersColumns,
       timeObjects: periodsClusters
+    };
+  }
+
+  computeEvents(data, thresholdTime) {
+    let maxColumn = 1;
+    const eventsClusters = data.filter(point => point.endDate === undefined).map(point => Object.assign({}, point));
+    eventsClusters.forEach((event, index) => {
+      let previous;
+      if (index > 0) {
+        previous = eventsClusters[index - 1];
+      }
+      if (previous && event.startDate - previous.startDate <= thresholdTime) {
+        event.column = previous.column + 1;
+        if (previous.column + 1 > maxColumn) {
+          maxColumn = previous.column + 1;
+        }
+      }
+      else {
+        event.column = 1;
+      }
+    });
+    const clustersColumns = [];
+    for (let count = 0; count < maxColumn; count ++) {
+      clustersColumns.push(count + 1);
+    }
+    return {
+      columns: clustersColumns,
+      timeObjects: eventsClusters
     };
   }
 
@@ -193,7 +228,8 @@ class Timeline extends React.Component {
       miniScale,
       miniTicks,
       viewParameters,
-      periodsClusters
+      periodsClusters,
+      eventsClusters: globalEventsClusters
     } = this;
     const fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
     const toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
@@ -205,29 +241,7 @@ class Timeline extends React.Component {
     });
     const displayedEvents = displayedData.filter(obj => obj.endDate === undefined);
     const eventPadding = timeSpan / 20;
-    const eventsClusters = displayedEvents
-      .reduce((periods, event) => {
-        let previous;
-        if (periods.timeObjects.length) {
-          previous = periods.timeObjects[periods.timeObjects.length - 1];
-        }
-        if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
-          event.column = previous.column + 1;
-          previous.overlapped = true;
-          event.overlapped = false;
-          if (periods.columns[periods.columns.length - 1] < event.column) {
-            periods.columns.push(event.column);
-          }
-        }
-        else {
-          event.column = 1;
-        }
-        periods.timeObjects.push(event);
-        return periods;
-      }, {
-        timeObjects: [],
-        columns: [1]
-      });
+    const eventsClusters = clusterEvents(displayedEvents, eventPadding);
     const displayedPeriods = periodsClusters.timeObjects.filter(point => {
       const start = point.startDate.getTime();
       const end = point.endDate && point.endDate.getTime();
@@ -282,60 +296,49 @@ class Timeline extends React.Component {
               height: miniScale(toDate) - miniScale(fromDate) + '%'
             }} />
           <div className="time-objects-container">
+            <ClustersGroup 
+              viewParameters={viewParameters} 
+              scale={miniScale} 
+              clusters={periodsClusters} 
+            />
+            <ClustersGroup 
+              viewParameters={viewParameters} 
+              scale={miniScale} 
+              clusters={globalEventsClusters} 
+            />
+            
+          </div>
+          {/*<div className="time-objects-container">
             {data.map((point, index) => (
-              <TimeObject scale={miniScale} point={point} key={index} />
+              <TimeObject 
+                scale={miniScale} 
+                point={point} 
+                key={index}
+                showTooltip={false} 
+              />
             ))}
           </div>
+        */}
         </aside>
         <section className="main-timeline" onWheel={onMainWheel}>
           <TimeTicks ticks={mainTicks} scale={timelineScale} />
-          {/*
-            TODO:
-            - separate periods and events into to flexed containers
-            - for periods : regroup them by overlapping groups and stack them in flex
-            - for events : regroup them by overlapping (on what criteria ?) and choose whether to display labels for each groups
-            - for events : apply displacement strategy to elements
-          */}
+
           <div className="time-objects-container">
-            {displayedPeriods.length ? <div className="columns-container">
-              {
-                periodsClusters.clustersColumns.map(column => (
-                  <div key={column} className="objects-column">
-                    {displayedPeriods
-                      .filter(obj => obj.column === column)
-                      .map((obj, index) => (
-                        <TimeObject
-                          key={index}
-                          point={obj}
-                          color={viewParameters.colorsMap[obj.category]}
-                          scale={timelineScale} />
-                      ))
-                    }
-                  </div>
-                ))
-              }
-            </div> : ''}
+            {displayedPeriods.length ? 
+              <ClustersGroup 
+                viewParameters={viewParameters} 
+                scale={timelineScale} 
+                clusters={{
+                  columns: periodsClusters.columns,
+                  timeObjects: displayedPeriods
+                }} 
+              /> : ''}
             {eventsClusters.timeObjects.length ?
-              <div className="columns-container">
-                {
-                eventsClusters.columns.map(column => (
-                  <div key={column} className="objects-column">
-                    {eventsClusters
-                      .timeObjects
-                      .filter(obj => obj.column === column)
-                      .map((obj, index) => (
-                        <TimeObject
-                          key={index}
-                          point={obj}
-                          scale={timelineScale}
-                          color={viewParameters.colorsMap[obj.category]}
-                          showLabel={!obj.overlapped} />
-                      ))
-                    }
-                  </div>
-                ))
-              }
-              </div> : ''}
+              <ClustersGroup 
+                viewParameters={viewParameters} 
+                scale={timelineScale} 
+                clusters={eventsClusters} 
+              /> : ''}
 
             {/*displayedData.map((point, index) => (
               <TimeObject scale={timelineScale} point={point} key={index} />

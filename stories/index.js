@@ -49,7 +49,7 @@ storiesOf('Timeline', module)
     <Timeline 
       allowViewChange ={true}
       data={timelineData} 
-      onViewChange={() => {}}
+      onViewChange={(e) => console.log('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
     />
   ))
@@ -85,36 +85,35 @@ storiesOf('Timeline', module)
         position: 'relative'
       }}>
         <Timeline 
-          allowViewChange={true}
-          data={timelineData} 
-          onViewChange={(e) => action('on view change', e)}
-          viewParameters = {timelineActiveViewParameters}
+          allowViewChange ={true}
+      data={timelineData} 
+      onViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {timelineActiveViewParameters}
         />
       </div>
     </div>
   ))
   .add('switch between view states (locked)', () => (
     <Timeline 
-      allowViewChange={false}
+      allowViewChange ={false}
       data={timelineData} 
-      onViewChange={(e) => action('on view change', e)}
-      allowViewChange={false}
+      onViewChange={(e) => console.log('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
     />
   ))
   .add('very small', () => (
     <Timeline 
-      allowViewChange={true}
+      allowViewChange ={true}
       data={timelineData} 
-      onViewChange={(e) => action('on view change', e)}
+      onViewChange={(e) => console.log('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
     />
   ))
   .add('very big', () => (
     <Timeline 
-      allowViewChange={true}
+      allowViewChange ={true}
       data={timelineData} 
-      onViewChange={(e) => action('on view change', e)}
+      onViewChange={(e) => console.log('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
     />
   ))

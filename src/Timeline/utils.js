@@ -205,3 +205,28 @@ export const computeTicks = (minimumDateDisplay, maximumDateDisplay) => {
           legend: formatDate(tick)
         }));
 };
+
+export const clusterEvents = (events, eventPadding) =>
+    events
+      .reduce((periods, event) => {
+        let previous;
+        if (periods.timeObjects.length) {
+          previous = periods.timeObjects[periods.timeObjects.length - 1];
+        }
+        if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
+          event.column = previous.column + 1;
+          previous.overlapped = true;
+          event.overlapped = false;
+          if (periods.columns[periods.columns.length - 1] < event.column) {
+            periods.columns.push(event.column);
+          }
+        }
+        else {
+          event.column = 1;
+        }
+        periods.timeObjects.push(event);
+        return periods;
+      }, {
+        timeObjects: [],
+        columns: [1]
+      });

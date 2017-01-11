@@ -47,6 +47,7 @@ var Timeline = function (_React$Component) {
     _this.mapData = _this.mapData.bind(_this);
     _this.computeBoundaries = _this.computeBoundaries.bind(_this);
     _this.pan = _this.pan.bind(_this);
+    _this.zoom = _this.zoom.bind(_this);
     _this.computePeriods = _this.computePeriods.bind(_this);
     _this.onViewChange = (0, _lodash.debounce)(_this.onViewChange, 100);
 
@@ -126,6 +127,21 @@ var Timeline = function (_React$Component) {
       this.viewParameters.fromDate += forward ? delta : -delta;
       this.forceUpdate();
       this.onViewChange('wheel');
+    }
+  }, {
+    key: 'zoom',
+    value: function zoom(ratio) {
+      var timeSpan = this.viewParameters.toDate - this.viewParameters.fromDate;
+      var newTimeSpan = timeSpan / ratio;
+      var diff = newTimeSpan - timeSpan;
+      var newFrom = this.viewParameters.fromDate - diff / 2;
+      var newTo = this.viewParameters.toDate + diff / 2;
+      if (newFrom >= this.timeBoundaries.minimumDateDisplay && newTo <= this.timeBoundaries.maximumDateDisplay) {
+        this.viewParameters.fromDate = newFrom;
+        this.viewParameters.toDate = newTo;
+        this.forceUpdate();
+      }
+      this.onViewChange('zoom');
     }
 
     /*
@@ -222,7 +238,7 @@ var Timeline = function (_React$Component) {
       var displayedEvents = displayedData.filter(function (obj) {
         return obj.endDate === undefined;
       });
-      var eventPadding = timeSpan / 2;
+      var eventPadding = timeSpan / 20;
       var eventsClusters = displayedEvents.reduce(function (periods, event) {
         var previous = void 0;
         if (periods.timeObjects.length) {
@@ -230,6 +246,8 @@ var Timeline = function (_React$Component) {
         }
         if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
           event.column = previous.column + 1;
+          previous.overlapped = true;
+          event.overlapped = false;
           if (periods.columns[periods.columns.length - 1] < event.column) {
             periods.columns.push(event.column);
           }
@@ -257,7 +275,7 @@ var Timeline = function (_React$Component) {
         if (!_this2.props.allowViewChange) {
           return;
         }
-        var delta = (toDate - fromDate) / 30;
+        var delta = (toDate - fromDate) / 10;
         var forward = e.deltaY > 0;
         if (forward && toDate + delta <= _this2.timeBoundaries.maximumDateDisplay) {
           _this2.pan(true, delta);
@@ -280,6 +298,13 @@ var Timeline = function (_React$Component) {
         if (!forward && fromDate - delta >= _this2.timeBoundaries.minimumDateDisplay) {
           _this2.pan(false, delta);
         }
+      };
+
+      var zoomIn = function zoomIn() {
+        return _this2.zoom(1.1);
+      };
+      var zoomOut = function zoomOut() {
+        return _this2.zoom(0.9);
       };
 
       return _react2.default.createElement(
@@ -310,7 +335,7 @@ var Timeline = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'time-objects-container' },
-            _react2.default.createElement(
+            displayedPeriods.length ? _react2.default.createElement(
               'div',
               { className: 'columns-container' },
               periodsClusters.clustersColumns.map(function (column) {
@@ -323,12 +348,13 @@ var Timeline = function (_React$Component) {
                     return _react2.default.createElement(_subComponents.TimeObject, {
                       key: index,
                       point: obj,
+                      color: viewParameters.colorsMap[obj.category],
                       scale: timelineScale });
                   })
                 );
               })
-            ),
-            _react2.default.createElement(
+            ) : '',
+            eventsClusters.timeObjects.length ? _react2.default.createElement(
               'div',
               { className: 'columns-container' },
               eventsClusters.columns.map(function (column) {
@@ -341,13 +367,17 @@ var Timeline = function (_React$Component) {
                     return _react2.default.createElement(_subComponents.TimeObject, {
                       key: index,
                       point: obj,
-                      scale: timelineScale });
+                      scale: timelineScale,
+                      color: viewParameters.colorsMap[obj.category],
+                      showLabel: !obj.overlapped });
                   })
                 );
               })
-            )
+            ) : ''
           ),
-          allowViewChange ? _react2.default.createElement(_subComponents.Controls, null) : '',
+          allowViewChange ? _react2.default.createElement(_subComponents.Controls, {
+            zoomIn: zoomIn,
+            zoomOut: zoomOut }) : '',
           _react2.default.createElement(
             'div',
             { className: 'time-boundaries-container' },
