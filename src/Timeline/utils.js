@@ -34,7 +34,7 @@ import {timeFormat} from 'd3-time-format';
 /**
  * Computes data's discretised date values to a javascript date object
  * @param {number} thatYear - year as a number
- * @param {number} thatMonth - month (0-11)
+ * @param {number} thatMonth - month (1-12)
  * @param {number} thatDay - day of month (1-31)
  * @param {string} time - time as a ':'-separated string (e.g. 12:33:32)
  * @return {Date} newDate - converted date

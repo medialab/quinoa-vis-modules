@@ -12,8 +12,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _d3Array = require('d3-array');
-
 var _d3Scale = require('d3-scale');
 
 var _d3TimeFormat = require('d3-time-format');
@@ -28,242 +26,185 @@ require('./Timeline.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This module exports a stateful customizable timeline component
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @module Timeline
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
+/**
+ * Timeline main component
+ */
 var Timeline = function (_React$Component) {
   _inherits(Timeline, _React$Component);
 
+  /**
+   * constructor
+   */
   function Timeline(props) {
     _classCallCheck(this, Timeline);
 
     var _this = _possibleConstructorReturn(this, (Timeline.__proto__ || Object.getPrototypeOf(Timeline)).call(this, props));
 
-    _this.mapData = _this.mapData.bind(_this);
-    _this.computeBoundaries = _this.computeBoundaries.bind(_this);
     _this.pan = _this.pan.bind(_this);
     _this.zoom = _this.zoom.bind(_this);
-    _this.computePeriods = _this.computePeriods.bind(_this);
-    _this.computeEvents = _this.computeEvents.bind(_this);
-    _this.onViewChange = (0, _lodash.debounce)(_this.onViewChange, 100);
-
+    _this.jump = _this.jump.bind(_this);
+    _this.setViewSpan = _this.setViewSpan.bind(_this);
+    _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
     // data time boundaries in order to display the mini-timeline
-    _this.timeBoundaries = {
-      // absolute minimum date
-      minimumDate: -Infinity,
-      // absolute maximum date
-      maximumDate: Infinity,
-      // padded minimum date
-      minimumDateDisplay: -Infinity,
-      // padded maximum date
-      maximumDateDisplay: Infinity
-    };
-    _this.viewParameters = props.viewParameters;
-    _this.miniScale = (0, _d3Scale.scaleLinear)().range([0, 100]).domain([-Infinity, Infinity]);
-    _this.mapData(_this.props.data, _this.props.viewParameters.dataMap);
-    _this.periodsClusters = _this.computePeriods(_this.data);
-    var displaceThreshold = (_this.timeBoundaries.maximumDateDisplay - _this.timeBoundaries.minimumDateDisplay) / 1000;
-    _this.eventsClusters = _this.computeEvents(_this.data, displaceThreshold);
+    _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters.dataMap, props.viewParameters || {});
     return _this;
   }
 
   _createClass(Timeline, [{
     key: 'componentWillUpdate',
     value: function componentWillUpdate(nextProps) {
-      // remap data if data or datamap will change
-      /*
-      if (this.props.data !== nextProps.data || this.props.dataMap !== nextProps.dataMap) {
-        this.mapData(nextProps.data, nextProps.dataMap);
-      }
-      */
       if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
-        this.viewParameters = nextProps.viewParameters;
+        this.setState({
+          viewParameters: nextProps.viewParameters
+        });
+      }
+
+      if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data) || JSON.stringify(this.props.dataMap) !== JSON.stringify(nextProps.dataMap)) {
+        var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters);
+        this.setState(_extends({}, newStateParts));
       }
     }
+
+    /**
+     * Lets instance parent to know when user has updated view
+     * @param {string} lastEventType - event type of the last event triggered by user
+     */
+
   }, {
-    key: 'onViewChange',
-    value: function onViewChange(lastEventType) {
-      this.props.onViewChange({
+    key: 'onUserViewChange',
+    value: function onUserViewChange(lastEventType) {
+      this.props.onUserViewChange({
         lastEventType: lastEventType,
-        viewParameters: this.viewParameters
+        // todo: verify if not next state needed ?
+        viewParameters: this.state.viewParameters
       });
     }
-  }, {
-    key: 'computePeriods',
-    value: function computePeriods(data) {
-      var maxColumn = 1;
-      var periodsClusters = data.filter(function (point) {
-        return point.endDate !== undefined;
-      });
-      periodsClusters.forEach(function (period, index) {
-        var previous = void 0;
-        if (index > 0) {
-          previous = periodsClusters[index - 1];
-        }
-        if (previous && period.startDate < previous.endDate) {
-          period.column = previous.column + 1;
-          previous.overlapped = true;
-          period.overlapped = false;
-          if (previous.column + 1 > maxColumn) {
-            maxColumn = previous.column + 1;
-          }
-        } else {
-          period.column = 1;
-        }
-      });
-      var clustersColumns = [];
-      for (var count = 0; count < maxColumn; count++) {
-        clustersColumns.push(count + 1);
-      }
-      return {
-        columns: clustersColumns,
-        timeObjects: periodsClusters
-      };
-    }
-  }, {
-    key: 'computeEvents',
-    value: function computeEvents(data, thresholdTime) {
-      var maxColumn = 1;
-      var eventsClusters = data.filter(function (point) {
-        return point.endDate === undefined;
-      }).map(function (point) {
-        return Object.assign({}, point);
-      });
-      eventsClusters.forEach(function (event, index) {
-        var previous = void 0;
-        if (index > 0) {
-          previous = eventsClusters[index - 1];
-        }
-        if (previous && event.startDate - previous.startDate <= thresholdTime) {
-          event.column = previous.column + 1;
-          if (previous.column + 1 > maxColumn) {
-            maxColumn = previous.column + 1;
-          }
-        } else {
-          event.column = 1;
-        }
-      });
-      var clustersColumns = [];
-      for (var count = 0; count < maxColumn; count++) {
-        clustersColumns.push(count + 1);
-      }
-      return {
-        columns: clustersColumns,
-        timeObjects: eventsClusters
-      };
-    }
+
+    /**
+     * Computes and calls a translation to the timespan being displayed in the main timeline
+     * @param {boolean} forward - whether panning goes forward or backward in time
+     * @param {number} delta - number of miliseconds to pan
+     */
+
   }, {
     key: 'pan',
     value: function pan(forward, delta) {
-      this.viewParameters.toDate += forward ? delta : -delta;
-      this.viewParameters.fromDate += forward ? delta : -delta;
-      this.forceUpdate();
-      this.onViewChange('wheel');
+      var from = this.state.viewParameters.fromDate + (forward ? delta : -delta);
+      var to = this.state.viewParameters.toDate + (forward ? delta : -delta);
+      this.setViewSpan(from, to, false);
+      this.onUserViewChange('wheel');
     }
+
+    /**
+     * Computes and calls a change of scale to the timespan being displayed in the main timeline - camera center is preserved
+     * @param {number} coefficient - the coefficient to apply to the scaling of view
+     */
+
   }, {
     key: 'zoom',
-    value: function zoom(ratio) {
-      var timeSpan = this.viewParameters.toDate - this.viewParameters.fromDate;
-      var newTimeSpan = timeSpan / ratio;
+    value: function zoom(coefficient) {
+      var timeSpan = this.state.viewParameters.toDate - this.state.viewParameters.fromDate;
+      var newTimeSpan = timeSpan / coefficient;
       var diff = newTimeSpan - timeSpan;
-      var newFrom = this.viewParameters.fromDate - diff / 2;
-      var newTo = this.viewParameters.toDate + diff / 2;
-      if (newFrom >= this.timeBoundaries.minimumDateDisplay && newTo <= this.timeBoundaries.maximumDateDisplay) {
-        this.viewParameters.fromDate = newFrom;
-        this.viewParameters.toDate = newTo;
-        this.forceUpdate();
+      var newFrom = this.state.viewParameters.fromDate - diff / 2;
+      var newTo = this.state.viewParameters.toDate + diff / 2;
+      if (newFrom >= this.state.timeBoundaries.minimumDateDisplay && newTo <= this.state.timeBoundaries.maximumDateDisplay) {
+        this.setViewSpan(newFrom, newTo, false);
+        this.onUserViewChange('zoom');
       }
-      this.onViewChange('zoom');
     }
 
-    /*
-     * Registers invariant timeline boundaries
+    /**
+     * Computes and calls a move of the timespan being displayed to a specific central point of time
+     * @param {number|object} param - whether an absolute time or an event position object
+     * @param {boolean} fromEvent - determines whether jump is called from a click-like event or not, thus whether first param is a number of an object
      */
 
   }, {
-    key: 'computeBoundaries',
-    value: function computeBoundaries() {
-      var minimumDate = (0, _d3Array.min)(this.data, function (d) {
-        return d.startDate.getTime();
-      });
-      var maximumDate = (0, _d3Array.max)(this.data, function (d) {
-        return d.endDate ? d.endDate.getTime() : d.startDate.getTime();
-      });
-      // padding max and min of 1% of total time ambitus
-      var ambitus = maximumDate - minimumDate;
-      var displacement = ambitus / 100;
-      var minimumDateDisplay = minimumDate - displacement;
-      var maximumDateDisplay = maximumDate + displacement;
-      this.timeBoundaries = {
-        minimumDate: minimumDate,
-        maximumDate: maximumDate,
-        minimumDateDisplay: minimumDateDisplay,
-        maximumDateDisplay: maximumDateDisplay
-      };
-      this.miniScale.domain([minimumDateDisplay, maximumDateDisplay]);
-      this.miniTicks = (0, _utils.computeTicks)(minimumDateDisplay, maximumDateDisplay);
+    key: 'jump',
+    value: function jump(param) {
+      var fromEvent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+      var toTime = void 0;
+      // giving event position as param
+      if (fromEvent) {
+        toTime = this.state.timeBoundaries.minimumDateDisplay + (this.state.timeBoundaries.maximumDateDisplay - this.state.timeBoundaries.minimumDateDisplay) * param.portionY;
+      }
+      // giving time number as param
+      else {
+          toTime = param;
+        }
+      var span = this.state.viewParameters.toDate - this.state.viewParameters.fromDate;
+      this.setViewSpan(toTime - span / 2, toTime + span / 2, false);
     }
-    /*
-     * Maps incoming data with provided data map
+    /**
+     * Computes and applies a change to the timespan being displayed
+     * @param {number|object} from - whether an absolute time or an event position object
+     * @param {number|object} to - whether an absolute time or an event position object
+     * @param {boolean} fromEvent - determines whether jump is called from a click-like event or not, thus whether first param is a number of an object
      */
 
   }, {
-    key: 'mapData',
-    value: function mapData(data, dataMap) {
-      this.data = data.map(function (datapoint) {
-        return Object.keys(dataMap).reduce(function (obj, dataKey) {
-          return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap[dataKey] === 'function' ? dataMap[dataKey](datapoint) // case accessor
-          : datapoint[dataMap[dataKey]]));
-        }, {});
-      })
-      // compute dates (timeline specific)
-      .map(function (datapoint) {
-        var year = datapoint.year,
-            month = datapoint.month,
-            day = datapoint.day,
-            time = datapoint.time;
-        var endYear = datapoint.endYear,
-            endMonth = datapoint.endMonth,
-            endDay = datapoint.endDay,
-            endTime = datapoint.endTime;
+    key: 'setViewSpan',
+    value: function setViewSpan(from, to) {
+      var fromEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
-
-        var startDate = (0, _utils.computeDate)(year, month, day, time);
-        var endDate = (0, _utils.computeDate)(endYear, endMonth, endDay, endTime);
-        return _extends({}, datapoint, {
-          startDate: startDate,
-          endDate: endDate
-        });
-      })
-      // sort by ascending date
-      .sort(function (a, b) {
-        if (a.startDate.getTime() > b.startDate.getTime()) {
-          return 1;
-        } else return -1;
+      var fromTime = void 0;
+      var toTime = void 0;
+      // giving events positions as params
+      if (fromEvents) {
+        fromTime = this.state.timeBoundaries.minimumDateDisplay + (this.state.timeBoundaries.maximumDateDisplay - this.state.timeBoundaries.minimumDateDisplay) * from.portionY;
+        toTime = this.state.timeBoundaries.minimumDateDisplay + (this.state.timeBoundaries.maximumDateDisplay - this.state.timeBoundaries.minimumDateDisplay) * to.portionY;
+      }
+      // giving time numbers as params
+      else {
+          fromTime = from;
+          toTime = to;
+        }
+      var viewParameters = _extends({}, this.state.viewParameters, {
+        fromDate: fromTime,
+        toDate: toTime
       });
-      this.computeBoundaries();
+      this.setState({
+        viewParameters: viewParameters
+      });
     }
+
+    /**
+     * Renders the component
+     */
+
   }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
 
       var _props = this.props,
-          _props$allowViewChang = _props.allowViewChange,
-          allowViewChange = _props$allowViewChang === undefined ? true : _props$allowViewChang,
+          _props$allowUserViewC = _props.allowUserViewChange,
+          allowUserViewChange = _props$allowUserViewC === undefined ? true : _props$allowUserViewC,
           _props$orientation = _props.orientation,
           orientation = _props$orientation === undefined ? 'portrait' : _props$orientation;
-      var data = this.data,
-          miniScale = this.miniScale,
-          miniTicks = this.miniTicks,
-          viewParameters = this.viewParameters,
-          periodsClusters = this.periodsClusters,
-          globalEventsClusters = this.eventsClusters;
+      var _state = this.state,
+          data = _state.data,
+          miniScale = _state.miniScale,
+          miniTicks = _state.miniTicks,
+          viewParameters = _state.viewParameters,
+          periodsClusters = _state.periodsClusters,
+          globalEventsClusters = _state.eventsClusters,
+          timeBoundaries = _state.timeBoundaries;
+
+      /*
+       * Step: filter the elements to display in the main timeline
+       */
 
       var fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
       var toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
@@ -273,58 +214,103 @@ var Timeline = function (_React$Component) {
         var end = point.endDate && point.endDate.getTime();
         return start >= fromDate && start <= toDate || end && end >= fromDate && end <= toDate;
       });
+      /*
+       * Step: organize events in a series of columns to avoid objects overlapping and allow a maximum number of labels to be rendered
+       */
       var displayedEvents = displayedData.filter(function (obj) {
         return obj.endDate === undefined;
       });
       var eventPadding = timeSpan / 20;
       var eventsClusters = (0, _utils.clusterEvents)(displayedEvents, eventPadding);
+      /*
+       * Step: organize periods in a series of columns to avoid objects overlapping and allow a maximum number of labels to be rendered
+       */
       var displayedPeriods = periodsClusters.timeObjects.filter(function (point) {
         var start = point.startDate.getTime();
         var end = point.endDate && point.endDate.getTime();
         return start >= fromDate && start <= toDate || end && end >= fromDate && end <= toDate;
       });
+      /*
+       * Step: compute timeline scale function, time graduations (ticks) and appropriate date formater (fn(timespan))
+       */
       var timelineScale = (0, _d3Scale.scaleLinear)().range([0, 100]).domain([fromDate, toDate]);
       var ticksParams = (0, _utils.setTicks)(toDate - fromDate);
       var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
       var mainTicks = (0, _utils.computeTicks)(fromDate, toDate);
 
+      /*
+       * Step: specify callbacks for user inputs
+       */
       var onMainWheel = function onMainWheel(e) {
         e.stopPropagation();
-        if (!_this2.props.allowViewChange) {
+        e.preventDefault();
+        if (!_this2.props.allowUserViewChange) {
           return;
         }
         var delta = (toDate - fromDate) / 10;
         var forward = e.deltaY > 0;
-        if (forward && toDate + delta <= _this2.timeBoundaries.maximumDateDisplay) {
+        if (forward && toDate + delta <= _this2.state.timeBoundaries.maximumDateDisplay) {
           _this2.pan(true, delta);
         }
-        if (!forward && fromDate - delta >= _this2.timeBoundaries.minimumDateDisplay) {
+        if (!forward && fromDate - delta >= _this2.state.timeBoundaries.minimumDateDisplay) {
           _this2.pan(false, delta);
         }
       };
-
       var onAsideWheel = function onAsideWheel(e) {
         e.stopPropagation();
-        if (!_this2.props.allowViewChange) {
+        e.preventDefault();
+        if (!_this2.props.allowUserViewChange) {
           return;
         }
         var delta = (toDate - fromDate) / 2;
         var forward = e.deltaY > 0;
-        if (forward && toDate + delta <= _this2.timeBoundaries.maximumDateDisplay) {
+        if (forward && toDate + delta <= timeBoundaries.maximumDateDisplay) {
           _this2.pan(true, delta);
         }
-        if (!forward && fromDate - delta >= _this2.timeBoundaries.minimumDateDisplay) {
+        if (!forward && fromDate - delta >= timeBoundaries.minimumDateDisplay) {
           _this2.pan(false, delta);
         }
       };
-
       var zoomIn = function zoomIn() {
         return _this2.zoom(1.1);
       };
       var zoomOut = function zoomOut() {
         return _this2.zoom(0.9);
       };
+      var panBackward = function panBackward() {
+        return _this2.pan(false, (toDate - fromDate) / 10);
+      };
+      var panForward = function panForward() {
+        return _this2.pan(true, (toDate - fromDate) / 10);
+      };
 
+      var onBrushClick = function onBrushClick(fromInput, toInput) {
+        if (fromInput && toInput) {
+          _this2.setViewSpan(fromInput, toInput);
+        }
+        /*
+        // brush-resizing related
+        const from = fromInput !== undefined ?
+        fromInput
+        : {
+            portionY: Math.abs(viewParameters.fromDate / (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay))
+          };
+        const to = toInput !== undefined ?
+        toInput
+        : {
+            portionY: Math.abs(viewParameters.toDate / (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay))
+          };
+        this.setViewSpan(from, to);
+        */
+      };
+
+      var onBrushManipulation = function onBrushManipulation(from, to) {
+        _this2.setViewSpan(from, to, false);
+      };
+
+      /*
+       * Step: render component
+       */
       return _react2.default.createElement(
         'figure',
         { className: 'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape') },
@@ -332,13 +318,14 @@ var Timeline = function (_React$Component) {
           'aside',
           { onWheel: onAsideWheel, className: 'mini-timeline' },
           _react2.default.createElement(_subComponents.TimeTicks, { ticks: miniTicks, scale: miniScale }),
-          _react2.default.createElement('div', { className: 'brush-placeholder' }),
-          _react2.default.createElement('div', {
-            className: 'brush',
-            style: {
-              top: miniScale(fromDate) + '%',
-              height: miniScale(toDate) - miniScale(fromDate) + '%'
-            } }),
+          _react2.default.createElement(_subComponents.Brush, {
+            onSimpleClick: this.jump,
+            scale: miniScale,
+            fromDate: viewParameters.fromDate,
+            toDate: viewParameters.toDate,
+            active: allowUserViewChange,
+            onSpanEventDefinition: onBrushClick,
+            onSpanAbsoluteDefinition: onBrushManipulation }),
           _react2.default.createElement(
             'div',
             { className: 'time-objects-container' },
@@ -371,9 +358,11 @@ var Timeline = function (_React$Component) {
               scale: timelineScale,
               clusters: eventsClusters }) : ''
           ),
-          allowViewChange ? _react2.default.createElement(_subComponents.Controls, {
+          allowUserViewChange ? _react2.default.createElement(_subComponents.Controls, {
             zoomIn: zoomIn,
-            zoomOut: zoomOut }) : '',
+            zoomOut: zoomOut,
+            panForward: panForward,
+            panBackward: panBackward }) : '',
           _react2.default.createElement(
             'div',
             { className: 'time-boundaries-container' },
@@ -400,7 +389,7 @@ Timeline.propTypes = {
   /*
    * Incoming data in json format
    */
-  // data: PropTypes.array,
+  // data: PropTypes.array, // commented to avoid angrying eslint that does not like unprecised arrays as proptypes
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not - like Timeline spatialization algorithm for instance)
    */
@@ -422,16 +411,19 @@ Timeline.propTypes = {
     }),
     fromDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
     toDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
-    orientation: _react.PropTypes.oneOf(['landscape', 'portrait'])
+    /*
+     * parameters specifying whether timeline should be displayed in left-to-right or top-to-bottom style
+     */
+    orientation: _react.PropTypes.oneOf(['landscape', 'portrait']).required
   }),
   /*
    * boolean to specify whether the user can pan/pan/interact or not with the view
    */
-  allowViewChange: _react.PropTypes.bool,
+  allowUserViewChange: _react.PropTypes.bool,
   /*
    * callback fn triggered when user changes view parameters, callbacks data about the triggering interaction and about the new view parameters
    */
-  onViewChange: _react.PropTypes.func
+  onUserViewChange: _react.PropTypes.func
 };
 
 exports.default = Timeline;

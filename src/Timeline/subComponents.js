@@ -76,16 +76,22 @@ export const TimeTicks = ({
  */
 export const Controls = ({
   zoomIn,
-  zoomOut
+  zoomOut,
+  panBackward,
+  panForward
 }) => (
   <div className="controls-container">
-    <button id="left">backward</button>
-    <button id="right">forward</button>
+    <button onMouseDown={panBackward} id="left">backward</button>
+    <button onMouseDown={panForward} id="right">forward</button>
     <button onMouseDown={zoomIn} id="zoom-in">zoom-in</button>
     <button onMouseDown={zoomOut} id="zoom-out">zoom-out</button>
   </div>
 );
 
+/**
+ * Represents a group of "clustered" time objects, organized in columns
+ * @return {ReactComponent} React component
+ */
 export const ClustersGroup = ({
   clusters,
   viewParameters,
@@ -159,8 +165,9 @@ export class Brush extends React.Component {
       fromDate,
       toDate,
       onSimpleClick,
-      onSpanAbsoluteDefinition,
-      onSpanEventDefinition
+      // onSpanAbsoluteDefinition,
+      onSpanEventDefinition,
+      allowBrush
     } = this.props;
 
     const onContainerLeave = () => {
@@ -176,16 +183,16 @@ export class Brush extends React.Component {
     const onBrushMouseMove = e => {
       e.stopPropagation();
       if (this.state.brushInteractionMode) {
-        const position = getEventCoordinates(e);
         if (this.state.brushInteractionMode === 'move') {
-          const displacement = (position.portionY - this.state.brushMoveStartPosition.portionY);
+          onSimpleClick(getEventCoordinates(e));
+          /*const displacement = (position.portionY - this.state.brushMoveStartPosition.portionY);
           const span = toDate - fromDate;
           const from = fromDate + span * displacement * 2;
           const to = toDate + span * displacement * 2;
           onSpanAbsoluteDefinition(from, to);
           this.setState({
             brushMoveStartPosition: position
-          });
+          });*/
         }
       }
     };
@@ -301,8 +308,8 @@ export class Brush extends React.Component {
       });
     };
 
-    return (
-      <div
+    return allowBrush ?
+      (<div
         className="brush-placeholder"
         onClick={onContainerClick}
         onMouseDown={onContainerMouseDown}
@@ -317,7 +324,17 @@ export class Brush extends React.Component {
             height: scale(toDate) - scale(fromDate) + '%',
             pointerEvents: (this.state.brushingContainer || this.state.brushInteractionMode) ? 'none' : 'all'
           }} />
-      </div>
-    );
+      </div>)
+      :
+      (<div
+        className="brush-placeholder">
+        <div
+          className="brush"
+          style={{
+            top: scale(fromDate) + '%',
+            height: scale(toDate) - scale(fromDate) + '%',
+            pointerEvents: 'none'
+          }} />
+      </div>);
   }
 }

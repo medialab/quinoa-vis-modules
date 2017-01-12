@@ -39,45 +39,7 @@ const model = {
       {
         id: 'category',
         acceptedValueTypes: ['string']
-      },
-      /*
-      {
-        id: 'display date',
-        acceptedValueTypes: ['string']
-      },
-      {
-        id: 'headline',
-        acceptedValueTypes: ['string']
-      },
-      {
-        id: 'text',
-        acceptedValueTypes: ['string']
-      },
-      {
-        id: 'media',
-        acceptedValueTypes: ['url']
-      },
-      {
-        id: 'media credit',
-        acceptedValueTypes: ['string']
-      },
-      {
-        id: 'media caption',
-        acceptedValueTypes: ['string']
-      },
-      {
-        id: 'media thumbnail',
-        acceptedValueTypes: ['string']
-      },
-      {
-        id: 'type',
-        acceptedValueTypes: ['string']
-      },
-      {
-        id: 'background',
-        acceptedValueTypes: ['string']
       }
-      */
     ],
     viewParameters: [
       {

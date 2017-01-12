@@ -36,7 +36,7 @@ class Timeline extends React.Component {
     this.zoom = this.zoom.bind(this);
     this.jump = this.jump.bind(this);
     this.setViewSpan = this.setViewSpan.bind(this);
-    this.onViewChange = debounce(this.onViewChange, 100);
+    this.onUserViewChange = debounce(this.onUserViewChange, 100);
     // data time boundaries in order to display the mini-timeline
     this.state = computeDataRelatedState(props.data, props.viewParameters.dataMap, props.viewParameters || {});
   }
@@ -60,8 +60,8 @@ class Timeline extends React.Component {
    * Lets instance parent to know when user has updated view
    * @param {string} lastEventType - event type of the last event triggered by user
    */
-  onViewChange (lastEventType) {
-    this.props.onViewChange({
+  onUserViewChange (lastEventType) {
+    this.props.onUserViewChange({
       lastEventType,
       // todo: verify if not next state needed ?
       viewParameters: this.state.viewParameters
@@ -77,7 +77,7 @@ class Timeline extends React.Component {
     const from = this.state.viewParameters.fromDate + (forward ? delta : -delta);
     const to = this.state.viewParameters.toDate + (forward ? delta : -delta);
     this.setViewSpan(from, to, false);
-    this.onViewChange('wheel');
+    this.onUserViewChange('wheel');
   }
 
   /**
@@ -92,7 +92,7 @@ class Timeline extends React.Component {
     const newTo = this.state.viewParameters.toDate + diff / 2;
     if (newFrom >= this.state.timeBoundaries.minimumDateDisplay && newTo <= this.state.timeBoundaries.maximumDateDisplay) {
       this.setViewSpan(newFrom, newTo, false);
-      this.onViewChange('zoom');
+      this.onUserViewChange('zoom');
     }
   }
 
@@ -148,7 +148,7 @@ class Timeline extends React.Component {
    */
   render () {
     const {
-      allowViewChange = true,
+      allowUserViewChange = true,
       orientation = 'portrait',
     } = this.props;
 
@@ -203,7 +203,7 @@ class Timeline extends React.Component {
     const onMainWheel = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      if (!this.props.allowViewChange) {
+      if (!this.props.allowUserViewChange) {
         return;
       }
       const delta = (toDate - fromDate) / 10;
@@ -218,7 +218,7 @@ class Timeline extends React.Component {
     const onAsideWheel = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      if (!this.props.allowViewChange) {
+      if (!this.props.allowUserViewChange) {
         return;
       }
       const delta = (toDate - fromDate) / 2;
@@ -232,11 +232,15 @@ class Timeline extends React.Component {
     };
     const zoomIn = () => this.zoom(1.1);
     const zoomOut = () => this.zoom(0.9);
+    const panBackward = () => this.pan(false, (toDate - fromDate) / 10);
+    const panForward = () => this.pan(true, (toDate - fromDate) / 10);
+
     const onBrushClick = (fromInput, toInput) => {
       if (fromInput && toInput) {
         this.setViewSpan(fromInput, toInput);
       }
       /*
+      // brush-resizing related
       const from = fromInput !== undefined ?
       fromInput
       : {
@@ -267,6 +271,7 @@ class Timeline extends React.Component {
             scale={miniScale}
             fromDate={viewParameters.fromDate}
             toDate={viewParameters.toDate}
+            active={allowUserViewChange}
             onSpanEventDefinition={onBrushClick}
             onSpanAbsoluteDefinition={onBrushManipulation} />
           <div className="time-objects-container">
@@ -299,10 +304,12 @@ class Timeline extends React.Component {
                 scale={timelineScale}
                 clusters={eventsClusters} /> : ''}
           </div>
-          {allowViewChange ?
+          {allowUserViewChange ?
             <Controls
               zoomIn={zoomIn}
-              zoomOut={zoomOut} />
+              zoomOut={zoomOut}
+              panForward={panForward}
+              panBackward={panBackward} />
           : ''}
           <div className="time-boundaries-container">
             <div id="from-date">{formatDate(new Date(fromDate))}</div>
@@ -379,16 +386,16 @@ Timeline.propTypes = {
     /*
      * parameters specifying whether timeline should be displayed in left-to-right or top-to-bottom style
      */
-    orientation: PropTypes.oneOf(['landscape', 'portrait'])
+    orientation: PropTypes.oneOf(['landscape', 'portrait']).required
   }),
   /*
    * boolean to specify whether the user can pan/pan/interact or not with the view
    */
-  allowViewChange: PropTypes.bool,
+  allowUserViewChange: PropTypes.bool,
   /*
    * callback fn triggered when user changes view parameters, callbacks data about the triggering interaction and about the new view parameters
    */
-  onViewChange: PropTypes.func
+  onUserViewChange: PropTypes.func
 };
 
 export default Timeline;
