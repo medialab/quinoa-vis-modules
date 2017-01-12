@@ -37,13 +37,12 @@ const timelineBaseViewParameters = {
   }
 };
 
-
 storiesOf('Timeline', module)
   .add('default (portrait)', () => (
     <Timeline 
-      allowViewChange ={true}
+      allowUserViewChange ={true}
       data={timelineData} 
-      onViewChange={(e) => console.log('on view change', e)}
+      onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
     />
   ))
@@ -54,14 +53,14 @@ storiesOf('Timeline', module)
     <TimelineStoryContainer
       timelineData={timelineData}
       baseParameters={timelineBaseViewParameters}
-      allowViewChange={true}
+      allowUserViewChange={true}
     />
   ))
   .add('switch between view states (locked)', () => (
     <TimelineStoryContainer
       timelineData={timelineData}
       baseParameters={timelineBaseViewParameters}
-      allowViewChange={false}
+      allowUserViewChange={false}
     />
   ))
   .add('very small', () => (
@@ -84,9 +83,9 @@ storiesOf('Timeline', module)
         background: 'white'
       }}>
       <Timeline 
-        allowViewChange ={true}
+        allowUserViewChange ={true}
         data={timelineData} 
-        onViewChange={(e) => console.log('on view change', e)}
+        onUserViewChange={(e) => console.log('on view change', e)}
         viewParameters = {timelineBaseViewParameters}
       />
       </div>
@@ -100,9 +99,9 @@ storiesOf('Timeline', module)
         background: 'white'
       }}>
       <Timeline 
-        allowViewChange ={true}
+        allowUserViewChange ={true}
         data={timelineData} 
-        onViewChange={(e) => console.log('on view change', e)}
+        onUserViewChange={(e) => console.log('on view change', e)}
         viewParameters = {timelineBaseViewParameters}
       />
       </div>
