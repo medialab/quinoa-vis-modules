@@ -18,6 +18,7 @@ gulp.task('build', function(){
       "react"
     ]
   }))
+    .pipe(strip())
     .pipe(gulp.dest('build'));
 
   gulp.src([
