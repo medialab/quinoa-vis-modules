@@ -17,16 +17,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Series of timeline-related sub components
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @module Timeline
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
 
 
-/**
- * Computes react representation of a time object (event or period)
- * @return {ReactComponent} React component
- */
 var TimeObject = exports.TimeObject = function TimeObject(_ref) {
   var point = _ref.point,
       scale = _ref.scale,
@@ -73,10 +66,6 @@ var TimeObject = exports.TimeObject = function TimeObject(_ref) {
   );
 };
 
-/**
- * Computes react representation of time graduations
- * @return {ReactComponent} React component
- */
 var TimeTicks = exports.TimeTicks = function TimeTicks(_ref2) {
   var ticks = _ref2.ticks,
       scale = _ref2.scale;
@@ -102,10 +91,6 @@ var TimeTicks = exports.TimeTicks = function TimeTicks(_ref2) {
   );
 };
 
-/**
- * Computes react representation of timeline controls
- * @return {ReactComponent} React component
- */
 var Controls = exports.Controls = function Controls(_ref3) {
   var zoomIn = _ref3.zoomIn,
       zoomOut = _ref3.zoomOut,
@@ -137,10 +122,6 @@ var Controls = exports.Controls = function Controls(_ref3) {
   );
 };
 
-/**
- * Represents a group of "clustered" time objects, organized in columns
- * @return {ReactComponent} React component
- */
 var ClustersGroup = exports.ClustersGroup = function ClustersGroup(_ref4) {
   var clusters = _ref4.clusters,
       viewParameters = _ref4.viewParameters,
@@ -167,11 +148,6 @@ var ClustersGroup = exports.ClustersGroup = function ClustersGroup(_ref4) {
   );
 };
 
-/**
- * Computes the relative and proportional position of a mouse-like event related to its target
- * @param {event} e - the event to analyze
- * @return {object} eventPosition - an object containing useful data about position of the event being triggered
- */
 var getEventCoordinates = function getEventCoordinates(e) {
   var w = e.target.clientWidth;
   var h = e.target.clientHeight;
@@ -191,9 +167,6 @@ var getEventCoordinates = function getEventCoordinates(e) {
   };
 };
 
-/**
- * Timeline brush stateful component
- */
 
 var Brush = exports.Brush = function (_React$Component) {
   _inherits(Brush, _React$Component);
@@ -242,14 +215,6 @@ var Brush = exports.Brush = function (_React$Component) {
         if (_this2.state.brushInteractionMode) {
           if (_this2.state.brushInteractionMode === 'move') {
             onSimpleClick(getEventCoordinates(e));
-            /*const displacement = (position.portionY - this.state.brushMoveStartPosition.portionY);
-            const span = toDate - fromDate;
-            const from = fromDate + span * displacement * 2;
-            const to = toDate + span * displacement * 2;
-            onSpanAbsoluteDefinition(from, to);
-            this.setState({
-              brushMoveStartPosition: position
-            });*/
           }
         }
       };
@@ -291,11 +256,9 @@ var Brush = exports.Brush = function (_React$Component) {
         e.stopPropagation();
         var eventPosition = getEventCoordinates(e);
         if (_this2.state.canBrushContainer) {
-          // console.log('mouse move, brushing container ?', this.state.brushingContainer);
           if (!_this2.state.brushingContainer) {
             _this2.setState({
               brushingContainer: true,
-              // storing brush start position
               containerBrushStartPosition: eventPosition
             });
           } else {

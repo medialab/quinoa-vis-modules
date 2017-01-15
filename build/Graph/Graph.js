@@ -22,11 +22,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 require('gexf');
 
-/**
- * Constants.
- */
-// TODO : this should be in visualization invariant params,
-// and parametrized while creating/parametrizing the whole story
 var SIGMA_SETTINGS = {
   labelThreshold: 7,
   minNodeSize: 2,
@@ -35,9 +30,6 @@ var SIGMA_SETTINGS = {
   sideMargin: 0
 };
 
-/**
- * Sigma instance.
- */
 var sigInst = new sigma({
   settings: SIGMA_SETTINGS
 });
@@ -59,21 +51,16 @@ var Graph = function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      // hack - todo : clean
       var data = new DOMParser().parseFromString(this.props.data[0].gexf, 'application/xml');
-      // Adding the relevant renderer
       this.renderer = sigInst.addRenderer({
         container: this.container,
         camera: 'main'
       });
 
-      // Loading the graph
       sigma.parsers.gexf(data, sigInst, function () {
         return sigInst.refresh();
       });
 
-      // Hooking into the camera
-      // this.releaseCamera = monkeyPatchCamera(this.updateSlide);
 
       var onCoordinatesUpdate = function onCoordinatesUpdate() {
         var coords = {
@@ -104,12 +91,10 @@ var Graph = function (_Component) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prev) {
-      // If the graph has changed, we reset sigma
       if (prev.data !== this.props.data) {
         var data = new DOMParser().parseFromString(this.props.data[0].gexf, 'application/xml');
         sigInst.graph.clear();
         sigma.parsers.gexf(data, sigInst, function () {
-          // camera.goTo({x: 0, y: 0, angle: 0, ratio: 1});
           camera.goTo();
           sigInst.refresh();
           sigInst.loadCamera('main');
@@ -119,10 +104,7 @@ var Graph = function (_Component) {
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      // Killing the renderer
       sigInst.killRenderer(this.renderer);
-      // Releasing the camera
-      // this.releaseCamera();
     }
   }, {
     key: 'render',

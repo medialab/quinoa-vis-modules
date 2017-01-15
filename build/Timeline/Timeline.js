@@ -30,20 +30,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * This module exports a stateful customizable timeline component
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @module Timeline
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
 
-/**
- * Timeline main component
- */
 var Timeline = function (_React$Component) {
   _inherits(Timeline, _React$Component);
 
-  /**
-   * constructor
-   */
   function Timeline(props) {
     _classCallCheck(this, Timeline);
 
@@ -54,7 +45,6 @@ var Timeline = function (_React$Component) {
     _this.jump = _this.jump.bind(_this);
     _this.setViewSpan = _this.setViewSpan.bind(_this);
     _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
-    // data time boundaries in order to display the mini-timeline
     _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters.dataMap, props.viewParameters || {});
     return _this;
   }
@@ -74,26 +64,16 @@ var Timeline = function (_React$Component) {
       }
     }
 
-    /**
-     * Lets instance parent to know when user has updated view
-     * @param {string} lastEventType - event type of the last event triggered by user
-     */
 
   }, {
     key: 'onUserViewChange',
     value: function onUserViewChange(lastEventType) {
       this.props.onUserViewChange({
         lastEventType: lastEventType,
-        // todo: verify if not next state needed ?
         viewParameters: this.state.viewParameters
       });
     }
 
-    /**
-     * Computes and calls a translation to the timespan being displayed in the main timeline
-     * @param {boolean} forward - whether panning goes forward or backward in time
-     * @param {number} delta - number of miliseconds to pan
-     */
 
   }, {
     key: 'pan',
@@ -104,10 +84,6 @@ var Timeline = function (_React$Component) {
       this.onUserViewChange('wheel');
     }
 
-    /**
-     * Computes and calls a change of scale to the timespan being displayed in the main timeline - camera center is preserved
-     * @param {number} coefficient - the coefficient to apply to the scaling of view
-     */
 
   }, {
     key: 'zoom',
@@ -123,11 +99,6 @@ var Timeline = function (_React$Component) {
       }
     }
 
-    /**
-     * Computes and calls a move of the timespan being displayed to a specific central point of time
-     * @param {number|object} param - whether an absolute time or an event position object
-     * @param {boolean} fromEvent - determines whether jump is called from a click-like event or not, thus whether first param is a number of an object
-     */
 
   }, {
     key: 'jump',
@@ -135,23 +106,15 @@ var Timeline = function (_React$Component) {
       var fromEvent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
       var toTime = void 0;
-      // giving event position as param
       if (fromEvent) {
         toTime = this.state.timeBoundaries.minimumDateDisplay + (this.state.timeBoundaries.maximumDateDisplay - this.state.timeBoundaries.minimumDateDisplay) * param.portionY;
       }
-      // giving time number as param
       else {
           toTime = param;
         }
       var span = this.state.viewParameters.toDate - this.state.viewParameters.fromDate;
       this.setViewSpan(toTime - span / 2, toTime + span / 2, false);
     }
-    /**
-     * Computes and applies a change to the timespan being displayed
-     * @param {number|object} from - whether an absolute time or an event position object
-     * @param {number|object} to - whether an absolute time or an event position object
-     * @param {boolean} fromEvent - determines whether jump is called from a click-like event or not, thus whether first param is a number of an object
-     */
 
   }, {
     key: 'setViewSpan',
@@ -160,12 +123,10 @@ var Timeline = function (_React$Component) {
 
       var fromTime = void 0;
       var toTime = void 0;
-      // giving events positions as params
       if (fromEvents) {
         fromTime = this.state.timeBoundaries.minimumDateDisplay + (this.state.timeBoundaries.maximumDateDisplay - this.state.timeBoundaries.minimumDateDisplay) * from.portionY;
         toTime = this.state.timeBoundaries.minimumDateDisplay + (this.state.timeBoundaries.maximumDateDisplay - this.state.timeBoundaries.minimumDateDisplay) * to.portionY;
       }
-      // giving time numbers as params
       else {
           fromTime = from;
           toTime = to;
@@ -179,9 +140,6 @@ var Timeline = function (_React$Component) {
       });
     }
 
-    /**
-     * Renders the component
-     */
 
   }, {
     key: 'render',
@@ -202,9 +160,6 @@ var Timeline = function (_React$Component) {
           globalEventsClusters = _state.eventsClusters,
           timeBoundaries = _state.timeBoundaries;
 
-      /*
-       * Step: filter the elements to display in the main timeline
-       */
 
       var fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
       var toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
@@ -214,33 +169,21 @@ var Timeline = function (_React$Component) {
         var end = point.endDate && point.endDate.getTime();
         return start >= fromDate && start <= toDate || end && end >= fromDate && end <= toDate;
       });
-      /*
-       * Step: organize events in a series of columns to avoid objects overlapping and allow a maximum number of labels to be rendered
-       */
       var displayedEvents = displayedData.filter(function (obj) {
         return obj.endDate === undefined;
       });
       var eventPadding = timeSpan / 20;
       var eventsClusters = (0, _utils.clusterEvents)(displayedEvents, eventPadding);
-      /*
-       * Step: organize periods in a series of columns to avoid objects overlapping and allow a maximum number of labels to be rendered
-       */
       var displayedPeriods = periodsClusters.timeObjects.filter(function (point) {
         var start = point.startDate.getTime();
         var end = point.endDate && point.endDate.getTime();
         return start >= fromDate && start <= toDate || end && end >= fromDate && end <= toDate;
       });
-      /*
-       * Step: compute timeline scale function, time graduations (ticks) and appropriate date formater (fn(timespan))
-       */
       var timelineScale = (0, _d3Scale.scaleLinear)().range([0, 100]).domain([fromDate, toDate]);
       var ticksParams = (0, _utils.setTicks)(toDate - fromDate);
       var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
       var mainTicks = (0, _utils.computeTicks)(fromDate, toDate);
 
-      /*
-       * Step: specify callbacks for user inputs
-       */
       var onMainWheel = function onMainWheel(e) {
         e.stopPropagation();
         e.preventDefault();
@@ -288,29 +231,12 @@ var Timeline = function (_React$Component) {
         if (fromInput && toInput) {
           _this2.setViewSpan(fromInput, toInput);
         }
-        /*
-        // brush-resizing related
-        const from = fromInput !== undefined ?
-        fromInput
-        : {
-            portionY: Math.abs(viewParameters.fromDate / (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay))
-          };
-        const to = toInput !== undefined ?
-        toInput
-        : {
-            portionY: Math.abs(viewParameters.toDate / (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay))
-          };
-        this.setViewSpan(from, to);
-        */
       };
 
       var onBrushManipulation = function onBrushManipulation(from, to) {
         _this2.setViewSpan(from, to, false);
       };
 
-      /*
-       * Step: render component
-       */
       return _react2.default.createElement(
         'figure',
         { className: 'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape') },
@@ -386,17 +312,7 @@ var Timeline = function (_React$Component) {
 }(_react2.default.Component);
 
 Timeline.propTypes = {
-  /*
-   * Incoming data in json format
-   */
-  // data: PropTypes.array, // commented to avoid angrying eslint that does not like unprecised arrays as proptypes
-  /*
-   * object describing the current view (some being exposed to user interaction like pan and pan params, others not - like Timeline spatialization algorithm for instance)
-   */
   viewParameters: _react.PropTypes.shape({
-    /*
-     * Dictionary that specifies how to map vis props to data attributes (key names or accessor funcs)
-     */
     dataMap: _react.PropTypes.shape({
       name: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
       category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
@@ -411,18 +327,9 @@ Timeline.propTypes = {
     }),
     fromDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
     toDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
-    /*
-     * parameters specifying whether timeline should be displayed in left-to-right or top-to-bottom style
-     */
     orientation: _react.PropTypes.oneOf(['landscape', 'portrait']).required
   }),
-  /*
-   * boolean to specify whether the user can pan/pan/interact or not with the view
-   */
   allowUserViewChange: _react.PropTypes.bool,
-  /*
-   * callback fn triggered when user changes view parameters, callbacks data about the triggering interaction and about the new view parameters
-   */
   onUserViewChange: _react.PropTypes.func
 };
 

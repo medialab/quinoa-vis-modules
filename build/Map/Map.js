@@ -14,11 +14,7 @@ require('./Map.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// require leaflet code
 require('leaflet/dist/leaflet.css');
-// "/node_modules/leaflet/dist/images/marker-icon.png",
-// "/node_modules/leaflet/dist/images/marker-icon-2x.png",
-// "/node_modules/leaflet/dist/images/marker-shadow.png"
 
 
 var Map = function Map(_ref) {
@@ -57,7 +53,6 @@ var Map = function Map(_ref) {
       updateView(view);
     }
   };
-  // http://{s}.tile.osm.org/{z}/{x}/{y}.png
   return _react2.default.createElement(
     _reactLeaflet.Map,
     {
