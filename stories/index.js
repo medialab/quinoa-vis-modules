@@ -13,6 +13,7 @@ import Graph from '../src/Graph/Graph';
 import Map from '../src/Map/Map';
 
 import TimelineStoryContainer from './TimelineStoryContainer';
+import MapStoryContainer from './MapStoryContainer';
 
 import timelineData from 'dsv!./mock_data/milestones-datavis.csv';
 import graphData from './mock_data/miserables.json';
@@ -37,7 +38,8 @@ const timelineBaseViewParameters = {
     cartography: '#F24D98',
     computation: '#813B7C',
     mathematics: '#59D044',
-    statistics: '#F3A002'
+    statistics: '#F3A002',
+    noCategory: 'brown'
   }
 };
 
@@ -58,9 +60,6 @@ storiesOf('Timeline', module)
       viewParameters = {timelineBaseViewParameters}
     />
   ))
-  // .add('default (landscape)', () => (
-  //   <span>Todo</span>
-  // ))
   .add('switch between view states (navigable)', () => (
     <TimelineStoryContainer
       timelineData={timelineData}
@@ -137,7 +136,8 @@ const mapBaseViewParameters = {
   dataMap: mapDataMap,
   colorsMap: {
     'accélérée': '#F24D98',
-    'normale': '#813B7C'
+    'normale': '#813B7C',
+    noCategory: 'brown'
   }
 };
 
@@ -151,13 +151,26 @@ storiesOf('Map', module)
     />
   ))
   .add('locked', () => (
-    <span>Todo</span>
+    <Map 
+      allowUserViewChange ={false}
+      data={mapData} 
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {mapBaseViewParameters}
+    />
   ))
-  .add('View changes (navigable)', () => (
-    <span>Todo</span>
+  .add('switch between view states (navigable)', () => (
+    <MapStoryContainer
+      mapData={mapData}
+      baseParameters={mapBaseViewParameters}
+      allowUserViewChange={true}
+    />
   ))
-  .add('View changes (locked)', () => (
-    <span>Todo</span>
+  .add('switch between view states (locked)', () => (
+    <MapStoryContainer
+      mapData={mapData}
+      baseParameters={mapBaseViewParameters}
+      allowUserViewChange={false}
+    />
   ))
   .add('very small layouts', () => (
     <span>Todo</span>

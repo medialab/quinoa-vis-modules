@@ -9,9 +9,8 @@
     display: none;
 }
 
-.quinoa-map{
-  user-select: none;
-
+.quinoa-map
+{
     /*
      * Layout and layout-specific subcomponents styling
      */
@@ -25,4 +24,57 @@
     height: 100%;
     margin: 0;
     padding: 0;
+
+    .map-wrapper{
+        position: absolute;
+    top: 0;
+    left: 0;
+
+    overflow: hidden;
+
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    }
+
+    user-select: none;
+    .point-marker-icon
+    {
+        width: 100%;
+        height: 100%;
+
+        cursor: pointer;
+        .shape
+        {
+            position: absolute;
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 100%;
+
+            border: 1px solid white;
+            border-radius: 50%;
+        }
+    }
+
+    &.locked{
+        .leaflet-control{
+            display: none;
+        }
+        .locked-mode-cache{
+            position : absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .leaflet-objects-pane
+        {
+            z-index: 20000;
+        }
+    }
 }

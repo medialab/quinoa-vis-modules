@@ -1,14 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import {Map as MapComponent, Marker, Popup, TileLayer} from 'react-leaflet';
+import {divIcon} from 'leaflet';
 import {debounce} from 'lodash';
 import {
   computeDataRelatedState
 } from './utils';
 // require leaflet code
 require('leaflet/dist/leaflet.css');
-// "/node_modules/leaflet/dist/images/marker-icon.png",
-// "/node_modules/leaflet/dist/images/marker-icon-2x.png",
-// "/node_modules/leaflet/dist/images/marker-shadow.png"
+
 import './Map.scss';
 
 /**
@@ -22,6 +21,16 @@ class Map extends Component {
     super(props);
     this.state = computeDataRelatedState(props.data, props.viewParameters.dataMap, props.viewParameters);
     this.onUserViewChange = debounce(this.onUserViewChange, 100);
+    this.activateMap = this.activateMap.bind(this);
+    this.deactivateMap = this.deactivateMap.bind(this);
+  }
+
+  componentDidMount () {
+    const map = this.map.leafletElement;
+    // disable leaflet instance interactivity if change is not allowed
+    if (!this.props.allowUserViewChange) {
+      this.deactivateMap(map);
+    }
   }
 
   componentWillUpdate(nextProps) {
@@ -39,16 +48,60 @@ class Map extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.allowUserViewChange !== this.props.allowUserViewChange) {
+      const map = this.map.leafletElement;
+      if (this.props.allowUserViewChange) {
+        this.activeMap(map);
+      }
+ else {
+        this.deactiveMap(map);
+      }
+    }
+  }
+
+  /**
+   * Enables interactivity on leaflet map instance
+   * @param {Leaflet.leafletElement} map - leaflet map instance to manipulate
+   */
+  activateMap (map) {
+    map.dragging.enable();
+    map.touchZoom.enable();
+    map.doubleClickZoom.enable();
+    map.scrollWheelZoom.enable();
+    map.boxZoom.enable();
+    map.keyboard.enable();
+    if (map.tap) {
+      map.tap.enable();
+    }
+  }
+
+  /**
+   * Disables interactivity on leaflet map instance
+   * @param {Leaflet.leafletElement} map - leaflet map instance to manipulate
+   */
+  deactivateMap (map) {
+    map.dragging.disable();
+    map.touchZoom.disable();
+    map.doubleClickZoom.disable();
+    map.scrollWheelZoom.disable();
+    map.boxZoom.disable();
+    map.keyboard.disable();
+    if (map.tap) map.tap.disable();
+  }
+
   /**
    * Lets instance parent to know when user has updated view
    * @param {string} lastEventType - event type of the last event triggered by user
    */
   onUserViewChange (lastEventType) {
-    this.props.onUserViewChange({
-      lastEventType,
-      // todo: verify if not next state needed ?
-      viewParameters: this.state.viewParameters
-    });
+    if (typeof this.props.onUserViewChange === 'function') {
+      this.props.onUserViewChange({
+        lastEventType,
+        // todo: verify if not next state needed ?
+        viewParameters: this.state.viewParameters
+      });
+    }
   }
   /**
    * Renders the component
@@ -59,7 +112,7 @@ class Map extends Component {
       viewParameters
     } = this.state;
     const {
-      // allowUserViewChange
+      allowUserViewChange
     } = this.props;
     const position = [viewParameters.cameraX, viewParameters.cameraY];
     const zoom = viewParameters.cameraZoom;
@@ -77,8 +130,11 @@ class Map extends Component {
     };
     // http://{s}.tile.osm.org/{z}/{x}/{y}.png
     return (
-      <figure className="quinoa-map">
+      <figure className={'quinoa-map' + (allowUserViewChange ? '' : ' locked')}>
         <MapComponent
+          ref={(c) => {
+ this.map = c;
+}}
           center={position}
           zoom={zoom}
           onMoveEnd={onMoveEnd}
@@ -86,20 +142,30 @@ class Map extends Component {
           <TileLayer
             url="http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png" />
           {
-              data.map((point, index) => {
-                if (point.latitude && point.longitude) {
-                  const thatPosition = [+point.latitude, +point.longitude];
-                  return (<Marker key={index} position={thatPosition}>
-                    <Popup>
-                      <span>{point.title}</span>
-                    </Popup>
-                  </Marker>);
-                }
-                else {
-                  return '';
-                }
-              })
-            }
+                data.map((point, index) => {
+                  if (point.latitude && point.longitude) {
+                    const thatPosition = [+point.latitude, +point.longitude];
+                    const color = viewParameters.colorsMap[point.category] || viewParameters.colorsMap.noCategory;
+                    const thatIcon = divIcon({
+                      className: 'point-marker-icon',
+                      html: '<span class="shape" style="background:' + color + '"></span>'
+                    });
+                    return (
+                      <Marker
+                        key={index}
+                        position={thatPosition}
+                        icon={thatIcon}>
+                        <Popup>
+                          <span>{point.title}</span>
+                        </Popup>
+                      </Marker>
+                    );
+                  }
+                  else {
+                    return '';
+                  }
+                })
+              }
         </MapComponent>
       </figure>
     );
