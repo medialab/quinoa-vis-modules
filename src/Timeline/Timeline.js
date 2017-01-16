@@ -60,11 +60,13 @@ class Timeline extends React.Component {
    * @param {string} lastEventType - event type of the last event triggered by user
    */
   onUserViewChange (lastEventType) {
-    this.props.onUserViewChange({
-      lastEventType,
-      // todo: verify if not next state needed ?
-      viewParameters: this.state.viewParameters
-    });
+    if (typeof this.props.onUserViewChange === 'function') {
+      this.props.onUserViewChange({
+        lastEventType,
+        // todo: verify if not next state needed ?
+        viewParameters: this.state.viewParameters
+      });
+    }
   }
 
   /**
