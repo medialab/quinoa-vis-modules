@@ -11,7 +11,7 @@ import React from 'react';
 export const TimeObject = ({
   point,
   scale,
-  color = 'grey',
+  color,
   showLabel = true,
   showTooltip = true
 }) => (
@@ -109,7 +109,7 @@ export const ClustersGroup = ({
               key={index}
               point={obj}
               scale={scale}
-              color={viewParameters.colorsMap[obj.category]}
+              color={viewParameters.colorsMap[obj.category] || viewParameters.colorsMap.noCategory}
               showLabel={!obj.overlapped} />
           ))
         }
