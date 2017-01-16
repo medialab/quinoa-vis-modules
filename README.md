@@ -72,11 +72,11 @@ Example of the ``Timeline`` submodule :
 ```
 -Timeline
 --Timeline.js // stateful main component
---Timeline.scss // component layout styling and invariant styling, structured as a nested sass
+--Timeline.scss // component layout styling and general styling
 --subComponents.js // mini components (mostly stateless) to be used by the main component
 ```
 
-# View parameters models
+# ``viewParameters`` property models
 
 ## Timeline
 
@@ -88,12 +88,6 @@ Start date to use fo displayingr the main view of the timeline.
 
 End date to use for displaying the main view of the timeline.
 
-### ``orientation`` : string
-
-Possible values: ``landscape``, ``portrait`
-
-Parameters specifying whether timeline should be displayed in left-to-right or top-to-bottom style.
-
 ### ``dataMap`` : object
 
 Object that specifies how to map data to vis properties. Keys are names of vis props, values may be a string representing input data objects' key name, or an accessor function.
@@ -101,7 +95,7 @@ Object that specifies how to map data to vis properties. Keys are names of vis p
 Detail of the timeline data map :
 
 - ``name`` : **required** - name of time objects to be displayed in labels
-- ``category`` : category to use for coloring objects
+- ``category`` : category to use for coloring and filtering objects
 - ``year`` : **required** - start year of time object
 - ``month`` : start month of time object
 - ``day`` : start year of time object

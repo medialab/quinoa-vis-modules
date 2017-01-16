@@ -32,7 +32,6 @@ const timelineDataMap = {
 const timelineBaseViewParameters = {
   fromDate: new Date().setFullYear(1900),
   toDate: new Date().setFullYear(1960),
-  orientation: 'portrait',
   dataMap: timelineDataMap,
   colorsMap: {
     cartography: '#F24D98',
