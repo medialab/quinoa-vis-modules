@@ -16,7 +16,12 @@ import TimelineStoryContainer from './TimelineStoryContainer';
 
 import timelineData from 'dsv!./mock_data/milestones-datavis.csv';
 import graphData from './mock_data/miserables.json';
-import mapData from 'dsv!./mock_data/etablissements-enseignement-fr.csv';
+import mapData from 'dsv!./mock_data/bornes-recharge-electrique.csv';
+
+
+/*
+ * TIMELINE COMPONENT STORIES
+ */
 
 const timelineDataMap = {
   year: 'year',
@@ -38,9 +43,17 @@ const timelineBaseViewParameters = {
 };
 
 storiesOf('Timeline', module)
-  .add('default (portrait)', () => (
+  .add('default', () => (
     <Timeline 
       allowUserViewChange ={true}
+      data={timelineData} 
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {timelineBaseViewParameters}
+    />
+  ))
+  .add('locked', () => (
+    <Timeline 
+      allowUserViewChange ={false}
       data={timelineData} 
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
@@ -63,13 +76,13 @@ storiesOf('Timeline', module)
       allowUserViewChange={false}
     />
   ))
-  .add('very small', () => (
+  .add('very small layouts', () => (
     <div style={{
       position: 'absolute',
       width: '100%',
       height: '100%',
       overflow: 'hidden',
-      background: 'yellow',
+      background: 'darkgrey',
       left: '0',
       top: '0'
     }}>
@@ -106,6 +119,49 @@ storiesOf('Timeline', module)
       />
       </div>
     </div>
+  ));
+
+/*
+ * MAP COMPONENT STORIES
+ */
+
+const mapDataMap = {
+  latitude: 'latitude',
+  longitude: 'longitude',
+  title: 'nom_station',
+  category: 'type_charge'
+};
+const mapBaseViewParameters = {
+  cameraX: 48.8674345,
+  cameraY: 2.3455482,
+  cameraZoom: 4,
+  dataMap: mapDataMap,
+  colorsMap: {
+    'accélérée': '#F24D98',
+    'normale': '#813B7C'
+  }
+};
+
+storiesOf('Map', module)
+  .add('default', () => (
+    <Map 
+      allowUserViewChange ={true}
+      data={mapData} 
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {mapBaseViewParameters}
+    />
+  ))
+  .add('locked', () => (
+    <span>Todo</span>
+  ))
+  .add('View changes (navigable)', () => (
+    <span>Todo</span>
+  ))
+  .add('View changes (locked)', () => (
+    <span>Todo</span>
+  ))
+  .add('very small layouts', () => (
+    <span>Todo</span>
   ))
 
 /*

@@ -37,7 +37,6 @@ class Timeline extends React.Component {
     this.jump = this.jump.bind(this);
     this.setViewSpan = this.setViewSpan.bind(this);
     this.onUserViewChange = debounce(this.onUserViewChange, 100);
-    // data time boundaries in order to display the mini-timeline
     this.state = computeDataRelatedState(props.data, props.viewParameters.dataMap, props.viewParameters || {});
   }
 
@@ -48,7 +47,7 @@ class Timeline extends React.Component {
       });
     }
 
-    if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data) || JSON.stringify(this.props.dataMap) !== JSON.stringify(nextProps.dataMap)) {
+    if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
       const newStateParts = computeDataRelatedState(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters);
       this.setState({
         ...newStateParts
