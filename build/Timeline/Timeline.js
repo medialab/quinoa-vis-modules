@@ -58,7 +58,7 @@ var Timeline = function (_React$Component) {
         });
       }
 
-      if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data) || JSON.stringify(this.props.dataMap) !== JSON.stringify(nextProps.dataMap)) {
+      if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
         var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters);
         this.setState(_extends({}, newStateParts));
       }
@@ -68,10 +68,12 @@ var Timeline = function (_React$Component) {
   }, {
     key: 'onUserViewChange',
     value: function onUserViewChange(lastEventType) {
-      this.props.onUserViewChange({
-        lastEventType: lastEventType,
-        viewParameters: this.state.viewParameters
-      });
+      if (typeof this.props.onUserViewChange === 'function') {
+        this.props.onUserViewChange({
+          lastEventType: lastEventType,
+          viewParameters: this.state.viewParameters
+        });
+      }
     }
 
 

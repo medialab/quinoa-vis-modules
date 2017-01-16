@@ -9,11 +9,13 @@
     "comb": "csscomb src",
     "test": "mocha --compilers js:babel-core/register -R spec --recursive $(find src -name '*.spec.js')",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "precommit-add-build": "git add build"
   },
   "pre-commit": [
     "lint",
-    "build"
+    "build",
+    "precommit-add-build"
   ],
   "repository": {
     "type": "git",

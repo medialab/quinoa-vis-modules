@@ -23,8 +23,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var TimeObject = exports.TimeObject = function TimeObject(_ref) {
   var point = _ref.point,
       scale = _ref.scale,
-      _ref$color = _ref.color,
-      color = _ref$color === undefined ? 'grey' : _ref$color,
+      color = _ref.color,
       _ref$showLabel = _ref.showLabel,
       showLabel = _ref$showLabel === undefined ? true : _ref$showLabel,
       _ref$showTooltip = _ref.showTooltip,
@@ -140,7 +139,7 @@ var ClustersGroup = exports.ClustersGroup = function ClustersGroup(_ref4) {
             key: index,
             point: obj,
             scale: scale,
-            color: viewParameters.colorsMap[obj.category],
+            color: viewParameters.colorsMap[obj.category] || viewParameters.colorsMap.noCategory,
             showLabel: !obj.overlapped });
         })
       );
