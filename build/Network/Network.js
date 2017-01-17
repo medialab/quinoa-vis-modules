@@ -37,16 +37,16 @@ var sigInst = new sigma({
 var camera = sigInst.addCamera('main');
 camera.isAnimated = true;
 
-var Graph = function (_Component) {
-  _inherits(Graph, _Component);
+var Network = function (_Component) {
+  _inherits(Network, _Component);
 
-  function Graph(props, context) {
-    _classCallCheck(this, Graph);
+  function Network(props, context) {
+    _classCallCheck(this, Network);
 
-    return _possibleConstructorReturn(this, (Graph.__proto__ || Object.getPrototypeOf(Graph)).call(this, props, context));
+    return _possibleConstructorReturn(this, (Network.__proto__ || Object.getPrototypeOf(Network)).call(this, props, context));
   }
 
-  _createClass(Graph, [{
+  _createClass(Network, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
       var _this2 = this;
@@ -117,7 +117,23 @@ var Graph = function (_Component) {
     }
   }]);
 
-  return Graph;
+  return Network;
 }(_react.Component);
 
-exports.default = Graph;
+Network.propTypes = {
+  dataStructure: _react.PropTypes.oneOf(['gexf', 'graphML']),
+  viewParameters: _react.PropTypes.shape({
+    dataMap: _react.PropTypes.shape({
+      title: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+      category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func])
+    }),
+    cameraX: _react.PropTypes.number,
+    cameraY: _react.PropTypes.number,
+    cameraZoom: _react.PropTypes.number,
+    cameraAngle: _react.PropTypes.number
+  }),
+  allowUserViewChange: _react.PropTypes.bool,
+  onUserViewChange: _react.PropTypes.func
+};
+
+exports.default = Network;
