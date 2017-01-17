@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.QuinoaTimeline = exports.QuinoaMap = exports.QuinoaNetwork = undefined;
+exports.Timline = exports.Map = exports.Network = undefined;
 
 var _Network = require('./Network/Network');
 
@@ -24,6 +24,6 @@ require('../sigma/sigma.layout.forceAtlas2.min.js');
 require('../sigma/sigma.parsers.gexf.min.js');
 require('../sigma/sigma.plugins.saveCamera.js');
 
-var QuinoaNetwork = exports.QuinoaNetwork = _Network2.default;
-var QuinoaMap = exports.QuinoaMap = _Map2.default;
-var QuinoaTimeline = exports.QuinoaTimeline = _Timeline2.default;
+var Network = exports.Network = _Network2.default;
+var Map = exports.Map = _Map2.default;
+var Timline = exports.Timline = _Timeline2.default;
