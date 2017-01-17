@@ -14,6 +14,7 @@ import Map from '../src/Map/Map';
 
 import TimelineStoryContainer from './TimelineStoryContainer';
 import MapStoryContainer from './MapStoryContainer';
+import MapLockSwitcher from './MapLockSwitcher';
 
 import timelineData from 'dsv!./mock_data/milestones-datavis.csv';
 import graphData from './mock_data/miserables.json';
@@ -158,6 +159,13 @@ storiesOf('Map', module)
       viewParameters = {mapBaseViewParameters}
     />
   ))
+  .add('switch between lock mode and unlock mode', () => (
+    <MapLockSwitcher
+      mapData={mapData}
+      baseParameters={mapBaseViewParameters}
+      allowUserViewChange={true}
+    />
+  ))
   .add('switch between view states (navigable)', () => (
     <MapStoryContainer
       mapData={mapData}
@@ -173,8 +181,49 @@ storiesOf('Map', module)
     />
   ))
   .add('very small layouts', () => (
-    <span>Todo</span>
-  ))
+    <div style={{
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      overflow: 'hidden',
+      background: 'darkgrey',
+      left: '0',
+      top: '0'
+    }}>
+      <div style={{
+        position: 'absolute',
+        height: '88%',
+        overflow: 'hidden',
+        width: '20%',
+        top: '1%',
+        left: '1%',
+        background: 'white'
+      }}>
+      <Map 
+        allowUserViewChange ={true}
+        data={mapData} 
+        onUserViewChange={(e) => console.log('on view change', e)}
+        viewParameters = {mapBaseViewParameters}
+      />
+      </div>
+      <div style={{
+        position: 'absolute',
+        height: '50%',
+        overflow: 'hidden',
+        width: '60%',
+        left: '30%',
+        top: '1%',
+        background: 'white'
+      }}>
+      <Map 
+        allowUserViewChange ={true}
+        data={mapData} 
+        onUserViewChange={(e) => console.log('on view change', e)}
+        viewParameters = {mapBaseViewParameters}
+      />
+      </div>
+    </div>
+  ));
 
 /*
 storiesOf('Graph', module)
