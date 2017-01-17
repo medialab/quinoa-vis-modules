@@ -45,7 +45,7 @@ var Timeline = function (_React$Component) {
     _this.jump = _this.jump.bind(_this);
     _this.setViewSpan = _this.setViewSpan.bind(_this);
     _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
-    _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters.dataMap, props.viewParameters || {});
+    _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters.dataMap, props.viewParameters || {}, props.dataStructure);
     return _this;
   }
 
@@ -59,7 +59,7 @@ var Timeline = function (_React$Component) {
       }
 
       if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
-        var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters);
+        var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters, nextProps.dataStructure);
         this.setState(_extends({}, newStateParts));
       }
     }
@@ -314,6 +314,7 @@ var Timeline = function (_React$Component) {
 }(_react2.default.Component);
 
 Timeline.propTypes = {
+  dataStructure: _react.PropTypes.oneOf(['flatArray']),
   viewParameters: _react.PropTypes.shape({
     dataMap: _react.PropTypes.shape({
       name: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),

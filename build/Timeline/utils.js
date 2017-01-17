@@ -274,39 +274,45 @@ var computeBoundaries = exports.computeBoundaries = function computeBoundaries(d
 };
 
 var mapData = function mapData(data, dataMap) {
-  return data.map(function (datapoint) {
-    return Object.keys(dataMap).reduce(function (obj, dataKey) {
-      return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap[dataKey] === 'function' ? dataMap[dataKey](datapoint) 
-      : datapoint[dataMap[dataKey]]));
-    }, {});
-  })
-  .map(function (datapoint) {
-    var year = datapoint.year,
-        month = datapoint.month,
-        day = datapoint.day,
-        time = datapoint.time;
-    var endYear = datapoint.endYear,
-        endMonth = datapoint.endMonth,
-        endDay = datapoint.endDay,
-        endTime = datapoint.endTime;
+  var dataStructure = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'flatArray';
+
+  if (dataStructure === 'flatArray') {
+    return data.map(function (datapoint) {
+      return Object.keys(dataMap).reduce(function (obj, dataKey) {
+        return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap[dataKey] === 'function' ? dataMap[dataKey](datapoint) 
+        : datapoint[dataMap[dataKey]]));
+      }, {});
+    })
+    .map(function (datapoint) {
+      var year = datapoint.year,
+          month = datapoint.month,
+          day = datapoint.day,
+          time = datapoint.time;
+      var endYear = datapoint.endYear,
+          endMonth = datapoint.endMonth,
+          endDay = datapoint.endDay,
+          endTime = datapoint.endTime;
 
 
-    var startDate = computeDate(year, month, day, time);
-    var endDate = computeDate(endYear, endMonth, endDay, endTime);
-    return _extends({}, datapoint, {
-      startDate: startDate,
-      endDate: endDate
+      var startDate = computeDate(year, month, day, time);
+      var endDate = computeDate(endYear, endMonth, endDay, endTime);
+      return _extends({}, datapoint, {
+        startDate: startDate,
+        endDate: endDate
+      });
+    })
+    .sort(function (a, b) {
+      if (a.startDate.getTime() > b.startDate.getTime()) {
+        return 1;
+      } else return -1;
     });
-  })
-  .sort(function (a, b) {
-    if (a.startDate.getTime() > b.startDate.getTime()) {
-      return 1;
-    } else return -1;
-  });
+  } else {
+    return data;
+  }
 };
 
-var computeDataRelatedState = exports.computeDataRelatedState = function computeDataRelatedState(inputData, dataMap, viewParameters) {
-  var data = mapData(inputData, dataMap);
+var computeDataRelatedState = exports.computeDataRelatedState = function computeDataRelatedState(inputData, dataMap, viewParameters, dataStructure) {
+  var data = mapData(inputData, dataMap, dataStructure);
   var timeBoundaries = computeBoundaries(data);
   var miniTicks = computeTicks(timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay);
   var displaceThreshold = (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay) / 1000;

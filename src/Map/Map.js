@@ -19,7 +19,7 @@ class Map extends Component {
    */
   constructor(props) {
     super(props);
-    this.state = computeDataRelatedState(props.data, props.viewParameters.dataMap, props.viewParameters);
+    this.state = computeDataRelatedState(props.data, props.viewParameters.dataMap, props.viewParameters, props.dataStructure);
     this.onUserViewChange = debounce(this.onUserViewChange, 100);
     this.activateMap = this.activateMap.bind(this);
     this.deactivateMap = this.deactivateMap.bind(this);
@@ -41,7 +41,7 @@ class Map extends Component {
     }
 
     if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
-      const newStateParts = computeDataRelatedState(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters);
+      const newStateParts = computeDataRelatedState(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters, nextProps.dataStructure);
       this.setState({
         ...newStateParts
       });
@@ -175,6 +175,10 @@ Map.propTypes = {
    * Incoming data in json format
    */
   // data: PropTypes.array, // commented to avoid angrying eslint that does not like unprecised arrays as proptypes
+  /*
+   * string describing how input data is structured (flat array or geoJson)
+   */
+  dataStructure: PropTypes.oneOf(['flatArray', 'geoJson']),
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not)
    */

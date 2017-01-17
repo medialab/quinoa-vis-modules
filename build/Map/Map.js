@@ -40,7 +40,7 @@ var Map = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Map.__proto__ || Object.getPrototypeOf(Map)).call(this, props));
 
-    _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters.dataMap, props.viewParameters);
+    _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters.dataMap, props.viewParameters, props.dataStructure);
     _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
     _this.activateMap = _this.activateMap.bind(_this);
     _this.deactivateMap = _this.deactivateMap.bind(_this);
@@ -65,7 +65,7 @@ var Map = function (_Component) {
       }
 
       if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
-        var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters);
+        var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters, nextProps.dataStructure);
         this.setState(_extends({}, newStateParts));
       }
 
@@ -197,6 +197,7 @@ var Map = function (_Component) {
 }(_react.Component);
 
 Map.propTypes = {
+  dataStructure: _react.PropTypes.oneOf(['flatArray', 'geoJson']),
   viewParameters: _react.PropTypes.shape({
     dataMap: _react.PropTypes.shape({
       latitude: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
