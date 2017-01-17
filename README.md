@@ -6,8 +6,18 @@ Quinoa vis module exposes a set of react component aimed at being used in quinoa
 # Install
 
 ```
-npm install https://github.com/medialab/quinoa-vis-modules
+npm install --save https://github.com/medialab/quinoa-vis-modules
 ```
+
+# Npm Scripts
+
+``build`` : build dist code for use as dependency
+``lint`` : *
+``comb`` : 
+``test`` : 
+``storybook`` : 
+``build-storybook`` : 
+``precommit-add-build`` : 
 
 # Components general structure and API
 
@@ -112,7 +122,32 @@ Object that specifies how to color objects. Keys are values to look for in a cat
 
 ## Map
 
-TODO
+### ``cameraX`` : number
+
+Longitude coordinate of the camera center
+
+### ``cameraY`` : number
+
+Latitude coordinate of the camera center
+
+### ``cameraZoom`` : number
+
+Zoom degree of the camera (1 corresponds to the farthest position of camera)
+
+### ``dataMap`` : object
+
+Object that specifies how to map data to vis properties. Keys are names of vis props, values may be a string representing input data objects' key name, or an accessor function.
+
+Detail of the map data map :
+
+- ``latitude`` : (only for flatArray-structured data of geopoints) latitude of the geo point
+- ``longitude`` : (only for flatArray-structured data of geopoints) longitude of the geo point
+- ``title`` : title of the object
+- ``category`` : category of the object (will be mapped with a specific display color)
+
+### ``colorMap`` : object
+
+Object that specifies how to color objects. Keys are values to look for in a categorical set of values present in objects' data, value are css color descriptions (therefore accepted methods : names, rgb, rgba, hex)
 
 ## Graph
 
