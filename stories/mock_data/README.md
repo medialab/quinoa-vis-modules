@@ -7,3 +7,5 @@
 ``milestones-datavis.csv`` : http://www.datavis.ca/milestones/ (scrapped)
 
 ``bornes-recharge-electrique.csv`` : http://www.data.gouv.fr/fr/datasets/fichier-consolide-des-bornes-de-recharge-pour-vehicules-electriques-irve/
+
+``amaps-et-regions.geojson`` : http://c2france.com/mapbio-front/www/data/DOITT_THEATER_01_13SEPT2010.geojson & https://github.com/gregoiredavid/france-geojson/blob/master/regions.geojson

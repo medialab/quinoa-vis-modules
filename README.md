@@ -18,7 +18,7 @@ Each quinoa-vis-module component *must* comply to the following API :
 Variable props :
 
 - ``data`` : data (array, object, or raw string) passed by parent
-- ``dataStructure`` : string specifying how incoming data is structured (WIP - possible values for now : ``flatArray``, ``geoJson`)
+- ``dataStructure`` : string specifying how incoming data is structured (WIP - possible values for now : ``flatArray``, ``geoJSON`)
 - ``allowUserViewChange`` : boolean to specify whether the user can pan/zoom/interact with the view or not
 - ``viewParameters`` : object describing the current view of the visualization
 

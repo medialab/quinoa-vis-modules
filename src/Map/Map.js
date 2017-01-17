@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Map as MapComponent, Marker, Popup, TileLayer} from 'react-leaflet';
+import {Map as MapComponent, Marker, Popup, TileLayer, Polygon} from 'react-leaflet';
 import {divIcon} from 'leaflet';
 import {debounce} from 'lodash';
 import {
@@ -126,13 +126,14 @@ class Map extends Component {
           this.onUserViewChange(view);
         }
     };
+    const refMap = (c) => {
+ this.map = c;
+};
     // http://{s}.tile.osm.org/{z}/{x}/{y}.png
     return (
       <figure className={'quinoa-map' + (allowUserViewChange ? '' : ' locked')}>
         <MapComponent
-          ref={(c) => {
- this.map = c;
-}}
+          ref={refMap}
           center={position}
           zoom={zoom}
           onMoveEnd={onMoveEnd}
@@ -140,27 +141,36 @@ class Map extends Component {
           <TileLayer
             url="http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png" />
           {
-                data.map((point, index) => {
-                  if (point.latitude && point.longitude) {
-                    const thatPosition = [+point.latitude, +point.longitude];
-                    const color = viewParameters.colorsMap[point.category] || viewParameters.colorsMap.noCategory;
-                    const thatIcon = divIcon({
-                      className: 'point-marker-icon',
-                      html: '<span class="shape" style="background:' + color + '"></span>'
-                    });
-                    return (
-                      <Marker
-                        key={index}
-                        position={thatPosition}
-                        icon={thatIcon}>
-                        <Popup>
-                          <span>{point.title}</span>
-                        </Popup>
-                      </Marker>
-                    );
-                  }
-                  else {
-                    return '';
+                data.map((object, index) => {
+                  switch (object.geometry.type) {
+                    case 'Point':
+                      const thatPosition = object.geometry.coordinates;
+                      if (!isNaN(thatPosition[0]) && !isNaN(thatPosition[1])) {
+                        const color = viewParameters.colorsMap[object.category] || viewParameters.colorsMap.noCategory;
+                        const thatIcon = divIcon({
+                          className: 'point-marker-icon',
+                          html: '<span class="shape" style="background:' + color + '"></span>'
+                        });
+                        return (
+                          <Marker
+                            key={index}
+                            position={thatPosition}
+                            icon={thatIcon}>
+                            <Popup>
+                              <span>{object.title}</span>
+                            </Popup>
+                          </Marker>);
+                      }
+                      break;
+                    case 'Polygon':
+                      const coordinates = object.geometry.coordinates.map(couple => couple.reverse());
+                      return (
+                        <Polygon
+                          key={index}
+                          positions={coordinates} />
+                      );
+                    default:
+                      return '';
                   }
                 })
               }
@@ -178,7 +188,7 @@ Map.propTypes = {
   /*
    * string describing how input data is structured (flat array or geoJson)
    */
-  dataStructure: PropTypes.oneOf(['flatArray', 'geoJson']),
+  dataStructure: PropTypes.oneOf(['flatArray', 'geoJSON']),
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not)
    */

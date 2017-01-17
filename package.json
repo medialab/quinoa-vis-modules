@@ -44,9 +44,6 @@
     "react-leaflet": "^0.12.3"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-babel": "^6.1.2",
-    "gulp-strip-comments": "^2.4.3",
     "@kadira/storybook": "^2.5.2",
     "@yomguithereal/eslint-config": "^3.0.0",
     "babel-core": "^6.17.0",
@@ -63,7 +60,11 @@
     "eslint": "^3.7.1",
     "eslint-plugin-react": "^6.3.0",
     "file-loader": "^0.9.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-strip-comments": "^2.4.3",
     "image-webpack-loader": "^2.0.0",
+    "json-loader": "^0.5.4",
     "mocha": "^3.1.0",
     "node-sass": "^3.8.0",
     "pre-commit": "^1.2.2",

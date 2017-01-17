@@ -19,6 +19,7 @@ import MapLockSwitcher from './MapLockSwitcher';
 import timelineData from 'dsv!./mock_data/milestones-datavis.csv';
 import graphData from './mock_data/miserables.json';
 import mapData from 'dsv!./mock_data/bornes-recharge-electrique.csv';
+import mapGeoJSONData from 'json!./mock_data/amaps-et-regions.geojson';
 
 
 /*
@@ -142,6 +143,23 @@ const mapBaseViewParameters = {
   }
 };
 
+const mapGeoJSONDataMap = {
+  latitude: 'latitude',
+  longitude: 'longitude',
+  title: 'nom',
+  category: 'basemap'
+};
+const mapGeoJSONBaseViewParameters = {
+  cameraX: 48.8674345,
+  cameraY: 2.3455482,
+  cameraZoom: 4,
+  dataMap: mapGeoJSONDataMap,
+  colorsMap: {
+    osm_mapnik: 'orange',
+    noCategory: 'brown'
+  }
+};
+
 storiesOf('Map', module)
   .add('default', () => (
     <Map 
@@ -149,6 +167,15 @@ storiesOf('Map', module)
       data={mapData} 
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {mapBaseViewParameters}
+    />
+  ))
+  .add('default (with geojson)', () => (
+    <Map 
+      allowUserViewChange ={true}
+      data={mapGeoJSONData} 
+      dataStructure="geoJSON"
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {mapGeoJSONBaseViewParameters}
     />
   ))
   .add('locked', () => (

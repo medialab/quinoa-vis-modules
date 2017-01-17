@@ -145,47 +145,59 @@ var Map = function (_Component) {
           _this2.onUserViewChange(view);
         }
       };
+      var refMap = function refMap(c) {
+        _this2.map = c;
+      };
       return _react2.default.createElement(
         'figure',
         { className: 'quinoa-map' + (allowUserViewChange ? '' : ' locked') },
         _react2.default.createElement(
           _reactLeaflet.Map,
           {
-            ref: function ref(c) {
-              _this2.map = c;
-            },
+            ref: refMap,
             center: position,
             zoom: zoom,
             onMoveEnd: onMoveEnd,
             animate: true },
           _react2.default.createElement(_reactLeaflet.TileLayer, {
             url: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png' }),
-          data.map(function (point, index) {
-            if (point.latitude && point.longitude) {
-              var thatPosition = [+point.latitude, +point.longitude];
-              var color = viewParameters.colorsMap[point.category] || viewParameters.colorsMap.noCategory;
-              var thatIcon = (0, _leaflet.divIcon)({
-                className: 'point-marker-icon',
-                html: '<span class="shape" style="background:' + color + '"></span>'
-              });
-              return _react2.default.createElement(
-                _reactLeaflet.Marker,
-                {
+          data.map(function (object, index) {
+            switch (object.geometry.type) {
+              case 'Point':
+                var thatPosition = object.geometry.coordinates;
+                if (!isNaN(thatPosition[0]) && !isNaN(thatPosition[1])) {
+                  var color = viewParameters.colorsMap[object.category] || viewParameters.colorsMap.noCategory;
+                  var thatIcon = (0, _leaflet.divIcon)({
+                    className: 'point-marker-icon',
+                    html: '<span class="shape" style="background:' + color + '"></span>'
+                  });
+                  return _react2.default.createElement(
+                    _reactLeaflet.Marker,
+                    {
+                      key: index,
+                      position: thatPosition,
+                      icon: thatIcon },
+                    _react2.default.createElement(
+                      _reactLeaflet.Popup,
+                      null,
+                      _react2.default.createElement(
+                        'span',
+                        null,
+                        object.title
+                      )
+                    )
+                  );
+                }
+                break;
+              case 'Polygon':
+                var coordinates = object.geometry.coordinates.map(function (couple) {
+                  return couple.reverse();
+                });
+                return _react2.default.createElement(_reactLeaflet.Polygon, {
                   key: index,
-                  position: thatPosition,
-                  icon: thatIcon },
-                _react2.default.createElement(
-                  _reactLeaflet.Popup,
-                  null,
-                  _react2.default.createElement(
-                    'span',
-                    null,
-                    point.title
-                  )
-                )
-              );
-            } else {
-              return '';
+                  positions: coordinates });
+              default:
+                return '';
             }
           })
         )
@@ -197,7 +209,7 @@ var Map = function (_Component) {
 }(_react.Component);
 
 Map.propTypes = {
-  dataStructure: _react.PropTypes.oneOf(['flatArray', 'geoJson']),
+  dataStructure: _react.PropTypes.oneOf(['flatArray', 'geoJSON']),
   viewParameters: _react.PropTypes.shape({
     dataMap: _react.PropTypes.shape({
       latitude: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
