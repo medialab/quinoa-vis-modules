@@ -56,8 +56,8 @@ var Map = function (_Component) {
       }
     }
   }, {
-    key: 'componentWillUpdate',
-    value: function componentWillUpdate(nextProps) {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
       if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
         this.setState({
           viewParameters: nextProps.viewParameters
@@ -68,16 +68,13 @@ var Map = function (_Component) {
         var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters);
         this.setState(_extends({}, newStateParts));
       }
-    }
-  }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevProps) {
-      if (prevProps.allowUserViewChange !== this.props.allowUserViewChange) {
+
+      if (nextProps.allowUserViewChange !== this.props.allowUserViewChange) {
         var map = this.map.leafletElement;
-        if (this.props.allowUserViewChange) {
-          this.activeMap(map);
+        if (nextProps.allowUserViewChange) {
+          this.activateMap(map);
         } else {
-          this.deactiveMap(map);
+          this.deactivateMap(map);
         }
       }
     }

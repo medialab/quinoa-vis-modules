@@ -33,7 +33,7 @@ class Map extends Component {
     }
   }
 
-  componentWillUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
       this.setState({
         viewParameters: nextProps.viewParameters
@@ -46,16 +46,14 @@ class Map extends Component {
         ...newStateParts
       });
     }
-  }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.allowUserViewChange !== this.props.allowUserViewChange) {
+    if (nextProps.allowUserViewChange !== this.props.allowUserViewChange) {
       const map = this.map.leafletElement;
-      if (this.props.allowUserViewChange) {
-        this.activeMap(map);
+      if (nextProps.allowUserViewChange) {
+        this.activateMap(map);
       }
- else {
-        this.deactiveMap(map);
+      else {
+        this.deactivateMap(map);
       }
     }
   }

@@ -50,8 +50,8 @@ var Timeline = function (_React$Component) {
   }
 
   _createClass(Timeline, [{
-    key: 'componentWillUpdate',
-    value: function componentWillUpdate(nextProps) {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
       if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
         this.setState({
           viewParameters: nextProps.viewParameters
