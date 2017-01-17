@@ -40,7 +40,7 @@ class Timeline extends React.Component {
     this.state = computeDataRelatedState(props.data, props.viewParameters.dataMap, props.viewParameters || {});
   }
 
-  componentWillUpdate(nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
       this.setState({
         viewParameters: nextProps.viewParameters
