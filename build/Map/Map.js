@@ -160,7 +160,7 @@ var Map = function (_Component) {
             onMoveEnd: onMoveEnd,
             animate: true },
           _react2.default.createElement(_reactLeaflet.TileLayer, {
-            url: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png' }),
+            url: viewParameters.tilesUrl }),
           data.map(function (object, index) {
             switch (object.geometry.type) {
               case 'Point':

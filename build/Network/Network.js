@@ -4,13 +4,19 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-require('./Graph.scss');
+var _lodash = require('lodash');
+
+require('./Network.scss');
+
+var _utils = require('./utils');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,20 +28,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 require('gexf');
 
-var SIGMA_SETTINGS = {
-  labelThreshold: 7,
-  minNodeSize: 2,
-  edgeColor: 'default',
-  defaultEdgeColor: '#D1D1D1',
-  sideMargin: 0
-};
-
-var sigInst = new sigma({
-  settings: SIGMA_SETTINGS
-});
-
-var camera = sigInst.addCamera('main');
-camera.isAnimated = true;
+var sigInst = void 0;
+var camera = void 0;
 
 var Network = function (_Component) {
   _inherits(Network, _Component);
@@ -43,7 +37,21 @@ var Network = function (_Component) {
   function Network(props, context) {
     _classCallCheck(this, Network);
 
-    return _possibleConstructorReturn(this, (Network.__proto__ || Object.getPrototypeOf(Network)).call(this, props, context));
+    var _this = _possibleConstructorReturn(this, (Network.__proto__ || Object.getPrototypeOf(Network)).call(this, props, context));
+
+    _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
+
+    var state = {
+      data: {},
+      viewParameters: props.viewParameters
+    };
+
+    state.data = (0, _utils.mapData)(props.data, props.viewParameters.dataMap, props.dataStructure);
+
+    _this.state = state;
+
+    _this.rebootSigma = _this.rebootSigma.bind(_this);
+    return _this;
   }
 
   _createClass(Network, [{
@@ -51,15 +59,13 @@ var Network = function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      var data = new DOMParser().parseFromString(this.props.data[0].gexf, 'application/xml');
+      this.rebootSigma();
       this.renderer = sigInst.addRenderer({
         container: this.container,
-        camera: 'main'
+        type: 'canvas',
+        camera: camera
       });
-
-      sigma.parsers.gexf(data, sigInst, function () {
-        return sigInst.refresh();
-      });
+      sigInst.refresh();
 
 
       var onCoordinatesUpdate = function onCoordinatesUpdate() {
@@ -69,51 +75,127 @@ var Network = function (_Component) {
           cameraRatio: camera.ratio,
           cameraAngle: camera.angle
         };
-        _this2.props.updateView(coords);
+        _this2.setState({
+          viewParameters: _extends({}, _this2.state.viewParameters, {
+            coords: coords
+          })
+        });
+        _this2.onUserViewChange('userevent');
       };
 
       camera.bind('coordinatesUpdated', onCoordinatesUpdate);
     }
   }, {
-    key: 'componentWillUpdate',
-    value: function componentWillUpdate(next) {
-      if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(next.viewParameters)) {
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps, nextState) {
+      if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+        this.setState({
+          viewParameters: nextProps.viewParameters
+        });
         var coords = {
-          x: next.viewParameters.cameraX,
-          y: next.viewParameters.cameraY,
-          angle: next.viewParameters.cameraAngle,
-          ratio: next.viewParameters.cameraRatio
+          x: nextProps.viewParameters.cameraX,
+          y: nextProps.viewParameters.cameraY,
+          angle: nextProps.viewParameters.cameraAngle,
+          ratio: nextProps.viewParameters.cameraRatio
         };
         camera.goTo(coords);
         sigInst.refresh();
       }
+      if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
+        this.setState({
+          data: (0, _utils.mapData)(nextProps.data, nextProps.viewParameters.dataMap, nextProps.dataStructure)
+        });
+      }
+
+      if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
+        this.rebootSigma();
+      }
     }
   }, {
     key: 'componentDidUpdate',
-    value: function componentDidUpdate(prev) {
-      if (prev.data !== this.props.data) {
-        var data = new DOMParser().parseFromString(this.props.data[0].gexf, 'application/xml');
+    value: function componentDidUpdate(prevProps, prev) {
+      if (prev.data !== this.state.data) {
         sigInst.graph.clear();
-        sigma.parsers.gexf(data, sigInst, function () {
-          camera.goTo();
-          sigInst.refresh();
-          sigInst.loadCamera('main');
-        });
+        this.rebootSigma();
       }
     }
   }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
-      sigInst.killRenderer(this.renderer);
+      if (sigInst) {}
+
     }
+
+
+  }, {
+    key: 'rebootSigma',
+    value: function rebootSigma() {
+      var props = this.state.viewParameters;
+      var visData = {
+        nodes: this.state.data.nodes.map(function (node) {
+          return _extends({}, node, {
+            color: props.colorsMap[node.category] || props.colorsMap.noCategory
+          });
+        }),
+        edges: this.state.data.edges.map(function (edge) {
+          return _extends({}, edge, {
+            type: edge.type || 'undirected'
+          });
+        })
+      };
+
+      var SIGMA_SETTINGS = {
+        labelThreshold: props.labelThreshold || 7,
+        minNodeSize: props.minNodeSize || 2,
+        edgeColor: 'default',
+        defaultEdgeColor: props.colorsMap && props.colorsMap.noCategory || '#D1D1D1',
+        sideMargin: props.sideMargin || 0
+      };
+      sigInst = new sigma({
+        settings: SIGMA_SETTINGS,
+        graph: visData
+      });
+      camera = sigInst.addCamera('main');
+      camera.isAnimated = true;
+
+      if (!this.state.data.spatialized) {
+        sigInst.refresh();
+        sigInst.startForceAtlas2({
+          startingIterations: 1000
+        });
+        setTimeout(function () {
+          return sigInst.stopForceAtlas2();
+        });
+      }
+    }
+
+
+  }, {
+    key: 'onUserViewChange',
+    value: function onUserViewChange(lastEventType) {
+      if (typeof this.props.onUserViewChange === 'function') {
+        this.props.onUserViewChange({
+          lastEventType: lastEventType,
+          viewParameters: this.state.viewParameters
+        });
+      }
+    }
+
   }, {
     key: 'render',
     value: function render() {
       var _this3 = this;
 
-      return _react2.default.createElement('div', { id: 'sigma-container', ref: function ref(div) {
-          return _this3.container = div;
-        } });
+      var allowUserViewChange = this.props.allowUserViewChange;
+
+
+      return _react2.default.createElement(
+        'figure',
+        { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
+        _react2.default.createElement('div', { id: 'sigma-container', ref: function ref(div) {
+            return _this3.container = div;
+          } })
+      );
     }
   }]);
 
@@ -121,16 +203,30 @@ var Network = function (_Component) {
 }(_react.Component);
 
 Network.propTypes = {
-  dataStructure: _react.PropTypes.oneOf(['gexf', 'graphML']),
+  dataStructure: _react.PropTypes.oneOf(['gexf', 'graphML', 'json']),
   viewParameters: _react.PropTypes.shape({
     dataMap: _react.PropTypes.shape({
-      title: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func])
+      nodes: _react.PropTypes.shape({
+        label: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+        category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+        description: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+        size: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func])
+      }),
+      edges: _react.PropTypes.shape({
+        label: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+        type: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+        category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+        description: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
+        weight: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func])
+      })
     }),
     cameraX: _react.PropTypes.number,
     cameraY: _react.PropTypes.number,
-    cameraZoom: _react.PropTypes.number,
-    cameraAngle: _react.PropTypes.number
+    cameraRatio: _react.PropTypes.number,
+    cameraAngle: _react.PropTypes.number,
+    labelThreshold: _react.PropTypes.number,
+    minNodeSize: _react.PropTypes.number,
+    sideMargin: _react.PropTypes.number
   }),
   allowUserViewChange: _react.PropTypes.bool,
   onUserViewChange: _react.PropTypes.func

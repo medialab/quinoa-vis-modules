@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml>
+    <graph edgedefault="directed" id="3f93dee2-6feb-4046-b2b1-a12764aeaf1f">
+        <key id="name" for="node" attr.name="name" attr.type="string" />
+        <key id="type" for="node" attr.name="type" attr.type="string" />
+        <key id="name" for="edge" attr.name="name" attr.type="string" />
+        <key id="weight" for="edge" attr.name="weight" attr.type="double">1.00</key>
+        <key id="name" for="graph" attr.name="name" attr.type="string" />
+        <data key="name">test for exports</data>
+        <pubDate>Wed, 18 Jan 2017 10:23:44 GMT</pubDate>
+        <node id="0">
+            <data key="name">the kitchen</data>
+            <data key="type">object</data>
+            <data key="description"></data>
+            <data key="color">#2ca02c</data>
+            <data key="image"></data>
+        </node>
+        <node id="1">
+            <data key="name">Michel</data>
+            <data key="type">person</data>
+            <data key="description"></data>
+            <data key="color">#9467bd</data>
+            <data key="image"></data>
+        </node>
+        <node id="2">
+            <data key="name">Jean-Pierre</data>
+            <data key="type">person</data>
+            <data key="description"></data>
+            <data key="color">#9467bd</data>
+            <data key="image"></data>
+        </node>
+        <node id="3">
+            <data key="name">Marine</data>
+            <data key="type">person</data>
+            <data key="description"></data>
+            <data key="color">#9467bd</data>
+            <data key="image"></data>
+        </node>
+        <node id="4">
+            <data key="name">Fred</data>
+            <data key="type">person</data>
+            <data key="description">test</data>
+            <data key="color">#9467bd</data>
+            <data key="image"></data>
+        </node>
+        <edge source="0" target="1" id="e0">
+            <data key="name">copresence</data>
+            <data key="weight">1</data>
+        </edge>
+        <edge source="0" target="1" id="e1">
+            <data key="name">presence</data>
+            <data key="weight">1</data>
+        </edge>
+        <edge source="1" target="2" id="e2">
+            <data key="name">know</data>
+            <data key="weight">1</data>
+        </edge>
+        <edge source="2" target="3" id="e3">
+            <data key="name">know</data>
+            <data key="weight">1</data>
+        </edge>
+        <edge source="4" target="1" id="e4">
+            <data key="name">know</data>
+            <data key="weight">1</data>
+        </edge>
+    </graph>
+</graphml>
