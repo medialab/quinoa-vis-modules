@@ -127,9 +127,8 @@ class Map extends Component {
         }
     };
     const refMap = (c) => {
- this.map = c;
-};
-    // http://{s}.tile.osm.org/{z}/{x}/{y}.png
+     this.map = c;
+    };
     return (
       <figure className={'quinoa-map' + (allowUserViewChange ? '' : ' locked')}>
         <MapComponent
@@ -139,7 +138,7 @@ class Map extends Component {
           onMoveEnd={onMoveEnd}
           animate>
           <TileLayer
-            url="http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png" />
+            url={viewParameters.tilesUrl} />
           {
                 data.map((object, index) => {
                   switch (object.geometry.type) {
