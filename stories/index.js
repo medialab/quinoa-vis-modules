@@ -12,8 +12,12 @@ storiesOf('Welcome', module)
  */
 
 import Timeline from '../src/Timeline/Timeline';
+
+
 import TimelineStoryContainer from './TimelineStoryContainer';
-import timelineData from 'dsv!./mock_data/milestones-datavis.csv';
+import parseTimelineData from '../src/utils/timelineDataParser';
+import mapTimelineData from '../src/utils/timelineDataMapper';
+import timelineDataRaw from 'raw-loader!./mock_data/milestones-datavis.csv';
 
 const timelineDataMap = {
   year: 'year',
@@ -33,6 +37,8 @@ const timelineBaseViewParameters = {
     noCategory: 'brown'
   }
 };
+
+const timelineData = mapTimelineData(parseTimelineData(timelineDataRaw), {main: timelineDataMap});
 
 storiesOf('Timeline', module)
   .add('default', () => (

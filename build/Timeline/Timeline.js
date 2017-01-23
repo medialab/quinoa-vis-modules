@@ -45,7 +45,7 @@ var Timeline = function (_React$Component) {
     _this.jump = _this.jump.bind(_this);
     _this.setViewSpan = _this.setViewSpan.bind(_this);
     _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
-    _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters.dataMap, props.viewParameters || {}, props.dataStructure);
+    _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters || {});
     return _this;
   }
 
@@ -59,7 +59,7 @@ var Timeline = function (_React$Component) {
       }
 
       if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
-        var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters, nextProps.dataStructure);
+        var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters);
         this.setState(_extends({}, newStateParts));
       }
     }
@@ -314,23 +314,16 @@ var Timeline = function (_React$Component) {
 }(_react2.default.Component);
 
 Timeline.propTypes = {
-  dataStructure: _react.PropTypes.oneOf(['flatArray']),
+  data: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+    category: _react.PropTypes.string,
+    name: _react.PropTypes.string,
+    startDate: _react.PropTypes.instanceOf(Date),
+    endDate: _react.PropTypes.instanceOf(Date)
+  })),
   viewParameters: _react.PropTypes.shape({
-    dataMap: _react.PropTypes.shape({
-      name: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      year: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      month: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      day: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      time: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      endYear: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      endMonth: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      endDay: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      endTime: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func])
-    }),
     fromDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
     toDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
-    orientation: _react.PropTypes.oneOf(['landscape', 'portrait']).required
+    orientation: _react.PropTypes.oneOf(['landscape', 'portrait'])
   }),
   allowUserViewChange: _react.PropTypes.bool,
   onUserViewChange: _react.PropTypes.func

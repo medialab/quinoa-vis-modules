@@ -37,7 +37,7 @@ class Timeline extends React.Component {
     this.jump = this.jump.bind(this);
     this.setViewSpan = this.setViewSpan.bind(this);
     this.onUserViewChange = debounce(this.onUserViewChange, 100);
-    this.state = computeDataRelatedState(props.data, props.viewParameters.dataMap, props.viewParameters || {}, props.dataStructure);
+    this.state = computeDataRelatedState(props.data, props.viewParameters || {});
   }
 
   componentWillReceiveProps(nextProps) {
@@ -48,7 +48,7 @@ class Timeline extends React.Component {
     }
 
     if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
-      const newStateParts = computeDataRelatedState(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters, nextProps.dataStructure);
+      const newStateParts = computeDataRelatedState(nextProps.data, nextProps.viewParameters);
       this.setState({
         ...newStateParts
       });
@@ -326,60 +326,19 @@ Timeline.propTypes = {
   /*
    * Incoming data in json format
    */
-  // data: PropTypes.array, // commented to avoid angrying eslint that does not like unprecised arrays as proptypes
-  /*
-   * string describing how input data is structured (flat array is for now the only option for timeline)
-   */
-  dataStructure: PropTypes.oneOf(['flatArray']),
+  data: PropTypes.arrayOf(PropTypes.shape({
+    category: PropTypes.string,
+    name: PropTypes.string,
+    startDate: PropTypes.instanceOf(Date),
+    endDate: PropTypes.instanceOf(Date)
+  })),
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not - like Timeline spatialization algorithm for instance)
    */
   viewParameters: PropTypes.shape({
     /*
-     * Dictionary that specifies how to map vis props to data attributes (key names or accessor funcs)
+     * parameters related to camera position
      */
-    dataMap: PropTypes.shape({
-      name: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      category: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      year: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      month: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      day: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      time: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      endYear: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      endMonth: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      endDay: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      endTime: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-    }),
     fromDate: PropTypes.oneOfType([
       PropTypes.instanceOf(Date),
       PropTypes.number
@@ -391,7 +350,7 @@ Timeline.propTypes = {
     /*
      * parameters specifying whether timeline should be displayed in left-to-right or top-to-bottom style
      */
-    orientation: PropTypes.oneOf(['landscape', 'portrait']).required
+    orientation: PropTypes.oneOf(['landscape', 'portrait'])
   }),
   /*
    * boolean to specify whether the user can pan/pan/interact or not with the view

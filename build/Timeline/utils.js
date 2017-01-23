@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.computeDataRelatedState = exports.computeBoundaries = exports.computeEvents = exports.computePeriods = exports.clusterEvents = exports.computeTicks = exports.setTicks = exports.computeDate = undefined;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; 
-
 var _d3Time = require('d3-time');
 
 var _d3Array = require('d3-array');
@@ -15,9 +13,8 @@ var _d3Scale = require('d3-scale');
 
 var _d3TimeFormat = require('d3-time-format');
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+var SECOND = 1000; 
 
-var SECOND = 1000;
 var MINUTE = SECOND * 60;
 var HOUR = MINUTE * 60;
 var DAY = HOUR * 24;
@@ -273,46 +270,7 @@ var computeBoundaries = exports.computeBoundaries = function computeBoundaries(d
   };
 };
 
-var mapData = function mapData(data, dataMap) {
-  var dataStructure = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'flatArray';
-
-  if (dataStructure === 'flatArray') {
-    return data.map(function (datapoint) {
-      return Object.keys(dataMap).reduce(function (obj, dataKey) {
-        return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap[dataKey] === 'function' ? dataMap[dataKey](datapoint) 
-        : datapoint[dataMap[dataKey]]));
-      }, {});
-    })
-    .map(function (datapoint) {
-      var year = datapoint.year,
-          month = datapoint.month,
-          day = datapoint.day,
-          time = datapoint.time;
-      var endYear = datapoint.endYear,
-          endMonth = datapoint.endMonth,
-          endDay = datapoint.endDay,
-          endTime = datapoint.endTime;
-
-
-      var startDate = computeDate(year, month, day, time);
-      var endDate = computeDate(endYear, endMonth, endDay, endTime);
-      return _extends({}, datapoint, {
-        startDate: startDate,
-        endDate: endDate
-      });
-    })
-    .sort(function (a, b) {
-      if (a.startDate.getTime() > b.startDate.getTime()) {
-        return 1;
-      } else return -1;
-    });
-  } else {
-    return data;
-  }
-};
-
-var computeDataRelatedState = exports.computeDataRelatedState = function computeDataRelatedState(inputData, dataMap, viewParameters, dataStructure) {
-  var data = mapData(inputData, dataMap, dataStructure);
+var computeDataRelatedState = exports.computeDataRelatedState = function computeDataRelatedState(data, viewParameters) {
   var timeBoundaries = computeBoundaries(data);
   var miniTicks = computeTicks(timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay);
   var displaceThreshold = (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay) / 1000;
