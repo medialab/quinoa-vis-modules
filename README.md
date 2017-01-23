@@ -128,10 +128,6 @@ Latitude coordinate of the camera center
 
 Zoom degree of the camera (1 corresponds to the farthest position of camera)
 
-### ``dataMap`` : object
-
-Object that specifies how to map data to vis properties. Keys are names of vis props, values may be a string representing input data objects' key name, or an accessor function.
-
 ### ``colorMap`` : object
 
 Object that specifies how to color objects. Keys are values to look for in a categorical set of values present in objects' data, value are css color descriptions (therefore accepted methods : names, rgb, rgba, hex)
