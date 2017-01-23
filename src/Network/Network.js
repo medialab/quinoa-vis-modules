@@ -166,7 +166,7 @@ class Network extends Component {
    */
   render() {
     const {
-      allowUserViewChange
+      allowUserViewChange = true
     } = this.props;
 
     return (
@@ -184,8 +184,8 @@ Network.propTypes = {
    */
   data: PropTypes.shape({
     nodes: PropTypes.arrayOf(PropTypes.shape({
-      label: PropTypes.string,
-      category: PropTypes.string,
+      label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      category: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       description: PropTypes.string,
       size: PropTypes.number,
       x: PropTypes.number,

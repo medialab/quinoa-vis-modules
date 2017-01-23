@@ -127,7 +127,8 @@ var Map = function (_Component) {
       var _state = this.state,
           data = _state.data,
           viewParameters = _state.viewParameters;
-      var allowUserViewChange = this.props.allowUserViewChange;
+      var _props$allowUserViewC = this.props.allowUserViewChange,
+          allowUserViewChange = _props$allowUserViewC === undefined ? true : _props$allowUserViewC;
 
       var position = [viewParameters.cameraX, viewParameters.cameraY];
       var zoom = viewParameters.cameraZoom;

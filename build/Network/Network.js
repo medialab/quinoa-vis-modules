@@ -181,7 +181,8 @@ var Network = function (_Component) {
     value: function render() {
       var _this3 = this;
 
-      var allowUserViewChange = this.props.allowUserViewChange;
+      var _props$allowUserViewC = this.props.allowUserViewChange,
+          allowUserViewChange = _props$allowUserViewC === undefined ? true : _props$allowUserViewC;
 
 
       return _react2.default.createElement(
@@ -201,8 +202,8 @@ var Network = function (_Component) {
 Network.propTypes = {
   data: _react.PropTypes.shape({
     nodes: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-      label: _react.PropTypes.string,
-      category: _react.PropTypes.string,
+      label: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
+      category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
       description: _react.PropTypes.string,
       size: _react.PropTypes.number,
       x: _react.PropTypes.number,

@@ -110,7 +110,7 @@ class Map extends Component {
     } = this.state;
 
     const {
-      allowUserViewChange
+      allowUserViewChange = true
     } = this.props;
     const position = [viewParameters.cameraX, viewParameters.cameraY];
     const zoom = viewParameters.cameraZoom;
