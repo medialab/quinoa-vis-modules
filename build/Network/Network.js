@@ -63,19 +63,18 @@ var Network = function (_Component) {
       sigInst.refresh();
 
 
-      var onCoordinatesUpdate = function onCoordinatesUpdate() {
+      var onCoordinatesUpdate = function onCoordinatesUpdate(event) {
+        var nextCamera = event.target;
         var coords = {
-          cameraX: camera.x,
-          cameraY: camera.y,
-          cameraRatio: camera.ratio,
-          cameraAngle: camera.angle
+          cameraX: nextCamera.x,
+          cameraY: nextCamera.y,
+          cameraRatio: nextCamera.ratio,
+          cameraAngle: nextCamera.angle
         };
         _this2.setState({
-          viewParameters: _extends({}, _this2.state.viewParameters, {
-            coords: coords
-          })
+          viewParameters: _extends({}, _this2.state.viewParameters, coords)
         });
-        _this2.onUserViewChange('userevent');
+        _this2.onUserViewChange(coords, 'userevent');
       };
 
       camera.bind('coordinatesUpdated', onCoordinatesUpdate);
@@ -104,6 +103,16 @@ var Network = function (_Component) {
 
       if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
         this.rebootSigma();
+      }
+    }
+  }, {
+    key: 'componentWillUpdate',
+    value: function componentWillUpdate(nextProps, nextState) {
+      if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
+        this.props.onUserViewChange({
+          lastEventType: nextState.lastEventType,
+          viewParameters: nextState.viewParameters
+        });
       }
     }
   }, {
@@ -167,13 +176,11 @@ var Network = function (_Component) {
 
   }, {
     key: 'onUserViewChange',
-    value: function onUserViewChange(lastEventType) {
-      if (typeof this.props.onUserViewChange === 'function') {
-        this.props.onUserViewChange({
-          lastEventType: lastEventType,
-          viewParameters: this.state.viewParameters
-        });
-      }
+    value: function onUserViewChange(parameters, lastEventType) {
+      this.setState({
+        lastEventType: lastEventType,
+        lastEventDate: new Date()
+      });
     }
 
   }, {

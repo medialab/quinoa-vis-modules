@@ -17,7 +17,7 @@ function mapMapData() {
 
   return normalizedData.main.map(function (datapoint) {
     return Object.keys(dataMap.main).reduce(function (obj, dataKey) {
-      return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap.main[dataKey] === 'function' ? dataMap.mapin[dataKey](datapoint) 
+      return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap.main[dataKey] === 'function' ? dataMap.main[dataKey](datapoint) 
       : datapoint[dataMap.main[dataKey]]));
     }, {
       geometry: datapoint.geometry

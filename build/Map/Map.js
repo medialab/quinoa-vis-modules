@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -78,6 +80,16 @@ var Map = function (_Component) {
         }
       }
     }
+  }, {
+    key: 'componentWillUpdate',
+    value: function componentWillUpdate(nextProps, nextState) {
+      if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
+        this.props.onUserViewChange({
+          lastEventType: nextState.lastEventType,
+          viewParameters: nextState.activeViewParameters
+        });
+      }
+    }
 
 
   }, {
@@ -110,13 +122,12 @@ var Map = function (_Component) {
 
   }, {
     key: 'onUserViewChange',
-    value: function onUserViewChange(lastEventType) {
-      if (typeof this.props.onUserViewChange === 'function') {
-        this.props.onUserViewChange({
-          lastEventType: lastEventType,
-          viewParameters: this.state.viewParameters
-        });
-      }
+    value: function onUserViewChange(newParameters, lastEventType) {
+      this.setState({
+        lastEventType: lastEventType,
+        lastEventDate: new Date(),
+        activeViewParameters: _extends({}, this.state.viewParameters, newParameters)
+      });
     }
 
   }, {
@@ -143,7 +154,7 @@ var Map = function (_Component) {
             cameraX: coords.lat,
             cameraY: coords.lng
           };
-          _this2.onUserViewChange(view);
+          _this2.onUserViewChange(view, 'move');
         }
       };
       var refMap = function refMap(c) {

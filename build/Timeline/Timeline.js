@@ -63,17 +63,25 @@ var Timeline = function (_React$Component) {
         this.setState(_extends({}, newStateParts));
       }
     }
+  }, {
+    key: 'componentWillUpdate',
+    value: function componentWillUpdate(nextProps, nextState) {
+      if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
+        this.props.onUserViewChange({
+          lastEventType: nextState.lastEventType,
+          viewParameters: nextState.viewParameters
+        });
+      }
+    }
 
 
   }, {
     key: 'onUserViewChange',
-    value: function onUserViewChange(lastEventType) {
-      if (typeof this.props.onUserViewChange === 'function') {
-        this.props.onUserViewChange({
-          lastEventType: lastEventType,
-          viewParameters: this.state.viewParameters
-        });
-      }
+    value: function onUserViewChange(newParameters, lastEventType) {
+      this.setState({
+        lastEventType: lastEventType,
+        lastEventDate: new Date()
+      });
     }
 
 
@@ -83,7 +91,10 @@ var Timeline = function (_React$Component) {
       var from = this.state.viewParameters.fromDate + (forward ? delta : -delta);
       var to = this.state.viewParameters.toDate + (forward ? delta : -delta);
       this.setViewSpan(from, to, false);
-      this.onUserViewChange('wheel');
+      this.onUserViewChange({
+        fromDate: from,
+        toDate: to
+      }, 'wheel');
     }
 
 
@@ -97,7 +108,10 @@ var Timeline = function (_React$Component) {
       var newTo = this.state.viewParameters.toDate + diff / 2;
       if (newFrom >= this.state.timeBoundaries.minimumDateDisplay && newTo <= this.state.timeBoundaries.maximumDateDisplay) {
         this.setViewSpan(newFrom, newTo, false);
-        this.onUserViewChange('zoom');
+        this.onUserViewChange({
+          fromDate: newFrom,
+          toDate: newTo
+        }, 'zoom');
       }
     }
 

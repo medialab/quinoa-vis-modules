@@ -15,7 +15,7 @@ export default function mapMapData (normalizedData = {main: []}, dataMap = {main
             return {
               ...obj,
               [dataKey]: typeof dataMap.main[dataKey] === 'function' ?
-                          dataMap.mapin[dataKey](datapoint) // case accessor
+                          dataMap.main[dataKey](datapoint) // case accessor
                           : datapoint[dataMap.main[dataKey]] // case prop name
             };
           }, {
