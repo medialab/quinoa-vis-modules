@@ -163,9 +163,10 @@ var Network = function (_Component) {
         sigInst.startForceAtlas2({
           startingIterations: 1000
         });
+        console.log('spatializing');
         setTimeout(function () {
           return sigInst.stopForceAtlas2();
-        });
+        }, 1000);
       }
     }
 
@@ -194,7 +195,8 @@ var Network = function (_Component) {
         { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
         _react2.default.createElement('div', { id: 'sigma-container', ref: function ref(div) {
             return _this3.container = div;
-          } })
+          } }),
+        allowUserViewChange ? '' : _react2.default.createElement('div', { id: 'interaction-cache' })
       );
     }
   }]);

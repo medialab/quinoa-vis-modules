@@ -374,6 +374,15 @@ storiesOf('Network', module)
       viewParameters = {networkGraphMLBaseViewParameters}
     />
   ))
+  .add('Locked', () => (
+    <Network 
+      allowUserViewChange ={false}
+      data={networkGexfData} 
+      dataStructure="gexf"
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {networkGexfBaseViewParameters}
+    />
+  ))
 
 
 
