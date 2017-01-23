@@ -221,6 +221,7 @@ Network.propTypes = {
     cameraY: PropTypes.number,
     cameraRatio: PropTypes.number,
     cameraAngle: PropTypes.number,
+    // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     /*
      * Graph settings parameters
      */

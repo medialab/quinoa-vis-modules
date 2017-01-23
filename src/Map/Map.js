@@ -195,6 +195,7 @@ Map.propTypes = {
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not)
    */
   viewParameters: PropTypes.shape({
+    // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     /*
      * Camera position related parameters
      */
