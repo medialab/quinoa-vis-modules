@@ -1,7 +1,19 @@
 [WIP] Quinoa vis modules
 ===
 
-Quinoa vis module exposes a set of react component aimed at being used in quinoa applications. Work in progress.
+Quinoa vis module exposes a set of scripts aimed at being used in quinoa applications. Work in progress.
+
+These scripts are of two types :
+
+- React components with a consistent API
+- parsing and mapping script aimed at manipulating data according to a specific visualization type
+
+These components are particularly designed to   :
+
+* dynamically update in case of change in data source, data mapping parameters and visualization params. They are given data as a string, and handle its parsing, mapping and rendering.
+* behave in the same way according to the same API, despite the differences of data structures and parameters shape accross visualization types
+
+They can temporarily have an inner state different from the one provided in their props, in order to allow application-state-independent navigation behaviors in the vis.
 
 # Install
 
@@ -12,12 +24,18 @@ npm install --save https://github.com/medialab/quinoa-vis-modules
 # Npm Scripts
 
 ``build`` : build dist code for use as dependency
+
 ``lint`` : *
-``comb`` : 
-``test`` : 
-``storybook`` : 
-``build-storybook`` : 
-``precommit-add-build`` : 
+
+``comb`` : *
+
+``test`` :  triggers ``.spec.js`` tests files present in ``src``
+
+``build-storybook`` : builds storybook static assets
+
+``storybook`` : runs a visual testing environment accessible at ``localhost:6006``
+
+``precommit-add-build`` : as the project uses a pre-commit hook to enforce code quality at each commit, each successful commit automatically adds the build directory
 
 # Components general structure and API
 
@@ -28,7 +46,6 @@ Each quinoa-vis-module component *must* comply to the following API :
 Variable props :
 
 - ``data`` : data (array, object, or raw string) passed by parent
-- ``dataStructure`` : string specifying how incoming data is structured (WIP - possible values for now : ``flatArray``, ``geoJSON`)
 - ``allowUserViewChange`` : boolean to specify whether the user can pan/zoom/interact with the view or not
 - ``viewParameters`` : object describing the current view of the visualization
 
@@ -38,7 +55,6 @@ Method props :
 
 The ``viewParameters`` *must* contain all the parameters necessary to render successfully a view of the visualization. The particular structures of the ``viewParameters`` of each component is detailed below, but all ``viewParameters``props share some subprop :
 
-- ``dataMap`` : object that specifies how to map data to vis properties. Keys are names of vis props, values may be a string representing input data objects' key name, or an accessor function
 - ``colorsMap`` : object that specifies how to color objects. Keys are values to look for in a categorical set of values present in objects' data, value are css color descriptions (therefore accepted methods : names, rgb, rgba, hex)
 
 ## Examples of use
@@ -54,12 +70,6 @@ export const MyTimelineContainer = () => (
           fromDate: new Date().setFullYear(1900),
           toDate: new Date().setFullYear(1960),
           orientation: 'portrait',
-          dataMap: {
-              year: 'year',
-              name: (d) => d.contents.title,
-              category: 'category',
-              endYear: 'end year'
-            },
           colorsMap: {
             cartography: '#F24D98',
             computation: '#813B7C',
@@ -99,22 +109,6 @@ Start date to use fo displayingr the main view of the timeline.
 
 End date to use for displaying the main view of the timeline.
 
-### ``dataMap`` : object
-
-Object that specifies how to map data to vis properties. Keys are names of vis props, values may be a string representing input data objects' key name, or an accessor function.
-
-Detail of the timeline data map :
-
-- ``name`` : **required** - name of time objects to be displayed in labels
-- ``category`` : category to use for coloring and filtering objects
-- ``year`` : **required** - start year of time object
-- ``month`` : start month of time object
-- ``day`` : start year of time object
-- ``time`` : start time of time object (time as a ':'-separated string (e.g. ``12:33:32``)
-- ``endYear`` : end year of time object
-- ``endMonth`` : end month of time object
-- ``endDay`` : end day of time object
-- ``endTime`` : end time of time object (time as a ':'-separated string (e.g. ``12:33:32``)
 
 ### ``colorMap`` : object
 
@@ -138,18 +132,43 @@ Zoom degree of the camera (1 corresponds to the farthest position of camera)
 
 Object that specifies how to map data to vis properties. Keys are names of vis props, values may be a string representing input data objects' key name, or an accessor function.
 
-Detail of the map data map :
+### ``colorMap`` : object
 
-- ``latitude`` : (only for flatArray-structured data of geopoints) latitude of the geo point
-- ``longitude`` : (only for flatArray-structured data of geopoints) longitude of the geo point
-- ``title`` : title of the object
-- ``category`` : category of the object (will be mapped with a specific display color)
+Object that specifies how to color objects. Keys are values to look for in a categorical set of values present in objects' data, value are css color descriptions (therefore accepted methods : names, rgb, rgba, hex)
+
+## Network
+
+### ``cameraX`` : number
+
+Describes the camera center
+
+### ``cameraY`` : number
+
+Describes the camera center
+
+### ``cameraRatio`` : number
+
+Zoom degree of the camera.
+
+### ``cameraAngle`` : number
+
+Rotation angle of the camera.
 
 ### ``colorMap`` : object
 
 Object that specifies how to color objects. Keys are values to look for in a categorical set of values present in objects' data, value are css color descriptions (therefore accepted methods : names, rgb, rgba, hex)
 
-## Graph
+### ``labelThreshold`` : number
 
-TODO
+Zoom level starting from which labels can be displayed.
+
+### ``minNodeSize`` : number
+
+Minimum size of network nodes.
+
+### ``sideMargin`` : number
+
+The margin (in pixels) to keep around the graph.
+
+
 
