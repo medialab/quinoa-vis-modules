@@ -5,6 +5,9 @@
   "main": "build/quinoa-vis-modules.js",
   "scripts": {
     "build": "rm -rf build && gulp build",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "lint": "eslint --fix src",
     "comb": "csscomb src",
     "test": "mocha --compilers js:babel-core/register -R spec --recursive $(find src -name '*.spec.js')",
@@ -97,7 +100,8 @@
       "react/no-set-state": 0
     },
     "globals": {
-      "sigma": true
+      "sigma": true,
+      "expect": true
     }
   }
 }
