@@ -115,7 +115,6 @@ storiesOf('Timeline', module)
  */
 
 import Map from '../src/Map/Map';
-
 import parseMapData from '../src/utils/mapDataParser';
 import mapMapData from '../src/utils/mapDataMapper';
 
@@ -264,11 +263,13 @@ storiesOf('Map', module)
  */
 
 import Network from '../src/Network/Network';
+import parseNetworkData from '../src/utils/networkDataParser';
+import mapNetworkData from '../src/utils/networkDataMapper';
 
-import networkJSONData from './mock_data/miserables.json';
-import networkGexfData from 'raw-loader!./mock_data/arctic.gexf';
+import networkJSONDataRaw from './mock_data/miserables.json';
+import networkGexfDataRaw from 'raw-loader!./mock_data/arctic.gexf';
 // import networkGraphMLData from 'raw-loader!./mock_data/primer.graphml';
-import networkGraphMLData from 'raw-loader!./mock_data/family-belongings.xml';
+import networkGraphMLDataRaw from 'raw-loader!./mock_data/family-belongings.xml';
 
 const networkJSONDataMap = {
   nodes: {
@@ -292,6 +293,7 @@ const networkJSONBaseViewParameters = {
     noCategory: 'brown'
   }
 };
+const networkJSONData = mapNetworkData(parseNetworkData(JSON.stringify(networkJSONDataRaw), 'json'), networkJSONDataMap)
 
 const networkGexfDataMap = {
   nodes: {
@@ -331,6 +333,8 @@ const networkGexfBaseViewParameters = {
   }
 };
 
+const networkGexfData = mapNetworkData(parseNetworkData(networkGexfDataRaw, 'gexf'), networkGexfDataMap)
+
 const networkGraphMLDataMap = {
   nodes: {
     label: 'name',
@@ -355,12 +359,13 @@ const networkGraphMLBaseViewParameters = {
   }
 };
 
+const networkGraphMLData = mapNetworkData(parseNetworkData(networkGraphMLDataRaw, 'graphML'), networkGraphMLDataMap)
+
 storiesOf('Network', module)
   .add('with gexf', () => (
     <Network 
       allowUserViewChange ={true}
       data={networkGexfData} 
-      dataStructure="gexf"
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkGexfBaseViewParameters}
     />
@@ -369,7 +374,6 @@ storiesOf('Network', module)
     <Network 
       allowUserViewChange ={true}
       data={networkJSONData} 
-      dataStructure="json"
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkJSONBaseViewParameters}
     />
@@ -378,7 +382,6 @@ storiesOf('Network', module)
     <Network 
       allowUserViewChange ={true}
       data={networkGraphMLData} 
-      dataStructure="graphML"
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkGraphMLBaseViewParameters}
     />
@@ -387,14 +390,7 @@ storiesOf('Network', module)
     <Network 
       allowUserViewChange ={false}
       data={networkGexfData} 
-      dataStructure="gexf"
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkGexfBaseViewParameters}
     />
-  ))
-
-
-
-
-
-
+  ));

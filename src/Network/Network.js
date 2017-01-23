@@ -4,10 +4,6 @@ require('gexf');
 
 import './Network.scss';
 
-import {
-  mapData
-} from './utils';
-
 let sigInst;
 let camera;
 
@@ -16,13 +12,10 @@ class Network extends Component {
   constructor(props, context) {
     super(props, context);
     this.onUserViewChange = debounce(this.onUserViewChange, 100);
-
     const state = {
-      data: {},
+      data: props.data,
       viewParameters: props.viewParameters
     };
-
-    state.data = mapData(props.data, props.viewParameters.dataMap, props.dataStructure);
 
     this.state = state;
 
@@ -75,13 +68,14 @@ class Network extends Component {
       camera.goTo(coords);
       sigInst.refresh();
     }
-    // update data when props update data
+    // update state's data when props update data
     if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
       this.setState({
-        data: mapData(nextProps.data, nextProps.viewParameters.dataMap, nextProps.dataStructure)
+        data: nextProps.data
       });
     }
 
+    // update sigma when state's data has changed
     if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
       this.rebootSigma();
     }
@@ -188,61 +182,38 @@ Network.propTypes = {
   /*
    * Incoming data
    */
-  // data: PropTypes.array, // commented to avoid angrying eslint that does not like unprecised arrays as proptypes
-  /*
-   * string describing how input data is structured (gexf or graphML)
-   */
-  dataStructure: PropTypes.oneOf(['gexf', 'graphML', 'json']),
+  data: PropTypes.shape({
+    nodes: PropTypes.arrayOf(PropTypes.shape({
+      label: PropTypes.string,
+      category: PropTypes.string,
+      description: PropTypes.string,
+      size: PropTypes.number,
+      x: PropTypes.number,
+      y: PropTypes.number,
+      id: PropTypes.string
+    })),
+    edges: PropTypes.arrayOf(PropTypes.shape({
+      label: PropTypes.string,
+      type: PropTypes.string,
+      category: PropTypes.string,
+      description: PropTypes.string,
+      weight: PropTypes.number,
+      id: PropTypes.string,
+      source: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]),
+      target: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]),
+      spatialized: PropTypes.bool
+    }))
+  }),
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not)
    */
   viewParameters: PropTypes.shape({
-    /*
-     * Dictionary that specifies how to map vis props to data attributes (key names or accessor funcs)
-     */
-    dataMap: PropTypes.shape({
-      nodes: PropTypes.shape({
-        label: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.func
-        ]),
-        category: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.func
-        ]),
-        description: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.func
-        ]),
-        size: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.func
-        ])
-      }),
-      edges: PropTypes.shape({
-        label: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.func
-        ]),
-        // one-side directed, two-side directed, undirected
-        type: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.func
-        ]),
-        category: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.func
-        ]),
-        description: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.func
-        ]),
-        weight: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.func
-        ])
-      })
-    }),
     /*
      * Camera position related parameters
      */

@@ -3,7 +3,6 @@
  * @module utils/mapDataMapper
  */
 
-
 /**
  * Maps incoming normalized with provided data map
  * @param {object} normalizedData

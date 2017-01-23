@@ -16,8 +16,6 @@ var _lodash = require('lodash');
 
 require('./Network.scss');
 
-var _utils = require('./utils');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -40,13 +38,10 @@ var Network = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Network.__proto__ || Object.getPrototypeOf(Network)).call(this, props, context));
 
     _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
-
     var state = {
-      data: {},
+      data: props.data,
       viewParameters: props.viewParameters
     };
-
-    state.data = (0, _utils.mapData)(props.data, props.viewParameters.dataMap, props.dataStructure);
 
     _this.state = state;
 
@@ -103,7 +98,7 @@ var Network = function (_Component) {
       }
       if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
         this.setState({
-          data: (0, _utils.mapData)(nextProps.data, nextProps.viewParameters.dataMap, nextProps.dataStructure)
+          data: nextProps.data
         });
       }
 
@@ -204,23 +199,29 @@ var Network = function (_Component) {
 }(_react.Component);
 
 Network.propTypes = {
-  dataStructure: _react.PropTypes.oneOf(['gexf', 'graphML', 'json']),
+  data: _react.PropTypes.shape({
+    nodes: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+      label: _react.PropTypes.string,
+      category: _react.PropTypes.string,
+      description: _react.PropTypes.string,
+      size: _react.PropTypes.number,
+      x: _react.PropTypes.number,
+      y: _react.PropTypes.number,
+      id: _react.PropTypes.string
+    })),
+    edges: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+      label: _react.PropTypes.string,
+      type: _react.PropTypes.string,
+      category: _react.PropTypes.string,
+      description: _react.PropTypes.string,
+      weight: _react.PropTypes.number,
+      id: _react.PropTypes.string,
+      source: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
+      target: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
+      spatialized: _react.PropTypes.bool
+    }))
+  }),
   viewParameters: _react.PropTypes.shape({
-    dataMap: _react.PropTypes.shape({
-      nodes: _react.PropTypes.shape({
-        label: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-        category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-        description: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-        size: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func])
-      }),
-      edges: _react.PropTypes.shape({
-        label: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-        type: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-        category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-        description: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-        weight: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func])
-      })
-    }),
     cameraX: _react.PropTypes.number,
     cameraY: _react.PropTypes.number,
     cameraRatio: _react.PropTypes.number,
