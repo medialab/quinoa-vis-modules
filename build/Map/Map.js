@@ -86,7 +86,7 @@ var Map = function (_Component) {
       if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
         this.props.onUserViewChange({
           lastEventType: nextState.lastEventType,
-          viewParameters: nextState.activeViewParameters
+          viewParameters: nextState.viewParameters
         });
       }
     }
@@ -126,7 +126,7 @@ var Map = function (_Component) {
       this.setState({
         lastEventType: lastEventType,
         lastEventDate: new Date(),
-        activeViewParameters: _extends({}, this.state.viewParameters, newParameters)
+        viewParameters: _extends({}, this.state.viewParameters, newParameters)
       });
     }
 

@@ -61,8 +61,7 @@ class Map extends Component {
     if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
       this.props.onUserViewChange({
         lastEventType: nextState.lastEventType,
-        // todo: verify if not next state needed ?
-        viewParameters: nextState.activeViewParameters
+        viewParameters: nextState.viewParameters
       });
     }
   }
@@ -105,7 +104,7 @@ class Map extends Component {
     this.setState({
       lastEventType,
       lastEventDate: new Date(),
-      activeViewParameters: {
+      viewParameters: {
         ...this.state.viewParameters,
         ...newParameters
       }
