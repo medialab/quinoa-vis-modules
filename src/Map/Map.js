@@ -156,7 +156,7 @@ class Map extends Component {
                 case 'Point':
                   const thatPosition = object.geometry.coordinates;
 
-                  if (!isNaN(thatPosition[0]) && !isNaN(thatPosition[1])) {
+                  if (!Number.isNaN(thatPosition[0]) && !Number.isNaN(thatPosition[1])) {
                     const color = viewParameters.colorsMap[object.category] || viewParameters.colorsMap.noCategory;
                     const thatIcon = divIcon({
                       className: 'point-marker-icon',

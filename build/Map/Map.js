@@ -173,7 +173,7 @@ var Map = function (_Component) {
               case 'Point':
                 var thatPosition = object.geometry.coordinates;
 
-                if (!isNaN(thatPosition[0]) && !isNaN(thatPosition[1])) {
+                if (!Number.isNaN(thatPosition[0]) && !Number.isNaN(thatPosition[1])) {
                   var color = viewParameters.colorsMap[object.category] || viewParameters.colorsMap.noCategory;
                   var thatIcon = (0, _leaflet.divIcon)({
                     className: 'point-marker-icon',
