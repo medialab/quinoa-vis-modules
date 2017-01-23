@@ -143,11 +143,9 @@ class Map extends Component {
           center={position}
           zoom={zoom}
           onMoveEnd={onMoveEnd}
-          animate
-        >
+          animate>
           <TileLayer
-            url={viewParameters.tilesUrl}
-          />
+            url={viewParameters.tilesUrl} />
 
           {
             data.map((object, index) => {
@@ -167,8 +165,7 @@ class Map extends Component {
                       <Marker
                         key={index}
                         position={thatPosition}
-                        icon={thatIcon}
-                      >
+                        icon={thatIcon}>
                         <Popup>
                           <span>{object.title}</span>
                         </Popup>
@@ -182,15 +179,14 @@ class Map extends Component {
                   return (
                     <Polygon
                       key={index}
-                      positions={coordinates}
-                    />
+                      positions={coordinates} />
                   );
 
                 default:
                   return '';
 
               }
-            });
+            })
           }
 
         </MapComponent>
