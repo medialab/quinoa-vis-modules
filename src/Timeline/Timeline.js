@@ -55,18 +55,25 @@ class Timeline extends React.Component {
     }
   }
 
-  /**
-   * Lets instance parent to know when user has updated view
-   * @param {string} lastEventType - event type of the last event triggered by user
-   */
-  onUserViewChange (lastEventType) {
-    if (typeof this.props.onUserViewChange === 'function') {
+  componentWillUpdate(nextProps, nextState) {
+    if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
       this.props.onUserViewChange({
-        lastEventType,
-        // todo: verify if not next state needed ?
-        viewParameters: this.state.viewParameters
+        lastEventType: nextState.lastEventType,
+        viewParameters: nextState.viewParameters
       });
     }
+  }
+
+  /**
+   * Lets instance parent to know when user has updated view
+   * @param {string} parameters - visualization parameters to update
+   * @param {string} lastEventType - event type of the last event triggered by user
+   */
+  onUserViewChange (newParameters, lastEventType) {
+    this.setState({
+      lastEventType,
+      lastEventDate: new Date()
+    });
   }
 
   /**
@@ -78,7 +85,10 @@ class Timeline extends React.Component {
     const from = this.state.viewParameters.fromDate + (forward ? delta : -delta);
     const to = this.state.viewParameters.toDate + (forward ? delta : -delta);
     this.setViewSpan(from, to, false);
-    this.onUserViewChange('wheel');
+    this.onUserViewChange({
+      fromDate: from,
+      toDate: to
+    }, 'wheel');
   }
 
   /**
@@ -93,7 +103,10 @@ class Timeline extends React.Component {
     const newTo = this.state.viewParameters.toDate + diff / 2;
     if (newFrom >= this.state.timeBoundaries.minimumDateDisplay && newTo <= this.state.timeBoundaries.maximumDateDisplay) {
       this.setViewSpan(newFrom, newTo, false);
-      this.onUserViewChange('zoom');
+      this.onUserViewChange({
+        fromDate: newFrom,
+        toDate: newTo
+      }, 'zoom');
     }
   }
 

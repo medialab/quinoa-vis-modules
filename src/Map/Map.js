@@ -57,6 +57,16 @@ class Map extends Component {
     }
   }
 
+  componentWillUpdate(nextProps, nextState) {
+    if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
+      this.props.onUserViewChange({
+        lastEventType: nextState.lastEventType,
+        // todo: verify if not next state needed ?
+        viewParameters: nextState.activeViewParameters
+      });
+    }
+  }
+
   /**
    * Enables interactivity on leaflet map instance
    * @param {Leaflet.leafletElement} map - leaflet map instance to manipulate
@@ -91,14 +101,15 @@ class Map extends Component {
    * Lets instance parent to know when user has updated view
    * @param {string} lastEventType - event type of the last event triggered by user
    */
-  onUserViewChange (lastEventType) {
-    if (typeof this.props.onUserViewChange === 'function') {
-      this.props.onUserViewChange({
-        lastEventType,
-        // todo: verify if not next state needed ?
-        viewParameters: this.state.viewParameters
-      });
-    }
+  onUserViewChange (newParameters, lastEventType) {
+    this.setState({
+      lastEventType,
+      lastEventDate: new Date(),
+      activeViewParameters: {
+        ...this.state.viewParameters,
+        ...newParameters
+      }
+    });
   }
   /**
    * Renders the component
@@ -123,7 +134,7 @@ class Map extends Component {
             cameraX: coords.lat,
             cameraY: coords.lng
           };
-          this.onUserViewChange(view);
+          this.onUserViewChange(view, 'move');
         }
     };
     const refMap = (c) => {

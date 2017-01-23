@@ -35,20 +35,21 @@ class Network extends Component {
     // // Hooking into the camera
     // // this.releaseCamera = monkeyPatchCamera(this.updateSlide);
 
-    const onCoordinatesUpdate = () => {
+    const onCoordinatesUpdate = (event) => {
+      const nextCamera = event.target;
       const coords = {
-        cameraX: camera.x,
-        cameraY: camera.y,
-        cameraRatio: camera.ratio,
-        cameraAngle: camera.angle,
+        cameraX: nextCamera.x,
+        cameraY: nextCamera.y,
+        cameraRatio: nextCamera.ratio,
+        cameraAngle: nextCamera.angle,
       };
       this.setState({
         viewParameters: {
           ...this.state.viewParameters,
-          coords
+          ...coords
         }
       });
-      this.onUserViewChange('userevent');
+      this.onUserViewChange(coords, 'userevent');
     };
 
     camera.bind('coordinatesUpdated', onCoordinatesUpdate);
@@ -78,6 +79,15 @@ class Network extends Component {
     // update sigma when state's data has changed
     if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
       this.rebootSigma();
+    }
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
+      this.props.onUserViewChange({
+        lastEventType: nextState.lastEventType,
+        viewParameters: nextState.viewParameters
+      });
     }
   }
 
@@ -152,14 +162,11 @@ class Network extends Component {
    * Lets instance parent to know when user has updated view
    * @param {string} lastEventType - event type of the last event triggered by user
    */
-  onUserViewChange (lastEventType) {
-    if (typeof this.props.onUserViewChange === 'function') {
-      this.props.onUserViewChange({
-        lastEventType,
-        // todo: verify if not next state needed ?
-        viewParameters: this.state.viewParameters
-      });
-    }
+  onUserViewChange (parameters, lastEventType) {
+    this.setState({
+      lastEventType,
+      lastEventDate: new Date()
+    });
   }
   /**
    * Renders the component
