@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {Map as MapComponent, Marker, Popup, TileLayer, Polygon} from 'react-leaflet';
 import {divIcon} from 'leaflet';
 import {debounce} from 'lodash';
+import {computeDataRelatedState} from './utils';
+
 // require leaflet code
 require('leaflet/dist/leaflet.css');
 
@@ -84,7 +86,9 @@ class Map extends Component {
     map.scrollWheelZoom.disable();
     map.boxZoom.disable();
     map.keyboard.disable();
-    if (map.tap) map.tap.disable();
+    if (map.tap) {
+      map.tap.disable();
+    }
   }
 
   /**
@@ -112,23 +116,26 @@ class Map extends Component {
     const {
       allowUserViewChange = true
     } = this.props;
+
     const position = [viewParameters.cameraX, viewParameters.cameraY];
     const zoom = viewParameters.cameraZoom;
 
     const onMoveEnd = (evt = {}) => {
-        if (evt.target) {
-          const coords = evt.target.getCenter();
-          const view = {
-            cameraZoom: evt.target.getZoom(),
-            cameraX: coords.lat,
-            cameraY: coords.lng
-          };
-          this.onUserViewChange(view);
-        }
+      if (evt.target) {
+        const coords = evt.target.getCenter();
+        const view = {
+          cameraZoom: evt.target.getZoom(),
+          cameraX: coords.lat,
+          cameraY: coords.lng
+        };
+        this.onUserViewChange(view);
+      }
     };
+
     const refMap = (c) => {
-     this.map = c;
+      this.map = c;
     };
+
     return (
       <figure className={'quinoa-map' + (allowUserViewChange ? '' : ' locked')}>
         <MapComponent
@@ -136,43 +143,56 @@ class Map extends Component {
           center={position}
           zoom={zoom}
           onMoveEnd={onMoveEnd}
-          animate>
+          animate
+        >
           <TileLayer
-            url={viewParameters.tilesUrl} />
+            url={viewParameters.tilesUrl}
+          />
+
           {
-                data.map((object, index) => {
-                  switch (object.geometry.type) {
-                    case 'Point':
-                      const thatPosition = object.geometry.coordinates;
-                      if (!isNaN(thatPosition[0]) && !isNaN(thatPosition[1])) {
-                        const color = viewParameters.colorsMap[object.category] || viewParameters.colorsMap.noCategory;
-                        const thatIcon = divIcon({
-                          className: 'point-marker-icon',
-                          html: '<span class="shape" style="background:' + color + '"></span>'
-                        });
-                        return (
-                          <Marker
-                            key={index}
-                            position={thatPosition}
-                            icon={thatIcon}>
-                            <Popup>
-                              <span>{object.title}</span>
-                            </Popup>
-                          </Marker>);
-                      }
-                      break;
-                    case 'Polygon':
-                      const coordinates = object.geometry.coordinates.map(couple => couple.reverse());
-                      return (
-                        <Polygon
-                          key={index}
-                          positions={coordinates} />
-                      );
-                    default:
-                      return '';
+            data.map((object, index) => {
+              switch (object.geometry.type) {
+
+                case 'Point':
+                  const thatPosition = object.geometry.coordinates;
+
+                  if (!isNaN(thatPosition[0]) && !isNaN(thatPosition[1])) {
+                    const color = viewParameters.colorsMap[object.category] || viewParameters.colorsMap.noCategory;
+                    const thatIcon = divIcon({
+                      className: 'point-marker-icon',
+                      html: '<span class="shape" style="background:' + color + '"></span>'
+                    });
+
+                    return (
+                      <Marker
+                        key={index}
+                        position={thatPosition}
+                        icon={thatIcon}
+                      >
+                        <Popup>
+                          <span>{object.title}</span>
+                        </Popup>
+                      </Marker>
+                    );
                   }
-                })
+                  break;
+
+                case 'Polygon':
+                  const coordinates = object.geometry.coordinates.map(couple => couple.reverse());
+                  return (
+                    <Polygon
+                      key={index}
+                      positions={coordinates}
+                    />
+                  );
+
+                default:
+                  return '';
+
               }
+            });
+          }
+
         </MapComponent>
       </figure>
     );
@@ -218,4 +238,3 @@ Map.propTypes = {
 };
 
 export default Map;
-
