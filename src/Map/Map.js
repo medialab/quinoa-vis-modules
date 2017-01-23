@@ -2,8 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {Map as MapComponent, Marker, Popup, TileLayer, Polygon} from 'react-leaflet';
 import {divIcon} from 'leaflet';
 import {debounce} from 'lodash';
-import {computeDataRelatedState} from './utils';
-
 // require leaflet code
 require('leaflet/dist/leaflet.css');
 

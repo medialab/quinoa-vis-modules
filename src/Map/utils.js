@@ -9,8 +9,7 @@ export const reverseCoordinates = (coordinates) => {
   if (Array.isArray(coordinates)) {
     if (Array.isArray(coordinates[0])) {
       return coordinates.map(reverseCoordinates);
-    }
- else {
+    } else {
       return coordinates.reverse();
     }
   }
