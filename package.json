@@ -10,7 +10,6 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint --fix src",
     "comb": "csscomb src",
-    "test": "mocha --compilers js:babel-core/register -R spec --recursive $(find src -name '*.spec.js')",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "precommit-add-build": "git add build"
@@ -44,8 +43,7 @@
     "lodash": "^4.17.4",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "react-leaflet": "^0.12.3",
-    "xml-js": "^1.0.0"
+    "react-leaflet": "^0.12.3"
   },
   "devDependencies": {
     "@kadira/storybook": "^2.5.2",
@@ -61,20 +59,26 @@
     "chai": "^3.5.0",
     "css-loader": "^0.23.1",
     "csscomb": "^3.1.7",
-    "d3-dsv": "^1.0.3",
+    "dsv-loader": "^2.0.0",
+    "enzyme": "^2.7.1",
+    "enzyme-to-json": "^1.4.5",
     "eslint": "^3.7.1",
     "eslint-plugin-react": "^6.3.0",
     "file-loader": "^0.9.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-strip-comments": "^2.4.3",
-    "image-webpack-loader": "^3.1.0",
+    "identity-obj-proxy": "^3.0.0",
+    "image-webpack-loader": "^2.0.0",
+    "jest": "^18.1.0",
     "jest-cli": "^18.1.0",
+    "jest-enzyme": "^2.1.0",
     "json-loader": "^0.5.4",
     "mocha": "^3.1.0",
     "node-sass": "^3.8.0",
     "pre-commit": "^1.2.2",
     "raw-loader": "^0.5.1",
+    "react-addons-test-utils": "^15.4.2",
     "sass-loader": "^4.0.0",
     "style-loader": "^0.13.1",
     "xml-js": "^1.0.0"
@@ -102,6 +106,15 @@
     "globals": {
       "sigma": true,
       "expect": true
+    }
+  },
+  "jest": {
+    "setupFiles": ["./.jest-setup.js"],
+    "snapshotSerializers": [
+      "./node_modules/enzyme-to-json/serializer"
+    ],
+    "moduleNameMapper": {
+      "^.+\\.(css|scss)$": "identity-obj-proxy"
     }
   }
 }
