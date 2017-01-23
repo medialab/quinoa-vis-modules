@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -17,8 +15,6 @@ var _reactLeaflet = require('react-leaflet');
 var _leaflet = require('leaflet');
 
 var _lodash = require('lodash');
-
-var _utils = require('./utils');
 
 require('./Map.scss');
 
@@ -40,7 +36,10 @@ var Map = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Map.__proto__ || Object.getPrototypeOf(Map)).call(this, props));
 
-    _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters.dataMap, props.viewParameters, props.dataStructure);
+    _this.state = {
+      data: props.data,
+      viewParameters: props.viewParameters
+    };
     _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
     _this.activateMap = _this.activateMap.bind(_this);
     _this.deactivateMap = _this.deactivateMap.bind(_this);
@@ -65,8 +64,9 @@ var Map = function (_Component) {
       }
 
       if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
-        var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters, nextProps.dataStructure);
-        this.setState(_extends({}, newStateParts));
+        this.setState({
+          data: nextProps.data
+        });
       }
 
       if (nextProps.allowUserViewChange !== this.props.allowUserViewChange) {
@@ -209,17 +209,18 @@ var Map = function (_Component) {
 }(_react.Component);
 
 Map.propTypes = {
-  dataStructure: _react.PropTypes.oneOf(['flatArray', 'geoJSON']),
+  data: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+    title: _react.PropTypes.string,
+    category: _react.PropTypes.string,
+    geometry: _react.PropTypes.shape({
+      type: _react.PropTypes.string
+    })
+  })),
   viewParameters: _react.PropTypes.shape({
-    dataMap: _react.PropTypes.shape({
-      latitude: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      longitude: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      title: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func]),
-      category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.func])
-    }),
     cameraX: _react.PropTypes.number,
     cameraY: _react.PropTypes.number,
-    cameraZoom: _react.PropTypes.number
+    cameraZoom: _react.PropTypes.number,
+    tilesUrl: _react.PropTypes.string 
   }),
   allowUserViewChange: _react.PropTypes.bool,
   onUserViewChange: _react.PropTypes.func

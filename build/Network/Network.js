@@ -163,7 +163,6 @@ var Network = function (_Component) {
         sigInst.startForceAtlas2({
           startingIterations: 1000
         });
-        console.log('spatializing');
         setTimeout(function () {
           return sigInst.stopForceAtlas2();
         }, 1000);

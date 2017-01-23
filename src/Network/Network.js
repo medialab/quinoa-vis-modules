@@ -150,7 +150,6 @@ class Network extends Component {
       sigInst.startForceAtlas2({
         startingIterations: 1000
       });
-      console.log('spatializing');
       setTimeout(() => sigInst.stopForceAtlas2(), 1000);
     }
   }
@@ -179,7 +178,7 @@ class Network extends Component {
     return (
       <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
         <div id="sigma-container" ref={div => (this.container = div)} />
-        {allowUserViewChange ? '' :  <div id="interaction-cache" />}
+        {allowUserViewChange ? '' : <div id="interaction-cache" />}
       </figure>
     );
   }

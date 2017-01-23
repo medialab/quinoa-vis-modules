@@ -2,9 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import {Map as MapComponent, Marker, Popup, TileLayer, Polygon} from 'react-leaflet';
 import {divIcon} from 'leaflet';
 import {debounce} from 'lodash';
-import {
-  computeDataRelatedState
-} from './utils';
 // require leaflet code
 require('leaflet/dist/leaflet.css');
 
@@ -19,7 +16,10 @@ class Map extends Component {
    */
   constructor(props) {
     super(props);
-    this.state = computeDataRelatedState(props.data, props.viewParameters.dataMap, props.viewParameters, props.dataStructure);
+    this.state = {
+      data: props.data,
+      viewParameters: props.viewParameters
+    };
     this.onUserViewChange = debounce(this.onUserViewChange, 100);
     this.activateMap = this.activateMap.bind(this);
     this.deactivateMap = this.deactivateMap.bind(this);
@@ -41,9 +41,8 @@ class Map extends Component {
     }
 
     if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
-      const newStateParts = computeDataRelatedState(nextProps.data, nextProps.viewParameters.dataMap, nextProps.viewParameters, nextProps.dataStructure);
       this.setState({
-        ...newStateParts
+        data: nextProps.data
       });
     }
 
@@ -109,6 +108,7 @@ class Map extends Component {
       data,
       viewParameters
     } = this.state;
+
     const {
       allowUserViewChange
     } = this.props;
@@ -183,42 +183,28 @@ Map.propTypes = {
   /*
    * Incoming data in json format
    */
-  // data: PropTypes.array, // commented to avoid angrying eslint that does not like unprecised arrays as proptypes
-  /*
-   * string describing how input data is structured (flat array or geoJson)
-   */
-  dataStructure: PropTypes.oneOf(['flatArray', 'geoJSON']),
+  data: PropTypes.arrayOf(PropTypes.shape({
+    title: PropTypes.string,
+    category: PropTypes.string,
+    geometry: PropTypes.shape({
+      type: PropTypes.string,
+      // coordinates: PropTypes.array
+    })
+  })),
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not)
    */
   viewParameters: PropTypes.shape({
     /*
-     * Dictionary that specifies how to map vis props to data attributes (key names or accessor funcs)
-     */
-    dataMap: PropTypes.shape({
-      latitude: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      longitude: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      title: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ]),
-      category: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.func
-      ])
-    }),
-    /*
      * Camera position related parameters
      */
     cameraX: PropTypes.number,
     cameraY: PropTypes.number,
-    cameraZoom: PropTypes.number
+    cameraZoom: PropTypes.number,
+    /*
+     * Other settings-related properties
+     */
+     tilesUrl: PropTypes.string // URL pattern of the leaflet tiles to use (e.g. http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png)
   }),
   /*
    * boolean to specify whether the user can pan/pan/interact or not with the view

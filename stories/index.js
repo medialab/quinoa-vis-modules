@@ -115,12 +115,15 @@ storiesOf('Timeline', module)
  */
 
 import Map from '../src/Map/Map';
+
+import parseMapData from '../src/utils/mapDataParser';
+import mapMapData from '../src/utils/mapDataMapper';
+
 import MapStoryContainer from './MapStoryContainer';
 import MapLockSwitcher from './MapLockSwitcher';
 
-import mapData from 'dsv!./mock_data/bornes-recharge-electrique.csv';
-import mapGeoJSONData from 'json!./mock_data/amaps-et-regions.geojson';
-
+import mapDataRaw from 'raw-loader!./mock_data/bornes-recharge-electrique.csv';
+import mapGeoJSONData from 'raw-loader!./mock_data/amaps-et-regions.geojson';
 
 const mapDataMap = {
   latitude: 'latitude',
@@ -132,7 +135,6 @@ const mapBaseViewParameters = {
   cameraX: 48.8674345,
   cameraY: 2.3455482,
   cameraZoom: 4,
-  dataMap: mapDataMap,
   colorsMap: {
     'accélérée': '#F24D98',
     'normale': '#813B7C',
@@ -141,9 +143,14 @@ const mapBaseViewParameters = {
   tilesUrl: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png'
 };
 
+const mapData = mapMapData(parseMapData(mapDataRaw, 'csv'), {
+  main: mapDataMap
+});
+
 const mapGeoJSONDataMap = {
-  latitude: 'latitude',
-  longitude: 'longitude',
+  // for now these two are not exposed to mapping
+  // latitude: 'latitude',
+  // longitude: 'longitude',
   title: 'nom',
   category: 'basemap'
 };
@@ -151,12 +158,15 @@ const mapGeoJSONBaseViewParameters = {
   cameraX: 48.8674345,
   cameraY: 2.3455482,
   cameraZoom: 4,
-  dataMap: mapGeoJSONDataMap,
+  tilesUrl: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png',
   colorsMap: {
     osm_mapnik: 'orange',
     noCategory: 'brown'
   }
 };
+const geoJSONData = mapMapData(parseMapData(mapGeoJSONData, 'geoJSON'), {
+  main: mapGeoJSONDataMap
+});
 
 storiesOf('Map', module)
   .add('default', () => (
@@ -170,8 +180,7 @@ storiesOf('Map', module)
   .add('default (with geojson)', () => (
     <Map 
       allowUserViewChange ={true}
-      data={mapGeoJSONData} 
-      dataStructure="geoJSON"
+      data={geoJSONData} 
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {mapGeoJSONBaseViewParameters}
     />
