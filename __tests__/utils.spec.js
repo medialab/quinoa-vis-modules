@@ -3,7 +3,7 @@ import {
   flattenGeoJSON,
   mapData,
   computeDataRelatedState
-} from '../../src/utils/mapDataParser';
+} from '../src/utils/mapDataParser';
 
 describe('Map utils', () => {
 
