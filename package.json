@@ -62,7 +62,6 @@
     "csscomb": "^3.1.7",
     "dsv-loader": "^2.0.0",
     "enzyme": "^2.7.1",
-    "enzyme-to-json": "^1.4.5",
     "eslint": "^3.7.1",
     "eslint-plugin-react": "^6.3.0",
     "file-loader": "^0.9.0",
@@ -110,9 +109,8 @@
     }
   },
   "jest": {
-    "setupFiles": ["./.jest-setup.js"],
-    "snapshotSerializers": [
-      "./node_modules/enzyme-to-json/serializer"
+    "setupFiles": [
+      "./.jest-setup.js"
     ],
     "moduleNameMapper": {
       "^.+\\.(css|scss)$": "identity-obj-proxy"
