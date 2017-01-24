@@ -8,12 +8,9 @@ These scripts are of two types :
 - React components with a consistent API
 - parsing and mapping script aimed at manipulating data according to a specific visualization type
 
-These components are particularly designed to   :
+These components are particularly designed to behave in the same way according to the same API, despite the differences of data structures and parameters shape accross visualization types
 
-* dynamically update in case of change in data source, data mapping parameters and visualization params. They are given data as a string, and handle its parsing, mapping and rendering.
-* behave in the same way according to the same API, despite the differences of data structures and parameters shape accross visualization types
-
-They can temporarily have an inner state different from the one provided in their props, in order to allow application-state-independent navigation behaviors in the vis.
+They are stateful components, because they can temporarily have an inner state different from the one provided in their props, in order to allow application-state-independent navigation behaviors in the vis.
 
 # Install
 
@@ -45,7 +42,7 @@ Each quinoa-vis-module component *must* comply to the following API :
 
 Variable props :
 
-- ``data`` : data (array, object, or raw string) passed by parent
+- ``data`` : ready-to-use data to visualize
 - ``allowUserViewChange`` : boolean to specify whether the user can pan/zoom/interact with the view or not
 - ``viewParameters`` : object describing the current view of the visualization
 
