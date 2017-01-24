@@ -70,6 +70,7 @@
     "pre-commit": "^1.2.2",
     "raw-loader": "^0.5.1",
     "sass-loader": "^4.0.0",
+    "script-loader": "^0.7.0",
     "style-loader": "^0.13.1",
     "xml-js": "^1.0.0"
   },

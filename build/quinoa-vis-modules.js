@@ -39,10 +39,10 @@ var _networkDataParser2 = _interopRequireDefault(_networkDataParser);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-require('../sigma/sigma.min.js');
-require('../sigma/sigma.layout.forceAtlas2.min.js');
-require('../sigma/sigma.parsers.gexf.min.js');
-require('../sigma/sigma.plugins.saveCamera.js');
+require('script!../sigma/sigma.min.js');
+require('script!../sigma/sigma.layout.forceAtlas2.min.js');
+require('script!../sigma/sigma.parsers.gexf.min.js');
+require('script!../sigma/sigma.plugins.saveCamera.js');
 
 var Network = exports.Network = _Network2.default;
 var Map = exports.Map = _Map2.default;
