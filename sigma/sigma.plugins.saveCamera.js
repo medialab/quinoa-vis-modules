@@ -1,4 +1,4 @@
-(function(undefined) {
+;(function(undefined) {
 
   /**
    * Sigma Save Camera Plugin
@@ -14,9 +14,9 @@
    */
 
   sigma.prototype.saveCamera = function(name) {
-    const camera = this.cameras[name];
+    var camera = this.cameras[name];
 
-    let b = sigma.utils.getBoundaries(this.graph, 'read_cam' + camera.id + ':'),
+    var b = sigma.utils.getBoundaries(this.graph, 'read_cam' + camera.id + ':'),
         w = b.maxX - b.minX,
         h = b.maxY - b.minY;
 
@@ -29,9 +29,9 @@
   };
 
   sigma.prototype.retrieveCamera = function(name, save) {
-    const camera = this.cameras[name];
+    var camera = this.cameras[name];
 
-    let b = sigma.utils.getBoundaries(this.graph, 'read_cam' + camera.id + ':'),
+    var b = sigma.utils.getBoundaries(this.graph, 'read_cam' + camera.id + ':'),
         w = b.maxX - b.minX,
         h = b.maxY - b.minY;
 
@@ -44,7 +44,7 @@
   };
 
   sigma.prototype.loadCamera = function(name, save) {
-    let camera = this.cameras[name],
+    var camera = this.cameras[name],
         coord = this.retrieveCamera(name, save);
 
     sigma.misc.animation.camera(
