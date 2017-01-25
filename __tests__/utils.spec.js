@@ -1,8 +1,6 @@
 import {
   reverseCoordinates,
-  flattenGeoJSON,
-  mapData,
-  computeDataRelatedState
+  flattenGeoJSON
 } from '../src/utils/mapDataParser';
 
 describe('mapDataParser', () => {
