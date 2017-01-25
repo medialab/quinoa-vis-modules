@@ -238,7 +238,7 @@ Network.propTypes = {
      */
     labelThreshold: PropTypes.number,
     minNodeSize: PropTypes.number,
-    sideMargin: PropTypes.number,
+    sideMargin: PropTypes.number
   }),
   /*
    * boolean to specify whether the user can pan/pan/interact or not with the view
