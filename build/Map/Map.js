@@ -157,7 +157,7 @@ var Map = function (_Component) {
             cameraX: coords.lat,
             cameraY: coords.lng
           };
-          _this2.onUserViewChange(view, 'move');
+          _this2.onUserViewChange(view);
         }
       };
 
