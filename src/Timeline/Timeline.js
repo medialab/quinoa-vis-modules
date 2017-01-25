@@ -13,7 +13,7 @@ import {
   computeTicks,
   clusterEvents,
   computeDataRelatedState
-} from '../utils/timelineDataParser';
+} from './utils';
 
 import {
   Brush,
