@@ -5,15 +5,18 @@
   "main": "build/quinoa-vis-modules.js",
   "scripts": {
     "build": "rm -rf build && gulp build",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "lint": "eslint --fix src",
     "comb": "csscomb src",
-    "test": "mocha --compilers js:babel-core/register -R spec --recursive $(find src -name '*.spec.js')",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "precommit-add-build": "git add build"
   },
   "pre-commit": [
     "lint",
+    "test",
     "build",
     "precommit-add-build"
   ],
@@ -43,14 +46,13 @@
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-leaflet": "^0.12.3",
-    "script-loader": "^0.7.0",
-    "xml-js": "^1.0.0"
   },
   "devDependencies": {
     "@kadira/storybook": "^2.5.2",
     "@yomguithereal/eslint-config": "^3.0.0",
     "babel-core": "^6.17.0",
     "babel-eslint": "^7.0.0",
+    "babel-jest": "^18.0.0",
     "babel-plugin-transform-decorators": "^6.13.0",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
@@ -59,17 +61,25 @@
     "chai": "^3.5.0",
     "css-loader": "^0.23.1",
     "csscomb": "^3.1.7",
+    "dsv-loader": "^2.0.0",
+    "enzyme": "^2.7.1",
     "eslint": "^3.7.1",
     "eslint-plugin-react": "^6.3.0",
     "file-loader": "^0.9.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-strip-comments": "^2.4.3",
-    "image-webpack-loader": "^3.1.0",
+    "identity-obj-proxy": "^3.0.0",
+    "image-webpack-loader": "^2.0.0",
+    "jest": "^18.1.0",
+    "jest-cli": "^18.1.0",
+    "jest-enzyme": "^2.1.0",
+    "json-loader": "^0.5.4",
     "mocha": "^3.1.0",
     "node-sass": "^3.8.0",
     "pre-commit": "^1.2.2",
     "raw-loader": "^0.5.1",
+    "react-addons-test-utils": "^15.4.2",
     "sass-loader": "^4.0.0",
     "script-loader": "^0.7.0",
     "style-loader": "^0.13.1",
@@ -96,7 +106,16 @@
       "react/no-set-state": 0
     },
     "globals": {
-      "sigma": true
+      "sigma": true,
+      "expect": true
+    }
+  },
+  "jest": {
+    "setupFiles": [
+      "./.jest-setup.js"
+    ],
+    "moduleNameMapper": {
+      "^.+\\.(css|scss)$": "identity-obj-proxy"
     }
   }
 }

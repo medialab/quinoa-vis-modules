@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.flattenGeoJSON = exports.reverseCoordinates = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; 
 
@@ -13,7 +14,7 @@ var _lodash = require('lodash');
 
 var _d3Dsv = require('d3-dsv');
 
-var reverseCoordinates = function reverseCoordinates(coordinates) {
+var reverseCoordinates = exports.reverseCoordinates = function reverseCoordinates(coordinates) {
   if (Array.isArray(coordinates)) {
     if (Array.isArray(coordinates[0])) {
       return coordinates.map(reverseCoordinates);
@@ -23,7 +24,7 @@ var reverseCoordinates = function reverseCoordinates(coordinates) {
   }
 };
 
-var flattenGeoJSON = function flattenGeoJSON(data) {
+var flattenGeoJSON = exports.flattenGeoJSON = function flattenGeoJSON(data) {
   if (data.type === 'FeatureCollection' && Array.isArray(data.features)) {
     return data.features.map(function (feature) {
       var properties = (0, _lodash.omit)(feature.properties, ['_storage_options']);

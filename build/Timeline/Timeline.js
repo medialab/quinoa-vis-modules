@@ -18,7 +18,7 @@ var _d3TimeFormat = require('d3-time-format');
 
 var _lodash = require('lodash');
 
-var _utils = require('./utils');
+var _timelineDataParser = require('../utils/timelineDataParser');
 
 var _subComponents = require('./subComponents.js');
 
@@ -45,7 +45,7 @@ var Timeline = function (_React$Component) {
     _this.jump = _this.jump.bind(_this);
     _this.setViewSpan = _this.setViewSpan.bind(_this);
     _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
-    _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters || {});
+    _this.state = (0, _timelineDataParser.computeDataRelatedState)(props.data, props.viewParameters || {});
     return _this;
   }
 
@@ -59,7 +59,7 @@ var Timeline = function (_React$Component) {
       }
 
       if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
-        var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters);
+        var newStateParts = (0, _timelineDataParser.computeDataRelatedState)(nextProps.data, nextProps.viewParameters);
         this.setState(_extends({}, newStateParts));
       }
     }
@@ -189,16 +189,16 @@ var Timeline = function (_React$Component) {
         return obj.endDate === undefined;
       });
       var eventPadding = timeSpan / 20;
-      var eventsClusters = (0, _utils.clusterEvents)(displayedEvents, eventPadding);
+      var eventsClusters = (0, _timelineDataParser.clusterEvents)(displayedEvents, eventPadding);
       var displayedPeriods = periodsClusters.timeObjects.filter(function (point) {
         var start = point.startDate.getTime();
         var end = point.endDate && point.endDate.getTime();
         return start >= fromDate && start <= toDate || end && end >= fromDate && end <= toDate;
       });
       var timelineScale = (0, _d3Scale.scaleLinear)().range([0, 100]).domain([fromDate, toDate]);
-      var ticksParams = (0, _utils.setTicks)(toDate - fromDate);
+      var ticksParams = (0, _timelineDataParser.setTicks)(toDate - fromDate);
       var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
-      var mainTicks = (0, _utils.computeTicks)(fromDate, toDate);
+      var mainTicks = (0, _timelineDataParser.computeTicks)(fromDate, toDate);
 
       var onMainWheel = function onMainWheel(e) {
         e.stopPropagation();

@@ -11,7 +11,7 @@ import {csvParse} from 'd3-dsv';
  * @param {array} coordinates - array of values or arrays representing coordinates
  * @return {array} newArray - the reversed set of coordinates
  */
-const reverseCoordinates = (coordinates) => {
+export const reverseCoordinates = (coordinates) => {
   if (Array.isArray(coordinates)) {
     if (Array.isArray(coordinates[0])) {
         return coordinates.map(reverseCoordinates);
@@ -27,7 +27,7 @@ const reverseCoordinates = (coordinates) => {
  * @param {object} geojson data - native geojson-structured data
  * @return {array} newData - ready-to-be-used data
  */
-const flattenGeoJSON = (data) => {
+export const flattenGeoJSON = (data) => {
   if (data.type === 'FeatureCollection' && Array.isArray(data.features)) {
     return data.features.map(feature => {
       const properties = omit(feature.properties, ['_storage_options']);

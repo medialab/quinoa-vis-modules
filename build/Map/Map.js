@@ -116,7 +116,9 @@ var Map = function (_Component) {
       map.scrollWheelZoom.disable();
       map.boxZoom.disable();
       map.keyboard.disable();
-      if (map.tap) map.tap.disable();
+      if (map.tap) {
+        map.tap.disable();
+      }
     }
 
 
@@ -141,6 +143,7 @@ var Map = function (_Component) {
       var _props$allowUserViewC = this.props.allowUserViewChange,
           allowUserViewChange = _props$allowUserViewC === undefined ? true : _props$allowUserViewC;
 
+
       var position = [viewParameters.cameraX, viewParameters.cameraY];
       var zoom = viewParameters.cameraZoom;
 
@@ -157,9 +160,11 @@ var Map = function (_Component) {
           _this2.onUserViewChange(view, 'move');
         }
       };
+
       var refMap = function refMap(c) {
         _this2.map = c;
       };
+
       return _react2.default.createElement(
         'figure',
         { className: 'quinoa-map' + (allowUserViewChange ? '' : ' locked') },
@@ -175,14 +180,17 @@ var Map = function (_Component) {
             url: viewParameters.tilesUrl }),
           data.map(function (object, index) {
             switch (object.geometry.type) {
+
               case 'Point':
                 var thatPosition = object.geometry.coordinates;
-                if (!isNaN(thatPosition[0]) && !isNaN(thatPosition[1])) {
+
+                if (!Number.isNaN(thatPosition[0]) && !Number.isNaN(thatPosition[1])) {
                   var color = viewParameters.colorsMap[object.category] || viewParameters.colorsMap.noCategory;
                   var thatIcon = (0, _leaflet.divIcon)({
                     className: 'point-marker-icon',
                     html: '<span class="shape" style="background:' + color + '"></span>'
                   });
+
                   return _react2.default.createElement(
                     _reactLeaflet.Marker,
                     {
@@ -201,6 +209,7 @@ var Map = function (_Component) {
                   );
                 }
                 break;
+
               case 'Polygon':
                 var coordinates = object.geometry.coordinates.map(function (couple) {
                   return couple.reverse();
@@ -208,8 +217,10 @@ var Map = function (_Component) {
                 return _react2.default.createElement(_reactLeaflet.Polygon, {
                   key: index,
                   positions: coordinates });
+
               default:
                 return '';
+
             }
           })
         )
