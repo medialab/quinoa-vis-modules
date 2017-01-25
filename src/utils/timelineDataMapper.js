@@ -14,9 +14,9 @@ import {
   // timeMillisecond // not used so far
 } from 'd3-time';
 
-import {min, max} from 'd3-array';
-import {scaleLinear} from 'd3-scale';
-import {timeFormat} from 'd3-time-format';
+// import {min, max} from 'd3-array';
+// import {scaleLinear} from 'd3-scale';
+// import {timeFormat} from 'd3-time-format';
 
 /**
  * timerelated constants
@@ -45,8 +45,17 @@ export const computeDate = (thatYear, thatMonth, thatDay, time) => {
   const date = new Date();
   date.setFullYear(thatYear);
 
-  thatMonth ? date.setMonth(thatMonth - 1) : date.setMonth(0)
-  thatDay ? date.setDate(thatDay) : date.setDate(1)
+  if (thatMonth) {
+    date.setMonth(thatMonth - 1);
+  } else {
+    date.setMonth(0);
+  }
+
+  if (thatDay) {
+    date.setDate(thatDay);
+  } else {
+    date.setDate(1);
+  }
 
   // computing time, taking into account different levels of precision
   // valid syntaxes :
@@ -141,9 +150,10 @@ export default function mapData (normalizedData = {main: []}, inputDataMap = {ma
  * @return {object} utils - proper unit, proper ticks timespan, and proper date formatting pattern
  */
 export const setTicks = function (time) {
-  let unit, span, format;
+  const timeVars = (unit, span, format) => {
+    return {unit, span, format};
+  };
 
-  const timeVars = (unit, span, format) => {unit, span, format};
   const year = (span, format) => timeVars(timeYear, span, format);
   const month = (span, format) => timeVars(timeMonth, span, format);
   const day = (span, format) => timeVars(timeDay, span, format);
@@ -183,12 +193,12 @@ export const setTicks = function (time) {
 
   // 1-3 years
   if (time > YEAR) {
-    return motnh(6, '%m/%Y');
+    return month(6, '%m/%Y');
   }
 
   // 6-12 months
   if (time > MONTH * 6) {
-    return motnh(1, '%m/%Y');
+    return month(1, '%m/%Y');
   }
 
   // 1-6 months
