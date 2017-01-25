@@ -12,56 +12,50 @@
  * @return {Date} newDate - converted date
  */
 export const computeDate = (thatYear, thatMonth, thatDay, time) => {
-    if (thatYear !== 0 && !thatYear) {
-        return undefined;
-    }
-    const date = new Date();
-    date.setFullYear(thatYear);
-    if (thatMonth) {
-      date.setMonth(thatMonth - 1);
-    }
- else date.setMonth(0);
+  if (thatYear !== 0 && !thatYear) {
+    return undefined;
+  }
 
-    if (thatDay) {
-      date.setDate(thatDay);
-    }
- else date.setDate(1);
+  const date = new Date();
+  date.setFullYear(thatYear);
 
-    // computing time, taking into account different levels of precision
-    // valid syntaxes :
-    // 12:33:32
-    // 12:33
-    // 12
-    if (time && typeof time === 'string') {
-      const vals = time.split(':');
-      if (vals.length > 0 && +vals[0] >= 0 && +vals[0] < 24) {
-        date.setHours(vals.shift());
-      }
- else {
-        date.setHours(0);
-        date.setMinutes(0);
-        date.setSeconds(0);
-      }
-      if (vals.length > 0 && +vals[0] >= 0 && +vals[0] < 60) {
-        date.setMinutes(vals.shift());
-      }
- else {
-        date.setMinutes(0);
-        date.setSeconds(0);
-      }
-      if (vals.length > 0 && +vals[0] >= 0 && +vals[0] < 60) {
-        date.setSeconds(vals.shift());
-      }
- else {
-        date.setSeconds(0);
-      }
-    }
- else {
+  thatMonth ? date.setMonth(thatMonth - 1) : date.setMonth(0)
+  thatDay ? date.setDate(thatDay) : date.setDate(1)
+
+  // computing time, taking into account different levels of precision
+  // valid syntaxes :
+  // 12:33:32
+  // 12:33
+  // 12
+  if (time && typeof time === 'string') {
+    const vals = time.split(':');
+
+    if (vals.length > 0 && +vals[0] >= 0 && +vals[0] < 24) {
+      date.setHours(vals.shift());
+    } else {
       date.setHours(0);
       date.setMinutes(0);
       date.setSeconds(0);
     }
-    return date;
+
+    if (vals.length > 0 && +vals[0] >= 0 && +vals[0] < 60) {
+      date.setMinutes(vals.shift());
+    } else {
+      date.setMinutes(0);
+      date.setSeconds(0);
+    }
+
+    if (vals.length > 0 && +vals[0] >= 0 && +vals[0] < 60) {
+      date.setSeconds(vals.shift());
+    } else {
+      date.setSeconds(0);
+    }
+  } else {
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+  }
+  return date;
 };
 
 /**
@@ -73,45 +67,44 @@ export const computeDate = (thatYear, thatMonth, thatDay, time) => {
 export default function mapData (normalizedData = {main: []}, inputDataMap = {main: {}}) {
   const data = normalizedData.main;
   const dataMap = inputDataMap.main;
+
   return data.map(datapoint => {
-      return Object.keys(dataMap).reduce((obj, dataKey) => {
-        return {
-          ...obj,
-          [dataKey]: typeof dataMap[dataKey] === 'function' ?
-                      dataMap[dataKey](datapoint) // case accessor
-                      : datapoint[dataMap[dataKey]] // case prop name
-        };
-      }, {});
-    })
-    // compute dates (timeline specific)
-    .map(datapoint => {
-      const {
-        year,
-        month,
-        day,
-        time
-      } = datapoint;
-
-      const {
-        endYear,
-        endMonth,
-        endDay,
-        endTime
-      } = datapoint;
-
-      const startDate = computeDate(year, month, day, time);
-      const endDate = computeDate(endYear, endMonth, endDay, endTime);
+    return Object.keys(dataMap).reduce((obj, dataKey) => {
       return {
-        ...datapoint,
-        startDate,
-        endDate
+        ...obj,
+        [dataKey]: (typeof dataMap[dataKey] === 'function')
+                   ? dataMap[dataKey](datapoint) // case accessor
+                   : datapoint[dataMap[dataKey]] // case prop name
       };
-    })
-    // sort by ascending date
-    .sort((a, b) => {
-      if (a.startDate.getTime() > b.startDate.getTime()) {
-        return 1;
-      }
-      else return -1;
-    });
+    }, {});
+  })
+  // compute dates (timeline specific)
+  .map(datapoint => {
+    const {
+      year,
+      month,
+      day,
+      time,
+      endYear,
+      endMonth,
+      endDay,
+      endTime
+    } = datapoint;
+
+    const startDate = computeDate(year, month, day, time);
+    const endDate = computeDate(endYear, endMonth, endDay, endTime);
+
+    return {
+      ...datapoint,
+      startDate,
+      endDate
+    };
+  })
+  // sort by ascending date
+  .sort((a, b) => {
+    if (a.startDate.getTime() > b.startDate.getTime()) {
+      return 1;
+    }
+    return -1;
+  });
 }
