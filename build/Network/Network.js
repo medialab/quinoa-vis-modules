@@ -134,7 +134,10 @@ var Network = function (_Component) {
   }, {
     key: 'rebootSigma',
     value: function rebootSigma() {
-      var props = this.state.viewParameters;
+      var props = _extends({}, this.state.viewParameters, {
+        allowUserViewChange: this.props.allowUserViewChange
+      });
+
       var visData = {
         nodes: this.state.data.nodes.map(function (node) {
           return _extends({}, node, {
@@ -153,7 +156,8 @@ var Network = function (_Component) {
         minNodeSize: props.minNodeSize || 2,
         edgeColor: 'default',
         defaultEdgeColor: props.colorsMap && props.colorsMap.noCategory || '#D1D1D1',
-        sideMargin: props.sideMargin || 0
+        sideMargin: props.sideMargin || 0,
+        enableCamera: props.allowUserViewChange
       };
       sigInst = new sigma({
         settings: SIGMA_SETTINGS,
@@ -197,8 +201,7 @@ var Network = function (_Component) {
         { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
         _react2.default.createElement('div', { id: 'sigma-container', ref: function ref(div) {
             return _this3.container = div;
-          } }),
-        allowUserViewChange ? '' : _react2.default.createElement('div', { id: 'interaction-cache' })
+          } })
       );
     }
   }]);

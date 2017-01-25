@@ -113,7 +113,11 @@ class Network extends Component {
    * Inits and re-spatialize sigma visualization
    */
   rebootSigma () {
-    const props = this.state.viewParameters;
+    const props = {
+      ...this.state.viewParameters,
+      allowUserViewChange: this.props.allowUserViewChange
+    };
+
     const visData = {
       nodes: this.state.data.nodes.map(node => ({
         ...node,
@@ -131,7 +135,8 @@ class Network extends Component {
       minNodeSize: props.minNodeSize || 2,
       edgeColor: 'default',
       defaultEdgeColor: (props.colorsMap && props.colorsMap.noCategory) || '#D1D1D1',
-      sideMargin: props.sideMargin || 0
+      sideMargin: props.sideMargin || 0,
+      enableCamera: props.allowUserViewChange
     };
     sigInst = new sigma({
       // settings: SIGMA_SETTINGS,
@@ -179,7 +184,6 @@ class Network extends Component {
     return (
       <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
         <div id="sigma-container" ref={div => (this.container = div)} />
-        {allowUserViewChange ? '' : <div id="interaction-cache" />}
       </figure>
     );
   }
