@@ -11,7 +11,7 @@ import QMapDataMapper from './utils/mapDataMapper';
 import QTimelineDataMapper from './utils/timelineDataMapper';
 import QNetworkDataMapper from './utils/networkDataMapper';
 
-import QMapDataParser from './utils/mapDataMapper';
+import QMapDataParser from './utils/mapDataParser';
 import QTimelineDataParser from './utils/timelineDataParser';
 import QNetworkDataParser from './utils/networkDataParser';
 
