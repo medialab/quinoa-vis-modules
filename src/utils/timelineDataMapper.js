@@ -19,8 +19,8 @@ export const computeDate = (thatYear, thatMonth, thatDay, time) => {
   const date = new Date();
   date.setFullYear(thatYear);
 
-  thatMonth ? date.setMonth(thatMonth - 1) : date.setMonth(0);
-  thatDay ? date.setDate(thatDay) : date.setDate(1);
+  // thatMonth ? date.setMonth(thatMonth - 1) : date.setMonth(0);
+  // thatDay ? date.setDate(thatDay) : date.setDate(1);
 
   // computing time, taking into account different levels of precision
   // valid syntaxes :
