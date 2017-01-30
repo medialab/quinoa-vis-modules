@@ -19,8 +19,8 @@ export const computeDate = (thatYear, thatMonth, thatDay, time) => {
   const date = new Date();
   date.setFullYear(thatYear);
 
-  thatMonth ? date.setMonth(thatMonth - 1) : date.setMonth(0)
-  thatDay ? date.setDate(thatDay) : date.setDate(1)
+  thatMonth ? date.setMonth(thatMonth - 1) : date.setMonth(0);
+  thatDay ? date.setDate(thatDay) : date.setDate(1);
 
   // computing time, taking into account different levels of precision
   // valid syntaxes :
@@ -32,7 +32,8 @@ export const computeDate = (thatYear, thatMonth, thatDay, time) => {
 
     if (vals.length > 0 && +vals[0] >= 0 && +vals[0] < 24) {
       date.setHours(vals.shift());
-    } else {
+    }
+ else {
       date.setHours(0);
       date.setMinutes(0);
       date.setSeconds(0);
@@ -40,17 +41,20 @@ export const computeDate = (thatYear, thatMonth, thatDay, time) => {
 
     if (vals.length > 0 && +vals[0] >= 0 && +vals[0] < 60) {
       date.setMinutes(vals.shift());
-    } else {
+    }
+ else {
       date.setMinutes(0);
       date.setSeconds(0);
     }
 
     if (vals.length > 0 && +vals[0] >= 0 && +vals[0] < 60) {
       date.setSeconds(vals.shift());
-    } else {
+    }
+ else {
       date.setSeconds(0);
     }
-  } else {
+  }
+ else {
     date.setHours(0);
     date.setMinutes(0);
     date.setSeconds(0);
