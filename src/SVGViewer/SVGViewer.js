@@ -1,15 +1,19 @@
 /**
  * @module SVGViewer
  */
-import /*React, */{Component/*, Proptypes*/} from 'react';
+import React, {Component/*, Proptypes*/} from 'react';
 
 class SVGViewer extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   shouldComponentUpdate(/*nextProps, nextState*/) {
 
   }
 
   render () {
-    return null;
+    return <div>hello</div>;
   }
 }
 

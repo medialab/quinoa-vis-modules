@@ -42,17 +42,17 @@ const timelineData = mapTimelineData(parseTimelineData(timelineDataRaw), {main: 
 
 storiesOf('Timeline', module)
   .add('default', () => (
-    <Timeline 
+    <Timeline
       allowUserViewChange ={true}
-      data={timelineData} 
+      data={timelineData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
     />
   ))
   .add('locked', () => (
-    <Timeline 
+    <Timeline
       allowUserViewChange ={false}
-      data={timelineData} 
+      data={timelineData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
     />
@@ -90,9 +90,9 @@ storiesOf('Timeline', module)
         left: '1%',
         background: 'white'
       }}>
-      <Timeline 
+      <Timeline
         allowUserViewChange ={true}
-        data={timelineData} 
+        data={timelineData}
         onUserViewChange={(e) => console.log('on view change', e)}
         viewParameters = {timelineBaseViewParameters}
       />
@@ -106,9 +106,9 @@ storiesOf('Timeline', module)
         top: '1%',
         background: 'white'
       }}>
-      <Timeline 
+      <Timeline
         allowUserViewChange ={true}
-        data={timelineData} 
+        data={timelineData}
         onUserViewChange={(e) => console.log('on view change', e)}
         viewParameters = {timelineBaseViewParameters}
       />
@@ -175,25 +175,25 @@ const geoJSONData = mapMapData(parseMapData(mapGeoJSONData, 'geoJSON'), {
 
 storiesOf('Map', module)
   .add('default', () => (
-    <Map 
+    <Map
       allowUserViewChange ={true}
-      data={mapData} 
+      data={mapData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {mapBaseViewParameters}
     />
   ))
   .add('default (with geojson)', () => (
-    <Map 
+    <Map
       allowUserViewChange ={true}
-      data={geoJSONData} 
+      data={geoJSONData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {mapGeoJSONBaseViewParameters}
     />
   ))
   .add('locked', () => (
-    <Map 
+    <Map
       allowUserViewChange ={false}
-      data={mapData} 
+      data={mapData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {mapBaseViewParameters}
     />
@@ -238,9 +238,9 @@ storiesOf('Map', module)
         left: '1%',
         background: 'white'
       }}>
-      <Map 
+      <Map
         allowUserViewChange ={true}
-        data={mapData} 
+        data={mapData}
         onUserViewChange={(e) => console.log('on view change', e)}
         viewParameters = {mapBaseViewParameters}
       />
@@ -254,9 +254,9 @@ storiesOf('Map', module)
         top: '1%',
         background: 'white'
       }}>
-      <Map 
+      <Map
         allowUserViewChange ={true}
-        data={mapData} 
+        data={mapData}
         onUserViewChange={(e) => console.log('on view change', e)}
         viewParameters = {mapBaseViewParameters}
       />
@@ -369,34 +369,45 @@ const networkGraphMLData = mapNetworkData(parseNetworkData(networkGraphMLDataRaw
 
 storiesOf('Network', module)
   .add('with gexf', () => (
-    <Network 
+    <Network
       allowUserViewChange ={true}
-      data={networkGexfData} 
+      data={networkGexfData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkGexfBaseViewParameters}
     />
   ))
   .add('with json', () => (
-    <Network 
+    <Network
       allowUserViewChange ={true}
-      data={networkJSONData} 
+      data={networkJSONData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkJSONBaseViewParameters}
     />
   ))
   .add('with graphml', () => (
-    <Network 
+    <Network
       allowUserViewChange ={true}
-      data={networkGraphMLData} 
+      data={networkGraphMLData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkGraphMLBaseViewParameters}
     />
   ))
   .add('Locked', () => (
-    <Network 
+    <Network
       allowUserViewChange ={false}
-      data={networkGexfData} 
+      data={networkGexfData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkGexfBaseViewParameters}
     />
+  ));
+
+/**
+ * SVGVIEWER COMPONENT STORIES
+ */
+
+import SVGViewer from '../src/SVGViewer/SVGViewer';
+
+storiesOf('SVGViewer', module)
+  .add('default', () => (
+    <SVGViewer />
   ));
