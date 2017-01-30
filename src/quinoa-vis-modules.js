@@ -6,6 +6,7 @@ require('script!../sigma/sigma.plugins.saveCamera.js');
 import QuinoaNetwork from './Network/Network';
 import QuinoaMap from './Map/Map';
 import QuinoaTimeline from './Timeline/Timeline';
+import QuinoaSVGViewer from './SVGViewer/SVGViewer';
 
 import QMapDataMapper from './utils/mapDataMapper';
 import QTimelineDataMapper from './utils/timelineDataMapper';
@@ -18,6 +19,7 @@ import QNetworkDataParser from './utils/networkDataParser';
 export const Network = QuinoaNetwork;
 export const Map = QuinoaMap;
 export const Timline = QuinoaTimeline;
+export const SVGViewer = QuinoaSVGViewer;
 
 export const parseMapData = QMapDataParser;
 export const parseTimelineData = QTimelineDataParser;
