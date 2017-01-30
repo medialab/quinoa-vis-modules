@@ -406,8 +406,9 @@ storiesOf('Network', module)
  */
 
 import SVGViewer from '../src/SVGViewer/SVGViewer';
+const TEST_SVG_FILE = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/tiger.svg';
 
 storiesOf('SVGViewer', module)
   .add('default', () => (
-    <SVGViewer />
+    <SVGViewer file={TEST_SVG_FILE} />
   ));
