@@ -27,7 +27,7 @@ export const TimeObject = ({
     {showLabel ?
       <span className="name-container">
         <span className="name">
-          {point.name.length > 27 ? point.name.substr(0, 30) + '...' : point.name}
+          {point.name && point.name.length > 27 ? point.name.substr(0, 30) + '...' : point.name}
           <span
             className="name-underline"
             style={{

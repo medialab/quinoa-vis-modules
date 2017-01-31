@@ -45,7 +45,7 @@ var TimeObject = exports.TimeObject = function TimeObject(_ref) {
       _react2.default.createElement(
         'span',
         { className: 'name' },
-        point.name.length > 27 ? point.name.substr(0, 30) + '...' : point.name,
+        point.name && point.name.length > 27 ? point.name.substr(0, 30) + '...' : point.name,
         _react2.default.createElement('span', {
           className: 'name-underline',
           style: {
