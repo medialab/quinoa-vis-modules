@@ -29,6 +29,10 @@ var _networkDataMapper = require('./utils/networkDataMapper');
 
 var _networkDataMapper2 = _interopRequireDefault(_networkDataMapper);
 
+var _mapDataParser = require('./utils/mapDataParser');
+
+var _mapDataParser2 = _interopRequireDefault(_mapDataParser);
+
 var _timelineDataParser = require('./utils/timelineDataParser');
 
 var _timelineDataParser2 = _interopRequireDefault(_timelineDataParser);
@@ -48,7 +52,7 @@ var Network = exports.Network = _Network2.default;
 var Map = exports.Map = _Map2.default;
 var Timline = exports.Timline = _Timeline2.default;
 
-var parseMapData = exports.parseMapData = _mapDataMapper2.default;
+var parseMapData = exports.parseMapData = _mapDataParser2.default;
 var parseTimelineData = exports.parseTimelineData = _timelineDataParser2.default;
 var parseNetworkData = exports.parseNetworkData = _networkDataParser2.default;
 
