@@ -226,7 +226,7 @@ Network.propTypes = {
       category: _react.PropTypes.string,
       description: _react.PropTypes.string,
       weight: _react.PropTypes.number,
-      id: _react.PropTypes.string,
+      id: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
       source: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
       target: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
       spatialized: _react.PropTypes.bool

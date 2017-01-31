@@ -209,7 +209,10 @@ Network.propTypes = {
       category: PropTypes.string,
       description: PropTypes.string,
       weight: PropTypes.number,
-      id: PropTypes.string,
+      id: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]),
       source: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number
