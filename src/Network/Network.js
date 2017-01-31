@@ -117,16 +117,16 @@ class Network extends Component {
       ...this.state.viewParameters,
       allowUserViewChange: this.props.allowUserViewChange
     };
-
     const visData = {
       nodes: this.state.data.nodes.map(node => ({
         ...node,
         // dynamically set color
-        color: props.colorsMap[node.category] || props.colorsMap.noCategory
+        color: (props.colorsMap.nodes && props.colorsMap.nodes[node.category]) || (props.colorsMap.nodes && props.colorsMap.nodes.default || props.colorsMap.default)
       })),
       edges: this.state.data.edges.map(edge => ({
         ...edge,
-        type: edge.type || 'undirected'
+        type: edge.type || 'undirected',
+        color: (props.colorsMap.edges && props.colorsMap.edges[edge.category]) || (props.colorsMap.edges && props.colorsMap.edges.default || props.colorsMap.default)
       }))
     };
 
@@ -201,7 +201,7 @@ Network.propTypes = {
       size: PropTypes.number,
       x: PropTypes.number,
       y: PropTypes.number,
-      id: PropTypes.string
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
     })),
     edges: PropTypes.arrayOf(PropTypes.shape({
       label: PropTypes.string,

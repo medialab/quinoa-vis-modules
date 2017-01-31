@@ -163,7 +163,7 @@ class Map extends Component {
                   const thatPosition = object.geometry.coordinates;
 
                   if (!Number.isNaN(thatPosition[0]) && !Number.isNaN(thatPosition[1])) {
-                    const color = viewParameters.colorsMap[object.category] || viewParameters.colorsMap.noCategory;
+                    const color = (viewParameters.colorsMap.main && viewParameters.colorsMap.main[object.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default);
                     const thatIcon = divIcon({
                       className: 'point-marker-icon',
                       html: '<span class="shape" style="background:' + color + '"></span>'
