@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.mapNetworkData = exports.mapTimelineData = exports.mapMapData = exports.parseNetworkData = exports.parseTimelineData = exports.parseMapData = exports.Timline = exports.Map = exports.Network = undefined;
+exports.mapNetworkData = exports.mapTimelineData = exports.mapMapData = exports.parseNetworkData = exports.parseTimelineData = exports.parseMapData = exports.Timeline = exports.Map = exports.Network = undefined;
 
 var _Network = require('./Network/Network');
 
@@ -50,7 +50,7 @@ require('script!../sigma/sigma.plugins.saveCamera.js');
 
 var Network = exports.Network = _Network2.default;
 var Map = exports.Map = _Map2.default;
-var Timline = exports.Timline = _Timeline2.default;
+var Timeline = exports.Timeline = _Timeline2.default;
 
 var parseMapData = exports.parseMapData = _mapDataParser2.default;
 var parseTimelineData = exports.parseTimelineData = _timelineDataParser2.default;

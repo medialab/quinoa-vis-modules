@@ -17,7 +17,7 @@ import QNetworkDataParser from './utils/networkDataParser';
 
 export const Network = QuinoaNetwork;
 export const Map = QuinoaMap;
-export const Timline = QuinoaTimeline;
+export const Timeline = QuinoaTimeline;
 
 export const parseMapData = QMapDataParser;
 export const parseTimelineData = QTimelineDataParser;
