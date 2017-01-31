@@ -19,8 +19,8 @@ var computeDate = exports.computeDate = function computeDate(thatYear, thatMonth
   var date = new Date();
   date.setFullYear(thatYear);
 
-  thatMonth ? date.setMonth(thatMonth - 1) : date.setMonth(0);
-  thatDay ? date.setDate(thatDay) : date.setDate(1);
+  thatMonth = thatMonth ? date.setMonth(thatMonth - 1) : date.setMonth(0);
+  thatDay = thatDay ? date.setDate(thatDay) : date.setDate(1);
 
   if (time && typeof time === 'string') {
     var vals = time.split(':');

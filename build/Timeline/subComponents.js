@@ -139,7 +139,7 @@ var ClustersGroup = exports.ClustersGroup = function ClustersGroup(_ref4) {
             key: index,
             point: obj,
             scale: scale,
-            color: viewParameters.colorsMap[obj.category] || viewParameters.colorsMap.noCategory,
+            color: viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category] || viewParameters.colorsMap.main.default || viewParameters.colorsMap.default,
             showLabel: !obj.overlapped });
         })
       );

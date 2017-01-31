@@ -137,16 +137,16 @@ var Network = function (_Component) {
       var props = _extends({}, this.state.viewParameters, {
         allowUserViewChange: this.props.allowUserViewChange
       });
-
       var visData = {
         nodes: this.state.data.nodes.map(function (node) {
           return _extends({}, node, {
-            color: props.colorsMap[node.category] || props.colorsMap.noCategory
+            color: props.colorsMap.nodes && props.colorsMap.nodes[node.category] || props.colorsMap.nodes && props.colorsMap.nodes.default || props.colorsMap.default
           });
         }),
         edges: this.state.data.edges.map(function (edge) {
           return _extends({}, edge, {
-            type: edge.type || 'undirected'
+            type: edge.type || 'undirected',
+            color: props.colorsMap.edges && props.colorsMap.edges[edge.category] || props.colorsMap.edges && props.colorsMap.edges.default || props.colorsMap.default
           });
         })
       };
@@ -218,7 +218,7 @@ Network.propTypes = {
       size: _react.PropTypes.number,
       x: _react.PropTypes.number,
       y: _react.PropTypes.number,
-      id: _react.PropTypes.string
+      id: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number])
     })),
     edges: _react.PropTypes.arrayOf(_react.PropTypes.shape({
       label: _react.PropTypes.string,
