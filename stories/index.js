@@ -28,7 +28,6 @@ const timelineDataMap = {
 const timelineBaseViewParameters = {
   fromDate: new Date().setFullYear(1900),
   toDate: new Date().setFullYear(1960),
-  dataMap: timelineDataMap,
   colorsMap: {
     main: {
       cartography: '#F24D98',
@@ -299,7 +298,6 @@ const networkJSONBaseViewParameters = {
   labelThreshold: 7,
   minNodeSize: 2,
   sideMargin: 0,
-  dataMap: networkJSONDataMap,
   colorsMap: {
     nodes: {
       1: 'blue',
