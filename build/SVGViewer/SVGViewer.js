@@ -14,6 +14,8 @@ var _reactDraggable = require('react-draggable');
 
 var _reactDraggable2 = _interopRequireDefault(_reactDraggable);
 
+var _lodash = require('lodash');
+
 require('./SVGViewer.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -37,13 +39,19 @@ var SVGViewer = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (SVGViewer.__proto__ || Object.getPrototypeOf(SVGViewer)).call(this, props));
 
     _this.state = { svg: null };
-
-    _this.loadFile = _this.loadFile.bind(_this);
-    _this.parseSVG = _this.parseSVG.bind(_this);
     return _this;
   }
 
   _createClass(SVGViewer, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      this.loadFile = this.loadFile.bind(this);
+      this.parseSVG = this.parseSVG.bind(this);
+      this.mouseWheelHandler = this.mouseWheelHandler.bind(this);
+
+      this.zoom = (0, _lodash.debounce)(this.zoom.bind(this), 100, { leading: true, trailing: false });
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       return this.props.file.indexOf('http') === 0 ? this.loadFile() : this.parseSVG(this.props.svgString);
@@ -72,15 +80,32 @@ var SVGViewer = function (_React$Component) {
       return new DOMParser().parseFromString(xmlString, 'text/xml');
     }
   }, {
+    key: 'mouseWheelHandler',
+    value: function mouseWheelHandler(e) {
+      e.preventDefault();
+      var amount = e.deltaY;
+      this.zoom(amount);
+    }
+  }, {
+    key: 'zoom',
+    value: function zoom(amount) {
+      if (amount < 0) {
+        console.log('zoom in, factor ' + amount);
+      }
+      if (amount > 0) {
+        console.log('zoom out, factor ' + amount);
+      }
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { className: this.props.allowUserViewChange ? 'grabbable' : '' },
+        null,
         this.state.svg ? _react2.default.createElement(
           _reactDraggable2.default,
-          { axis: 'both', disabled: !this.props.allowUserViewChange },
-          _react2.default.createElement('div', { className: 'draggable', dangerouslySetInnerHTML: {
+          { axis: 'both', handle: '.grabbable', disabled: !this.props.allowUserViewChange },
+          _react2.default.createElement('div', { className: this.props.allowUserViewChange ? 'grabbable' : '', onWheel: this.mouseWheelHandler, dangerouslySetInnerHTML: {
               __html: new XMLSerializer().serializeToString(this.state.svg.documentElement) } })
         ) : _react2.default.createElement(
           'div',
