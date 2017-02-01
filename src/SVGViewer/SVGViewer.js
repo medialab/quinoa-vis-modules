@@ -47,16 +47,15 @@ class SVGViewer extends React.Component {
 
   render () {
     return (
-      <div className="grabbable">
+      <div className={this.props.allowUserViewChange ? 'grabbable' : ''}>
         {this.state.svg
-          ? <Draggable axis='both' disabled={!this.props.allowUserViewChange}>
-                <div className="draggable" dangerouslySetInnerHTML={{
-                  __html: new XMLSerializer().serializeToString(this.state.svg.documentElement)}}
-                />
-            </Draggable>
+          ? <Draggable axis="both" disabled={!this.props.allowUserViewChange}>
+            <div className="draggable" dangerouslySetInnerHTML={{
+                  __html: new XMLSerializer().serializeToString(this.state.svg.documentElement)}} />
+          </Draggable>
           : <div>Loading...</div>}
       </div>
-    )
+    );
   }
 }
 

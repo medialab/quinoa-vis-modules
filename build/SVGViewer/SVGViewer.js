@@ -76,7 +76,7 @@ var SVGViewer = function (_React$Component) {
     value: function render() {
       return _react2.default.createElement(
         'div',
-        { className: 'grabbable' },
+        { className: this.props.allowUserViewChange ? 'grabbable' : '' },
         this.state.svg ? _react2.default.createElement(
           _reactDraggable2.default,
           { axis: 'both', disabled: !this.props.allowUserViewChange },
