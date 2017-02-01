@@ -10,6 +10,12 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _reactDraggable = require('react-draggable');
+
+var _reactDraggable2 = _interopRequireDefault(_reactDraggable);
+
+require('./SVGViewer.scss');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -68,12 +74,20 @@ var SVGViewer = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      return this.state.svg ? _react2.default.createElement('div', { dangerouslySetInnerHTML: {
-          __html: new XMLSerializer().serializeToString(this.state.svg.documentElement)
-        } }) : _react2.default.createElement(
+      return _react2.default.createElement(
         'div',
-        null,
-        'Loading...'
+        { className: 'grabbable' },
+        this.state.svg ? _react2.default.createElement(
+          _reactDraggable2.default,
+          {
+            axis: 'both' },
+          _react2.default.createElement('div', { className: 'draggable', dangerouslySetInnerHTML: {
+              __html: new XMLSerializer().serializeToString(this.state.svg.documentElement) } })
+        ) : _react2.default.createElement(
+          'div',
+          null,
+          'Loading...'
+        )
       );
     }
   }]);
@@ -87,8 +101,8 @@ SVGViewer.defaultProps = {
 
 SVGViewer.proptypes = {
   allowUserViewChange: _react.PropTypes.bool,
-  file: _react.PropTypes.string,
-  svgString: _react.PropTypes.string
+  svgString: _react.PropTypes.string,
+  file: _react.PropTypes.string
 };
 
 exports.default = SVGViewer;

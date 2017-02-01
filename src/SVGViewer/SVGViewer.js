@@ -2,9 +2,12 @@
  * @module SVGViewer
  */
 import React, {PropTypes} from 'react';
+import Draggable from 'react-draggable';
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
+
+import './SVGViewer.scss';
 
 class SVGViewer extends React.Component {
   constructor (props) {
@@ -43,11 +46,17 @@ class SVGViewer extends React.Component {
   }
 
   render () {
-    return this.state.svg
-      ? <div dangerouslySetInnerHTML={{
-          __html: new XMLSerializer().serializeToString(this.state.svg.documentElement)
-        }} />
-      : <div>Loading...</div>;
+    return (
+      <div className="grabbable">
+        {this.state.svg
+          ? <Draggable
+              axis='both'>
+                <div className="draggable" dangerouslySetInnerHTML={{
+                  __html: new XMLSerializer().serializeToString(this.state.svg.documentElement)}} />
+            </Draggable>
+          : <div>Loading...</div>}
+      </div>
+    )
   }
 }
 
@@ -57,8 +66,8 @@ SVGViewer.defaultProps = {
 
 SVGViewer.proptypes = {
   allowUserViewChange: PropTypes.bool,
-  file: PropTypes.string,
-  svgString: PropTypes.string
+  svgString: PropTypes.string,
+  file: PropTypes.string
 };
 
 export default SVGViewer;
