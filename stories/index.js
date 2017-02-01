@@ -411,4 +411,7 @@ const TEST_SVG_FILE = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/tiger
 storiesOf('SVGViewer', module)
   .add('default', () => (
     <SVGViewer file={TEST_SVG_FILE} />
-  ));
+  ))
+  .add('locked', () => (
+    <SVGViewer file={TEST_SVG_FILE} allowUserViewChange={false} />
+  ))
