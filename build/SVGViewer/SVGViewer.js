@@ -159,8 +159,6 @@ var SVGViewer = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
-
       var svgContainerStyles = {
         transform: 'translateX(' + this.state.dragPosition.x + 'px)\n                  translateY(' + this.state.dragPosition.y + 'px)\n                  translateZ(' + this.limitZoomLevel(this.state.zoomLevel * 500) + 'px)'
       };
@@ -171,10 +169,7 @@ var SVGViewer = function (_React$Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: 'svg-container',
-          ref: function ref(_ref) {
-            return _this3.svgContainer = _ref;
-          } },
+        { className: 'svg-container' },
         this.state.svg ? _react2.default.createElement('div', { className: this.props.allowUserViewChange ? 'grabbable' : '',
           onWheel: this.mouseWheelHandler,
           onMouseDown: this.startDrag,

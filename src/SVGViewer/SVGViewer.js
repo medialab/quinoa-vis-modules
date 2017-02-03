@@ -141,8 +141,7 @@ class SVGViewer extends React.Component {
     }
 
     return (
-      <div className="svg-container"
-        ref={ref => (this.svgContainer = ref)}>
+      <div className="svg-container">
         {this.state.svg
           ? <div className={this.props.allowUserViewChange ? 'grabbable' : ''}
             onWheel={this.mouseWheelHandler}
