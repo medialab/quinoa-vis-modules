@@ -2,7 +2,6 @@
  * @module SVGViewer
  */
 import React, {PropTypes} from 'react';
-import Draggable from 'react-draggable';
 import {debounce} from 'lodash';
 
 require('es6-promise').polyfill();
@@ -10,21 +9,34 @@ require('isomorphic-fetch');
 
 import './SVGViewer.scss';
 
+
 class SVGViewer extends React.Component {
   constructor (props) {
     super(props);
 
-    this.state = {svg: null};
+    this.state = {
+      svg: null,
+      zoomLevel: 0,
+      zoomOrigin: null,
+      dragOffset: null,
+      dragPosition: {x: 0, y: 0},
+      isDragEnabled: false
+    };
   }
 
   componentWillMount () {
     this.loadFile = this.loadFile.bind(this);
     this.parseSVG = this.parseSVG.bind(this);
     this.mouseWheelHandler = this.mouseWheelHandler.bind(this);
+    this.setZoomOrigin = this.setZoomOrigin.bind(this);
+    this.unsetZoomOrigin = this.unsetZoomOrigin.bind(this);
+    this.startDrag = this.startDrag.bind(this);
+    this.stopDrag = this.stopDrag.bind(this);
+    this.doDrag = this.doDrag.bind(this);
 
     // Debounce zoom method for user-friendly zoom behavior.
     this.zoom = debounce(
-      this.zoom.bind(this), 100,
+      this.zoom.bind(this), 50,
       {leading: true, trailing: false}
     );
   }
@@ -62,22 +74,83 @@ class SVGViewer extends React.Component {
   }
 
   zoom (amount) {
-    if (amount < 0) {
-      console.log(`zoom in, factor ${amount}`);
-    }
-    if (amount > 0) {
-      console.log(`zoom out, factor ${amount}`);
+    if (amount !== 0 && amount !== -0) {
+      this.setState({zoomLevel: this.state.zoomLevel + amount});
     }
   }
 
+  setZoomOrigin (e) {
+    this.setState({zoomOrigin: {x: e.clientX, y: e.clientY}});
+  }
+
+  unsetZoomOrigin () {
+    this.setState({zoomOrigin: null});
+  }
+
+  limitZoomLevel (level) {
+    if (level >= 0) {
+      return level < this.props.maxZoomLevel ? level : this.props.maxZoomLevel;
+    }
+
+    if (level <= -0) {
+      return level > this.props.minZoomLevel ? level : this.props.minZoomLevel;
+    }
+
+    return level;
+  }
+
+  startDrag (e) {
+    const bounds = e.currentTarget.getBoundingClientRect();
+
+    this.setState({
+      isDragEnabled: true,
+      dragOffset: {
+        x: e.clientX - bounds.left,
+        y: e.clientY - bounds.top
+      }
+    });
+    e.currentTarget.addEventListener('mousemove', this.doDrag);
+  }
+
+  stopDrag (e) {
+    this.setState({isDragEnabled: false});
+    e.currentTarget.removeEventListener('mousemove', this.doDrag);
+  }
+
+  doDrag (e) {
+    if (!this.state.isDragEnabled) return;
+
+    // this.setZoomOrigin(e);
+    this.setState({
+      dragPosition: {
+        x: e.clientX - this.state.dragOffset.x,
+        y: e.clientY - this.state.dragOffset.y
+      }
+    });
+  }
+
   render () {
+    const svgContainerStyles = {
+      transform: `translateX(${this.state.dragPosition.x}px)
+                  translateY(${this.state.dragPosition.y}px)
+                  translateZ(${this.limitZoomLevel(this.state.zoomLevel * 500)}px)`
+    };
+
+    if (this.state.zoomOrigin) {
+      svgContainerStyles.transformOrigin = `${this.state.zoomOrigin.x}px ${this.state.zoomOrigin.y}px`;
+    }
+
     return (
-      <div>
+      <div className="svg-container"
+        ref={ref => (this.svgContainer = ref)}>
         {this.state.svg
-          ? <Draggable axis="both" handle=".grabbable" disabled={!this.props.allowUserViewChange}>
-            <div className={this.props.allowUserViewChange ? 'grabbable' : ''} onWheel={this.mouseWheelHandler} dangerouslySetInnerHTML={{
+          ? <div className={this.props.allowUserViewChange ? 'grabbable' : ''}
+            onWheel={this.mouseWheelHandler}
+            onMouseDown={this.startDrag}
+            onMouseUp={this.stopDrag}
+            style={svgContainerStyles}
+            dangerouslySetInnerHTML={{
                   __html: new XMLSerializer().serializeToString(this.state.svg.documentElement)}} />
-          </Draggable>
           : <div>Loading...</div>}
       </div>
     );
@@ -85,10 +158,14 @@ class SVGViewer extends React.Component {
 }
 
 SVGViewer.defaultProps = {
-  allowUserViewChange: true
+  allowUserViewChange: true,
+  maxZoomLevel: 2000,
+  minZoomLevel: -2000
 };
 
 SVGViewer.proptypes = {
+  maxZoomLevel: PropTypes.number,
+  minZoomLevel: PropTypes.number,
   allowUserViewChange: PropTypes.bool,
   svgString: PropTypes.string,
   file: PropTypes.string

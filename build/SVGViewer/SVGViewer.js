@@ -10,10 +10,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDraggable = require('react-draggable');
-
-var _reactDraggable2 = _interopRequireDefault(_reactDraggable);
-
 var _lodash = require('lodash');
 
 require('./SVGViewer.scss');
@@ -38,7 +34,14 @@ var SVGViewer = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (SVGViewer.__proto__ || Object.getPrototypeOf(SVGViewer)).call(this, props));
 
-    _this.state = { svg: null };
+    _this.state = {
+      svg: null,
+      zoomLevel: 0,
+      zoomOrigin: null,
+      dragOffset: null,
+      dragPosition: { x: 0, y: 0 },
+      isDragEnabled: false
+    };
     return _this;
   }
 
@@ -48,8 +51,13 @@ var SVGViewer = function (_React$Component) {
       this.loadFile = this.loadFile.bind(this);
       this.parseSVG = this.parseSVG.bind(this);
       this.mouseWheelHandler = this.mouseWheelHandler.bind(this);
+      this.setZoomOrigin = this.setZoomOrigin.bind(this);
+      this.unsetZoomOrigin = this.unsetZoomOrigin.bind(this);
+      this.startDrag = this.startDrag.bind(this);
+      this.stopDrag = this.stopDrag.bind(this);
+      this.doDrag = this.doDrag.bind(this);
 
-      this.zoom = (0, _lodash.debounce)(this.zoom.bind(this), 100, { leading: true, trailing: false });
+      this.zoom = (0, _lodash.debounce)(this.zoom.bind(this), 50, { leading: true, trailing: false });
     }
   }, {
     key: 'componentDidMount',
@@ -89,25 +97,91 @@ var SVGViewer = function (_React$Component) {
   }, {
     key: 'zoom',
     value: function zoom(amount) {
-      if (amount < 0) {
-        console.log('zoom in, factor ' + amount);
+      if (amount !== 0 && amount !== -0) {
+        this.setState({ zoomLevel: this.state.zoomLevel + amount });
       }
-      if (amount > 0) {
-        console.log('zoom out, factor ' + amount);
+    }
+  }, {
+    key: 'setZoomOrigin',
+    value: function setZoomOrigin(e) {
+      this.setState({ zoomOrigin: { x: e.clientX, y: e.clientY } });
+    }
+  }, {
+    key: 'unsetZoomOrigin',
+    value: function unsetZoomOrigin() {
+      this.setState({ zoomOrigin: null });
+    }
+  }, {
+    key: 'limitZoomLevel',
+    value: function limitZoomLevel(level) {
+      if (level >= 0) {
+        return level < this.props.maxZoomLevel ? level : this.props.maxZoomLevel;
       }
+
+      if (level <= -0) {
+        return level > this.props.minZoomLevel ? level : this.props.minZoomLevel;
+      }
+
+      return level;
+    }
+  }, {
+    key: 'startDrag',
+    value: function startDrag(e) {
+      var bounds = e.currentTarget.getBoundingClientRect();
+
+      this.setState({
+        isDragEnabled: true,
+        dragOffset: {
+          x: e.clientX - bounds.left,
+          y: e.clientY - bounds.top
+        }
+      });
+      e.currentTarget.addEventListener('mousemove', this.doDrag);
+    }
+  }, {
+    key: 'stopDrag',
+    value: function stopDrag(e) {
+      this.setState({ isDragEnabled: false });
+      e.currentTarget.removeEventListener('mousemove', this.doDrag);
+    }
+  }, {
+    key: 'doDrag',
+    value: function doDrag(e) {
+      if (!this.state.isDragEnabled) return;
+
+      this.setState({
+        dragPosition: {
+          x: e.clientX - this.state.dragOffset.x,
+          y: e.clientY - this.state.dragOffset.y
+        }
+      });
     }
   }, {
     key: 'render',
     value: function render() {
+      var _this3 = this;
+
+      var svgContainerStyles = {
+        transform: 'translateX(' + this.state.dragPosition.x + 'px)\n                  translateY(' + this.state.dragPosition.y + 'px)\n                  translateZ(' + this.limitZoomLevel(this.state.zoomLevel * 500) + 'px)'
+      };
+
+      if (this.state.zoomOrigin) {
+        svgContainerStyles.transformOrigin = this.state.zoomOrigin.x + 'px ' + this.state.zoomOrigin.y + 'px';
+      }
+
       return _react2.default.createElement(
         'div',
-        null,
-        this.state.svg ? _react2.default.createElement(
-          _reactDraggable2.default,
-          { axis: 'both', handle: '.grabbable', disabled: !this.props.allowUserViewChange },
-          _react2.default.createElement('div', { className: this.props.allowUserViewChange ? 'grabbable' : '', onWheel: this.mouseWheelHandler, dangerouslySetInnerHTML: {
-              __html: new XMLSerializer().serializeToString(this.state.svg.documentElement) } })
-        ) : _react2.default.createElement(
+        { className: 'svg-container',
+          ref: function ref(_ref) {
+            return _this3.svgContainer = _ref;
+          } },
+        this.state.svg ? _react2.default.createElement('div', { className: this.props.allowUserViewChange ? 'grabbable' : '',
+          onWheel: this.mouseWheelHandler,
+          onMouseDown: this.startDrag,
+          onMouseUp: this.stopDrag,
+          style: svgContainerStyles,
+          dangerouslySetInnerHTML: {
+            __html: new XMLSerializer().serializeToString(this.state.svg.documentElement) } }) : _react2.default.createElement(
           'div',
           null,
           'Loading...'
@@ -120,10 +194,14 @@ var SVGViewer = function (_React$Component) {
 }(_react2.default.Component);
 
 SVGViewer.defaultProps = {
-  allowUserViewChange: true
+  allowUserViewChange: true,
+  maxZoomLevel: 2000,
+  minZoomLevel: -2000
 };
 
 SVGViewer.proptypes = {
+  maxZoomLevel: _react.PropTypes.number,
+  minZoomLevel: _react.PropTypes.number,
   allowUserViewChange: _react.PropTypes.bool,
   svgString: _react.PropTypes.string,
   file: _react.PropTypes.string
