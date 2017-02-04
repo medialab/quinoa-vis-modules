@@ -20,6 +20,7 @@ class Network extends Component {
     this.state = state;
 
     this.rebootSigma = this.rebootSigma.bind(this);
+    this.rebootSigma();
   }
 
   componentDidMount() {
@@ -89,13 +90,20 @@ class Network extends Component {
         viewParameters: nextState.viewParameters
       });
     }
+    if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+      this.setState({
+        viewParameters: nextProps.viewParameters
+      });
+    }
   }
 
 
   componentDidUpdate(prevProps, prev) {
     // If the graph has changed, we reset sigma
     if (prev.data !== this.state.data) {
-      sigInst.graph.clear();
+      this.rebootSigma();
+    }
+    if (JSON.stringify(this.state.viewParameters.colorsMap) !== JSON.stringify(prev.viewParameters.colorsMap)) {
       this.rebootSigma();
     }
   }
@@ -103,7 +111,10 @@ class Network extends Component {
   componentWillUnmount() {
     if (sigInst) {
       // Killing the renderer todo re set with new workflow
-      // sigInst.killRenderer(this.renderer);
+      sigInst.graph.clear();
+      sigInst.refresh();
+      sigInst.killRenderer(this.renderer);
+      // sigInst = undefined;
     }
     // Releasing the camera
     // this.releaseCamera();
@@ -121,12 +132,12 @@ class Network extends Component {
       nodes: this.state.data.nodes.map(node => ({
         ...node,
         // dynamically set color
-        color: (props.colorsMap.nodes && props.colorsMap.nodes[node.category]) || (props.colorsMap.nodes && props.colorsMap.nodes.default || props.colorsMap.default)
+        color: (props.colorsMap.nodes && (props.colorsMap.nodes[node.category] || props.colorsMap.nodes.default)) || props.colorsMap.default
       })),
       edges: this.state.data.edges.map(edge => ({
         ...edge,
         type: edge.type || 'undirected',
-        color: (props.colorsMap.edges && props.colorsMap.edges[edge.category]) || (props.colorsMap.edges && props.colorsMap.edges.default || props.colorsMap.default)
+        color: (props.colorsMap.edges && (props.colorsMap.edges[edge.category] || props.colorsMap.edges.default)) || props.colorsMap.default
       }))
     };
 
@@ -134,28 +145,26 @@ class Network extends Component {
       labelThreshold: props.labelThreshold || 7,
       minNodeSize: props.minNodeSize || 2,
       edgeColor: 'default',
-      defaultEdgeColor: (props.colorsMap && props.colorsMap.noCategory) || '#D1D1D1',
+      defaultEdgeColor: (props.viewParameters && props.viewParameters.colorsMap && props.viewParameters.colorsMap.noCategory) || '#D1D1D1',
       sideMargin: props.sideMargin || 0,
       enableCamera: props.allowUserViewChange
     };
-    sigInst = new sigma({
-      // settings: SIGMA_SETTINGS,
-      // graph: state.data,
-      // container: 'sigma-container'
-      settings: SIGMA_SETTINGS,
-      graph: visData,
-      // container: this.container,
-      // renderer: {
-      //   container: this.container,
-      //   type: 'svg'
-      // }
-    });
-    camera = sigInst.addCamera('main');
-    camera.isAnimated = true;
+    if (sigInst === undefined) {
+      sigInst = new sigma({
+        settings: SIGMA_SETTINGS,
+        graph: visData,
+      });
+      camera = sigInst.addCamera('main');
+      camera.isAnimated = true;
+    }
+ else {
+      sigInst.graph.clear();
+      sigInst.graph.read(visData);
+    }
 
+    sigInst.refresh();
     // launch forceAtlas if graph is not spatialized
     if (!this.state.data.spatialized) {
-      sigInst.refresh();
       sigInst.startForceAtlas2({
         startingIterations: 1000
       });
