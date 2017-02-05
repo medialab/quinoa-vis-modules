@@ -28,7 +28,10 @@
     "visualization",
     "storytelling"
   ],
-  "author": "Robin de Mourat",
+  "author": "Robin de Mourat <robin.demourat@sciencespo.fr>",
+  "contributors": [
+    "Davy Peter Braun <davy.braun@sciencespo.fr>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/medialab/quinoa-vis-modules/issues"
