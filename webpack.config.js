@@ -15,6 +15,10 @@ module.exports = {
       {
         test: /\.css$/,
         loaders: ['style', 'css']
+      },
+      {
+        test: /\.txt$/,
+        loaders: ['raw-loader']
       }
     ]
   }
