@@ -14,10 +14,18 @@ class SVGViewer extends React.Component {
   constructor (props) {
     super(props);
 
+    /**
+     * State
+     *
+     * svg             object   SVG data, as a DOM Document Object
+     * zoomLevel       number   Zoom level on the viewer
+     * dragOffset      number   Offset object calculating drag offset (the X/Y offset from mouse X/Y)
+     * dragPosition    number   Current position of dragged object
+     * isDragEnabled   boolean  Enable dragging motion if true
+     */
     this.state = {
       svg: null,
       zoomLevel: 0,
-      zoomOrigin: null,
       dragOffset: null,
       dragPosition: {x: 0, y: 0},
       isDragEnabled: false
@@ -25,11 +33,9 @@ class SVGViewer extends React.Component {
   }
 
   componentWillMount () {
-    this.loadFile = this.loadFile.bind(this);
+    this.loadSVGFromRemoteServer = this.loadSVGFromRemoteServer.bind(this);
     this.parseSVG = this.parseSVG.bind(this);
     this.mouseWheelHandler = this.mouseWheelHandler.bind(this);
-    this.setZoomOrigin = this.setZoomOrigin.bind(this);
-    this.unsetZoomOrigin = this.unsetZoomOrigin.bind(this);
     this.startDrag = this.startDrag.bind(this);
     this.stopDrag = this.stopDrag.bind(this);
     this.doDrag = this.doDrag.bind(this);
@@ -41,13 +47,17 @@ class SVGViewer extends React.Component {
     );
   }
 
+  /**
+   * On mounting, check whether SVG data is raw, or to be loaded from a remote server.
+   * Remoting loading superseds raw data if both are present.
+   */
   componentDidMount () {
     return this.props.file.indexOf('http') === 0
-      ? this.loadFile()
+      ? this.loadSVGFromRemoteServer()
       : this.parseSVG(this.props.svgString);
   }
 
-  loadFile() {
+  loadSVGFromRemoteServer() {
     fetch(this.props.file)
       .then(res => {
         if (res.status >= 400) {
@@ -75,16 +85,10 @@ class SVGViewer extends React.Component {
 
   zoom (amount) {
     if (amount !== 0 && amount !== -0) {
-      this.setState({zoomLevel: this.state.zoomLevel + amount});
+      this.setState({
+        zoomLevel: this.state.zoomLevel + amount
+      });
     }
-  }
-
-  setZoomOrigin (e) {
-    this.setState({zoomOrigin: {x: e.clientX, y: e.clientY}});
-  }
-
-  unsetZoomOrigin () {
-    this.setState({zoomOrigin: null});
   }
 
   limitZoomLevel (level) {
@@ -104,6 +108,7 @@ class SVGViewer extends React.Component {
 
     this.setState({
       isDragEnabled: true,
+      perspectiveLevel: 0,
       dragOffset: {
         x: e.clientX - bounds.left,
         y: e.clientY - bounds.top
@@ -132,22 +137,27 @@ class SVGViewer extends React.Component {
   render () {
     const svgContainerStyles = {
       transform: `translateX(${this.state.dragPosition.x}px)
-                  translateY(${this.state.dragPosition.y}px)
-                  translateZ(${this.limitZoomLevel(this.state.zoomLevel * 500)}px)`
+                  translateY(${this.state.dragPosition.y}px)`
+    };
+
+    const svgStyles = {
+      transform: `perspective(${this.props.perspectiveLevel}px)
+                  translateZ(${this.limitZoomLevel(this.state.zoomLevel * this.props.zoomFactor)}px)`
     };
 
     if (this.state.zoomOrigin) {
-      svgContainerStyles.transformOrigin = `${this.state.zoomOrigin.x}px ${this.state.zoomOrigin.y}px`;
+      svgStyles.transformOrigin = `${this.state.zoomOrigin.x}px ${this.state.zoomOrigin.y}px`;
     }
 
     return (
-      <div className="svg-container">
+      <div className="svg-container"
+        style={svgContainerStyles}
+        onMouseDown={this.startDrag}
+        onMouseUp={this.stopDrag}>
         {this.state.svg
           ? <div className={this.props.allowUserViewChange ? 'grabbable' : ''}
             onWheel={this.mouseWheelHandler}
-            onMouseDown={this.startDrag}
-            onMouseUp={this.stopDrag}
-            style={svgContainerStyles}
+            style={svgStyles}
             dangerouslySetInnerHTML={{
                   __html: new XMLSerializer().serializeToString(this.state.svg.documentElement)}} />
           : <div>Loading...</div>}
@@ -156,18 +166,34 @@ class SVGViewer extends React.Component {
   }
 }
 
-SVGViewer.defaultProps = {
-  allowUserViewChange: true,
-  maxZoomLevel: 2000,
-  minZoomLevel: -2000
-};
-
+/**
+ * PropTypes
+ *
+ * maxZoomLevel        number   Max zoom value, defaults to 2000
+ * minZoomLevel        number   Min zoom value, defaults to 2000
+ * perspectiveLevel    number   CSS perspective level in 3D space, 1000(px)
+ * zoomFactor          number   Factorize wheel zoom for proper zoom effect, defauls to 250
+ * allowUserViewChange boolean  If true, locks interaction on SVGViewer
+ * svgString           string   Raw SVG string to load
+ * file                string   URL to SVG file to load, superseding `svgString` prop if both are present
+ */
 SVGViewer.proptypes = {
   maxZoomLevel: PropTypes.number,
   minZoomLevel: PropTypes.number,
+  perspectiveLevel: PropTypes.number,
+  zoomFactor: PropTypes.number,
   allowUserViewChange: PropTypes.bool,
   svgString: PropTypes.string,
   file: PropTypes.string
 };
+
+SVGViewer.defaultProps = {
+  allowUserViewChange: true,
+  maxZoomLevel: 2000,
+  minZoomLevel: -2000,
+  zoomFactor: 250,
+  perspectiveLevel: 1000
+};
+
 
 export default SVGViewer;

@@ -1,7 +1,3 @@
-.svg-container {
-  transition: translateZ 250ms ease-in;
-}
-
 .grabbable {
   cursor: move; /* fallback if grab cursor is unsupported */
   cursor: grab;
@@ -10,7 +6,7 @@
 
   width: auto;
   height: auto;
-  background: red;
+  transition: transform 250ms ease-in;
 }
 
  /* (Optional) Apply a "closed-hand" cursor during drag operation. */
