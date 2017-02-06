@@ -406,11 +406,15 @@ storiesOf('Network', module)
  */
 
 import SVGViewer from '../src/SVGViewer/SVGViewer';
+import TEST_RAW_SVG from 'raw-loader!./mock_data/svgviewer-test.svg.txt'
 const TEST_SVG_FILE = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/tiger.svg';
 
 storiesOf('SVGViewer', module)
-  .add('default', () => (
+  .add('default, fetch remote SVG file', () => (
     <SVGViewer file={TEST_SVG_FILE} />
+  ))
+  .add('default, load raw SVG file', () => (
+    <SVGViewer svgString={TEST_RAW_SVG} />
   ))
   .add('locked', () => (
     <SVGViewer file={TEST_SVG_FILE} allowUserViewChange={false} />

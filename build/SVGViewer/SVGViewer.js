@@ -61,7 +61,7 @@ var SVGViewer = function (_React$Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      return this.props.file.indexOf('http') === 0 ? this.loadSVGFromRemoteServer() : this.parseSVG(this.props.svgString);
+      return this.props.file && this.props.file.indexOf('http') === 0 ? this.loadSVGFromRemoteServer() : this.mountSVG(this.parseSVG(this.props.svgString));
     }
   }, {
     key: 'loadSVGFromRemoteServer',
@@ -74,17 +74,26 @@ var SVGViewer = function (_React$Component) {
         }
         return res.text();
       }).then(function (svg) {
-        _this2.setState({ svg: _this2.parseSVG(svg) });
+        _this2.mountSVG(_this2.parseSVG(svg));
       }).catch(function (err) {
         throw new Error('Unknown error occured while loading ' + _this2.props.file + ' -> ' + err.message);
       });
     }
+
+
   }, {
     key: 'parseSVG',
     value: function parseSVG() {
       var xmlString = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
       return new DOMParser().parseFromString(xmlString, 'text/xml');
+    }
+
+
+  }, {
+    key: 'mountSVG',
+    value: function mountSVG(svgDom) {
+      this.setState({ svg: svgDom });
     }
   }, {
     key: 'mouseWheelHandler',
@@ -158,10 +167,6 @@ var SVGViewer = function (_React$Component) {
       var svgStyles = {
         transform: 'perspective(' + this.props.perspectiveLevel + 'px)\n                  translateZ(' + this.limitZoomLevel(this.state.zoomLevel * this.props.zoomFactor) + 'px)'
       };
-
-      if (this.state.zoomOrigin) {
-        svgStyles.transformOrigin = this.state.zoomOrigin.x + 'px ' + this.state.zoomOrigin.y + 'px';
-      }
 
       return _react2.default.createElement(
         'div',

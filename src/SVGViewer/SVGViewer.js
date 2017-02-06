@@ -48,13 +48,13 @@ class SVGViewer extends React.Component {
   }
 
   /**
-   * On mounting, check whether SVG data is raw, or to be loaded from a remote server.
-   * Remoting loading superseds raw data if both are present.
+   * When mount, check whether SVG data is raw, or to be loaded from a remote server.
+   * Remote loading superseds raw data loading if both are specified.
    */
   componentDidMount () {
-    return this.props.file.indexOf('http') === 0
+    return this.props.file && this.props.file.indexOf('http') === 0
       ? this.loadSVGFromRemoteServer()
-      : this.parseSVG(this.props.svgString);
+      : this.mountSVG(this.parseSVG(this.props.svgString));
   }
 
   loadSVGFromRemoteServer() {
@@ -66,15 +66,25 @@ class SVGViewer extends React.Component {
         return res.text();
       })
       .then(svg => {
-        this.setState({svg: this.parseSVG(svg)});
+        this.mountSVG(this.parseSVG(svg));
       })
       .catch(err => {
         throw new Error(`Unknown error occured while loading ${this.props.file} -> ${err.message}`);
       });
   }
 
+  /**
+   * From XML dom string representing the SVG, return a mountable Document object.
+   */
   parseSVG(xmlString = '') {
     return new DOMParser().parseFromString(xmlString, 'text/xml');
+  }
+
+  /**
+   * Mount DOM Document (SVG) into the DOM via state setting of the component.
+   */
+  mountSVG(svgDom) {
+    this.setState({svg: svgDom});
   }
 
   mouseWheelHandler(e) {
@@ -125,7 +135,6 @@ class SVGViewer extends React.Component {
   doDrag (e) {
     if (!this.state.isDragEnabled) return;
 
-    // this.setZoomOrigin(e);
     this.setState({
       dragPosition: {
         x: e.clientX - this.state.dragOffset.x,
@@ -144,10 +153,6 @@ class SVGViewer extends React.Component {
       transform: `perspective(${this.props.perspectiveLevel}px)
                   translateZ(${this.limitZoomLevel(this.state.zoomLevel * this.props.zoomFactor)}px)`
     };
-
-    if (this.state.zoomOrigin) {
-      svgStyles.transformOrigin = `${this.state.zoomOrigin.x}px ${this.state.zoomOrigin.y}px`;
-    }
 
     return (
       <div className="svg-container"
