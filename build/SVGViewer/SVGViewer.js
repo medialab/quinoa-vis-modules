@@ -167,10 +167,10 @@ var SVGViewer = function (_React$Component) {
         'div',
         { className: 'svg-container',
           style: svgContainerStyles,
-          onMouseDown: this.startDrag,
-          onMouseUp: this.stopDrag },
+          onMouseDown: this.props.allowUserViewChange ? this.startDrag : void 0,
+          onMouseUp: this.props.allowUserViewChange ? this.stopDrag : void 0 },
         this.state.svg ? _react2.default.createElement('div', { className: this.props.allowUserViewChange ? 'grabbable' : '',
-          onWheel: this.mouseWheelHandler,
+          onWheel: this.props.allowUserViewChange ? this.mouseWheelHandler : void 0,
           style: svgStyles,
           dangerouslySetInnerHTML: {
             __html: new XMLSerializer().serializeToString(this.state.svg.documentElement) } }) : _react2.default.createElement(
