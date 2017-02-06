@@ -37,7 +37,6 @@ var SVGViewer = function (_React$Component) {
     _this.state = {
       svg: null,
       zoomLevel: 0,
-      zoomOrigin: null,
       dragOffset: null,
       dragPosition: { x: 0, y: 0 },
       isDragEnabled: false
@@ -48,25 +47,25 @@ var SVGViewer = function (_React$Component) {
   _createClass(SVGViewer, [{
     key: 'componentWillMount',
     value: function componentWillMount() {
-      this.loadFile = this.loadFile.bind(this);
+      this.loadSVGFromRemoteServer = this.loadSVGFromRemoteServer.bind(this);
       this.parseSVG = this.parseSVG.bind(this);
       this.mouseWheelHandler = this.mouseWheelHandler.bind(this);
-      this.setZoomOrigin = this.setZoomOrigin.bind(this);
-      this.unsetZoomOrigin = this.unsetZoomOrigin.bind(this);
       this.startDrag = this.startDrag.bind(this);
       this.stopDrag = this.stopDrag.bind(this);
       this.doDrag = this.doDrag.bind(this);
 
       this.zoom = (0, _lodash.debounce)(this.zoom.bind(this), 50, { leading: true, trailing: false });
     }
+
+
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      return this.props.file.indexOf('http') === 0 ? this.loadFile() : this.parseSVG(this.props.svgString);
+      return this.props.file.indexOf('http') === 0 ? this.loadSVGFromRemoteServer() : this.parseSVG(this.props.svgString);
     }
   }, {
-    key: 'loadFile',
-    value: function loadFile() {
+    key: 'loadSVGFromRemoteServer',
+    value: function loadSVGFromRemoteServer() {
       var _this2 = this;
 
       fetch(this.props.file).then(function (res) {
@@ -98,18 +97,10 @@ var SVGViewer = function (_React$Component) {
     key: 'zoom',
     value: function zoom(amount) {
       if (amount !== 0 && amount !== -0) {
-        this.setState({ zoomLevel: this.state.zoomLevel + amount });
+        this.setState({
+          zoomLevel: this.state.zoomLevel + amount
+        });
       }
-    }
-  }, {
-    key: 'setZoomOrigin',
-    value: function setZoomOrigin(e) {
-      this.setState({ zoomOrigin: { x: e.clientX, y: e.clientY } });
-    }
-  }, {
-    key: 'unsetZoomOrigin',
-    value: function unsetZoomOrigin() {
-      this.setState({ zoomOrigin: null });
     }
   }, {
     key: 'limitZoomLevel',
@@ -131,6 +122,7 @@ var SVGViewer = function (_React$Component) {
 
       this.setState({
         isDragEnabled: true,
+        perspectiveLevel: 0,
         dragOffset: {
           x: e.clientX - bounds.left,
           y: e.clientY - bounds.top
@@ -160,21 +152,26 @@ var SVGViewer = function (_React$Component) {
     key: 'render',
     value: function render() {
       var svgContainerStyles = {
-        transform: 'translateX(' + this.state.dragPosition.x + 'px)\n                  translateY(' + this.state.dragPosition.y + 'px)\n                  translateZ(' + this.limitZoomLevel(this.state.zoomLevel * 500) + 'px)'
+        transform: 'translateX(' + this.state.dragPosition.x + 'px)\n                  translateY(' + this.state.dragPosition.y + 'px)'
+      };
+
+      var svgStyles = {
+        transform: 'perspective(' + this.props.perspectiveLevel + 'px)\n                  translateZ(' + this.limitZoomLevel(this.state.zoomLevel * this.props.zoomFactor) + 'px)'
       };
 
       if (this.state.zoomOrigin) {
-        svgContainerStyles.transformOrigin = this.state.zoomOrigin.x + 'px ' + this.state.zoomOrigin.y + 'px';
+        svgStyles.transformOrigin = this.state.zoomOrigin.x + 'px ' + this.state.zoomOrigin.y + 'px';
       }
 
       return _react2.default.createElement(
         'div',
-        { className: 'svg-container' },
+        { className: 'svg-container',
+          style: svgContainerStyles,
+          onMouseDown: this.startDrag,
+          onMouseUp: this.stopDrag },
         this.state.svg ? _react2.default.createElement('div', { className: this.props.allowUserViewChange ? 'grabbable' : '',
           onWheel: this.mouseWheelHandler,
-          onMouseDown: this.startDrag,
-          onMouseUp: this.stopDrag,
-          style: svgContainerStyles,
+          style: svgStyles,
           dangerouslySetInnerHTML: {
             __html: new XMLSerializer().serializeToString(this.state.svg.documentElement) } }) : _react2.default.createElement(
           'div',
@@ -188,18 +185,24 @@ var SVGViewer = function (_React$Component) {
   return SVGViewer;
 }(_react2.default.Component);
 
-SVGViewer.defaultProps = {
-  allowUserViewChange: true,
-  maxZoomLevel: 2000,
-  minZoomLevel: -2000
-};
+
 
 SVGViewer.proptypes = {
   maxZoomLevel: _react.PropTypes.number,
   minZoomLevel: _react.PropTypes.number,
+  perspectiveLevel: _react.PropTypes.number,
+  zoomFactor: _react.PropTypes.number,
   allowUserViewChange: _react.PropTypes.bool,
   svgString: _react.PropTypes.string,
   file: _react.PropTypes.string
+};
+
+SVGViewer.defaultProps = {
+  allowUserViewChange: true,
+  maxZoomLevel: 2000,
+  minZoomLevel: -2000,
+  zoomFactor: 250,
+  perspectiveLevel: 1000
 };
 
 exports.default = SVGViewer;
