@@ -28,13 +28,15 @@ const timelineDataMap = {
 const timelineBaseViewParameters = {
   fromDate: new Date().setFullYear(1900),
   toDate: new Date().setFullYear(1960),
-  dataMap: timelineDataMap,
   colorsMap: {
-    cartography: '#F24D98',
-    computation: '#813B7C',
-    mathematics: '#59D044',
-    statistics: '#F3A002',
-    noCategory: 'brown'
+    main: {
+      cartography: '#F24D98',
+      computation: '#813B7C',
+      mathematics: '#59D044',
+      statistics: '#F3A002',
+      default: 'brown'
+    },
+    default: 'brown'
   }
 };
 
@@ -141,9 +143,12 @@ const mapBaseViewParameters = {
   cameraY: 2.3455482,
   cameraZoom: 4,
   colorsMap: {
-    'accélérée': '#F24D98',
-    'normale': '#813B7C',
-    noCategory: 'brown'
+    main: {
+      'accélérée': '#F24D98',
+      'normale': '#813B7C',
+      default: 'brown'
+    },
+    default: 'brown'
   },
   tilesUrl: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png'
 };
@@ -165,8 +170,10 @@ const mapGeoJSONBaseViewParameters = {
   cameraZoom: 4,
   tilesUrl: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png',
   colorsMap: {
-    osm_mapnik: 'orange',
-    noCategory: 'brown'
+    main: {
+      osm_mapnik: 'orange',
+      noCategory: 'brown'
+    }
   }
 };
 const geoJSONData = mapMapData(parseMapData(mapGeoJSONData, 'geoJSON'), {
@@ -291,12 +298,14 @@ const networkJSONBaseViewParameters = {
   labelThreshold: 7,
   minNodeSize: 2,
   sideMargin: 0,
-  dataMap: networkJSONDataMap,
   colorsMap: {
-    1: 'blue',
-    2: 'green',
-    3: 'red',
-    noCategory: 'brown'
+    nodes: {
+      1: 'blue',
+      2: 'green',
+      3: 'red',
+      default: 'brown'
+    },
+    default: 'brown'
   }
 };
 const networkJSONData = mapNetworkData(parseNetworkData(JSON.stringify(networkJSONDataRaw), 'json'), networkJSONDataMap)
@@ -317,25 +326,28 @@ const networkGexfBaseViewParameters = {
   sideMargin: 0,
   dataMap: networkGexfDataMap,
   colorsMap: {
-    "rgb(255,51,51)": "rgb(255,51,51)",
-    "rgb(0,204,204)": "rgb(0,204,204)",
-    "rgb(255,255,51)": "rgb(255,255,51)",
-    "rgb(204,204,255)": "rgb(204,204,255)",
-    "rgb(153,0,0)": "rgb(153,0,0)",
-    "rgb(102,102,0)": "rgb(102,102,0)",
-    "rgb(255,204,102)": "rgb(255,204,102)",
-    "rgb(153,255,0)": "rgb(153,255,0)",
-    "rgb(102,0,102)": "rgb(102,0,102)",
-    "rgb(153,255,255)": "rgb(153,255,255)",
-    "rgb(102,255,102)": "rgb(102,255,102)",
-    "rgb(0,153,0)": "rgb(0,153,0)",
-    "rgb(255,153,153)": "rgb(255,153,153)",
-    "rgb(255,255,0)": "rgb(255,255,0)",
-    "rgb(204,0,0)": "rgb(204,0,0)",
-    "rgb(0,204,51)": "rgb(0,204,51)",
-    "rgb(51,153,255)": "rgb(51,153,255)",
-    "rgb(255,204,51)": "rgb(255,204,51)",
-    noCategory: 'brown'
+    nodes: {
+      "rgb(255,51,51)": "rgb(255,51,51)",
+      "rgb(0,204,204)": "rgb(0,204,204)",
+      "rgb(255,255,51)": "rgb(255,255,51)",
+      "rgb(204,204,255)": "rgb(204,204,255)",
+      "rgb(153,0,0)": "rgb(153,0,0)",
+      "rgb(102,102,0)": "rgb(102,102,0)",
+      "rgb(255,204,102)": "rgb(255,204,102)",
+      "rgb(153,255,0)": "rgb(153,255,0)",
+      "rgb(102,0,102)": "rgb(102,0,102)",
+      "rgb(153,255,255)": "rgb(153,255,255)",
+      "rgb(102,255,102)": "rgb(102,255,102)",
+      "rgb(0,153,0)": "rgb(0,153,0)",
+      "rgb(255,153,153)": "rgb(255,153,153)",
+      "rgb(255,255,0)": "rgb(255,255,0)",
+      "rgb(204,0,0)": "rgb(204,0,0)",
+      "rgb(0,204,51)": "rgb(0,204,51)",
+      "rgb(51,153,255)": "rgb(51,153,255)",
+      "rgb(255,204,51)": "rgb(255,204,51)",
+      default: 'brown'
+    },
+    default: 'brown'
   }
 };
 
@@ -358,10 +370,13 @@ const networkGraphMLBaseViewParameters = {
   sideMargin: 0,
   dataMap: networkGraphMLDataMap,
   colorsMap: {
-    'person': '#F24D98',
-    'object': '#813B7C',
-    'animal': 'yellow',
-    noCategory: 'brown'
+    nodes: {
+      'person': '#F24D98',
+      'object': '#813B7C',
+      'animal': 'yellow',
+      default: 'brown'
+    },
+    default: 'brown'
   }
 };
 

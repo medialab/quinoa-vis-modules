@@ -28,7 +28,10 @@
     "visualization",
     "storytelling"
   ],
-  "author": "Robin de Mourat",
+  "author": "Robin de Mourat <robin.demourat@sciencespo.fr>",
+  "contributors": [
+    "Davy Peter Braun <davy.braun@sciencespo.fr>"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/medialab/quinoa-vis-modules/issues"
@@ -47,7 +50,9 @@
     "lodash": "^4.17.4",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "react-leaflet": "^0.12.3"
+    "react-leaflet": "^0.12.3",
+    "xml-js": "^1.0.0",
+    "script-loader": "^0.7.0"
   },
   "devDependencies": {
     "@kadira/storybook": "^2.5.2",
@@ -83,9 +88,7 @@
     "raw-loader": "^0.5.1",
     "react-addons-test-utils": "^15.4.2",
     "sass-loader": "^4.0.0",
-    "script-loader": "^0.7.0",
-    "style-loader": "^0.13.1",
-    "xml-js": "^1.0.0"
+    "style-loader": "^0.13.1"
   },
   "babel": {
     "plugins": [

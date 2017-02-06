@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.computeDataRelatedState = exports.computeBoundaries = exports.computeEvents = exports.computePeriods = exports.clusterEvents = exports.computeTicks = exports.setTicks = exports.computeDate = undefined;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; 
+
 var _d3Time = require('d3-time');
 
 var _d3Array = require('d3-array');
@@ -13,8 +15,7 @@ var _d3Scale = require('d3-scale');
 
 var _d3TimeFormat = require('d3-time-format');
 
-var SECOND = 1000; 
-
+var SECOND = 1000;
 var MINUTE = SECOND * 60;
 var HOUR = MINUTE * 60;
 var DAY = HOUR * 24;
@@ -257,6 +258,7 @@ var computeBoundaries = exports.computeBoundaries = function computeBoundaries(d
   });
   var maximumDate = (0, _d3Array.max)(data, function (d) {
     return d.endDate ? d.endDate.getTime() : d.startDate.getTime();
+
   });
   var ambitus = maximumDate - minimumDate;
   var displacement = ambitus / 100;
@@ -270,7 +272,13 @@ var computeBoundaries = exports.computeBoundaries = function computeBoundaries(d
   };
 };
 
-var computeDataRelatedState = exports.computeDataRelatedState = function computeDataRelatedState(data, viewParameters) {
+var computeDataRelatedState = exports.computeDataRelatedState = function computeDataRelatedState(inputData, viewParameters) {
+  var data = inputData.map(function (d) {
+    return _extends({}, d, {
+      startDate: d.startDate && typeof d.startDate === 'string' ? new Date(d.startDate) : d.startDate,
+      endDate: d.endDate && typeof d.endDate === 'string' ? new Date(d.endDate) : d.endDate
+    });
+  });
   var timeBoundaries = computeBoundaries(data);
   var miniTicks = computeTicks(timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay);
   var displaceThreshold = (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay) / 1000;
