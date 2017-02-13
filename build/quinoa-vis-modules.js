@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.mapNetworkData = exports.mapTimelineData = exports.mapMapData = exports.parseNetworkData = exports.parseTimelineData = exports.parseMapData = exports.SVGViewer = exports.Timline = exports.Map = exports.Network = undefined;
+exports.mapNetworkData = exports.mapTimelineData = exports.mapMapData = exports.parseNetworkData = exports.parseTimelineData = exports.parseMapData = exports.Timeline = exports.SVGViewer = exports.Map = exports.Network = undefined;
 
 var _Network = require('./Network/Network');
 

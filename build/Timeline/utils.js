@@ -254,11 +254,10 @@ var computeEvents = exports.computeEvents = function computeEvents(data, thresho
 
 var computeBoundaries = exports.computeBoundaries = function computeBoundaries(data) {
   var minimumDate = (0, _d3Array.min)(data, function (d) {
-    return d.startDate.getTime();
+    return d.startDate && d.startDate.getTime();
   });
   var maximumDate = (0, _d3Array.max)(data, function (d) {
-    return d.endDate ? d.endDate.getTime() : d.startDate.getTime();
-
+    return d.endDate ? d.endDate && d.endDate.getTime() : d.startDate.getTime();
   });
   var ambitus = maximumDate - minimumDate;
   var displacement = ambitus / 100;

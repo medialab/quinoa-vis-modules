@@ -108,6 +108,10 @@ var Network = function (_Component) {
         this.setState({
           data: nextProps.data
         });
+      }
+
+      if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
+        this.rebootSigma();
         if (!nextProps.data.spatialized && sigInst) {
           sigInst.startForceAtlas2({
             startingIterations: 1000
@@ -116,10 +120,6 @@ var Network = function (_Component) {
             return sigInst.stopForceAtlas2();
           }, 1000);
         }
-      }
-
-      if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
-        this.rebootSigma();
       }
     }
   }, {

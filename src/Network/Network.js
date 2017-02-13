@@ -82,6 +82,11 @@ class Network extends Component {
       this.setState({
         data: nextProps.data
       });
+    }
+
+    // update sigma when state's data has changed
+    if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
+      this.rebootSigma();
       // launch forceAtlas if graph is not spatialized
       if (!nextProps.data.spatialized && sigInst) {
         sigInst.startForceAtlas2({
@@ -89,11 +94,6 @@ class Network extends Component {
         });
         setTimeout(() => sigInst.stopForceAtlas2(), 1000);
       }
-    }
-
-    // update sigma when state's data has changed
-    if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
-      this.rebootSigma();
     }
   }
 
