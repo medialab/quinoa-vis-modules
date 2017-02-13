@@ -21,6 +21,13 @@ class Network extends Component {
 
     this.rebootSigma = this.rebootSigma.bind(this);
     this.rebootSigma();
+    // launch forceAtlas if graph is not spatialized
+    if (!props.data.spatialized && sigInst) {
+      sigInst.startForceAtlas2({
+        startingIterations: 1000
+      });
+      setTimeout(() => sigInst.stopForceAtlas2(), 1000);
+    }
   }
 
   componentDidMount() {
@@ -75,6 +82,13 @@ class Network extends Component {
       this.setState({
         data: nextProps.data
       });
+      // launch forceAtlas if graph is not spatialized
+      if (!nextProps.data.spatialized && sigInst) {
+        sigInst.startForceAtlas2({
+          startingIterations: 1000
+        });
+        setTimeout(() => sigInst.stopForceAtlas2(), 1000);
+      }
     }
 
     // update sigma when state's data has changed
@@ -157,19 +171,12 @@ class Network extends Component {
       camera = sigInst.addCamera('main');
       camera.isAnimated = true;
     }
- else {
+    else {
       sigInst.graph.clear();
       sigInst.graph.read(visData);
     }
 
     sigInst.refresh();
-    // launch forceAtlas if graph is not spatialized
-    if (!this.state.data.spatialized) {
-      sigInst.startForceAtlas2({
-        startingIterations: 1000
-      });
-      setTimeout(() => sigInst.stopForceAtlas2(), 1000);
-    }
   }
 
   /**

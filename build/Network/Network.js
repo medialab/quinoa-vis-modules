@@ -47,6 +47,14 @@ var Network = function (_Component) {
 
     _this.rebootSigma = _this.rebootSigma.bind(_this);
     _this.rebootSigma();
+    if (!props.data.spatialized && sigInst) {
+      sigInst.startForceAtlas2({
+        startingIterations: 1000
+      });
+      setTimeout(function () {
+        return sigInst.stopForceAtlas2();
+      }, 1000);
+    }
     return _this;
   }
 
@@ -100,6 +108,14 @@ var Network = function (_Component) {
         this.setState({
           data: nextProps.data
         });
+        if (!nextProps.data.spatialized && sigInst) {
+          sigInst.startForceAtlas2({
+            startingIterations: 1000
+          });
+          setTimeout(function () {
+            return sigInst.stopForceAtlas2();
+          }, 1000);
+        }
       }
 
       if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
@@ -183,14 +199,6 @@ var Network = function (_Component) {
       }
 
       sigInst.refresh();
-      if (!this.state.data.spatialized) {
-        sigInst.startForceAtlas2({
-          startingIterations: 1000
-        });
-        setTimeout(function () {
-          return sigInst.stopForceAtlas2();
-        }, 1000);
-      }
     }
 
 
