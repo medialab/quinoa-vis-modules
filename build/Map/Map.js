@@ -179,12 +179,13 @@ var Map = function (_Component) {
             url: viewParameters.tilesUrl }),
           data && data.main.map(function (obj, index) {
             var shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.indexOf(obj.category) > -1 : true;
+            var color = viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category] || viewParameters.colorsMap.main.default || viewParameters.colorsMap.default;
+            var coordinates = void 0;
             switch (obj.geometry.type) {
               case 'Point':
                 var thatPosition = obj.geometry.coordinates;
 
                 if (!Number.isNaN(thatPosition[0]) && !Number.isNaN(thatPosition[1])) {
-                  var color = viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category] || viewParameters.colorsMap.main.default || viewParameters.colorsMap.default;
                   var thatIcon = (0, _leaflet.divIcon)({
                     className: 'point-marker-icon',
                     html: '<span class="shape" style="background:' + color + '"></span>'
@@ -210,11 +211,22 @@ var Map = function (_Component) {
                 break;
 
               case 'Polygon':
-                var coordinates = obj.geometry.coordinates.map(function (couple) {
+                coordinates = obj.geometry.coordinates.map(function (couple) {
                   return couple.reverse();
                 });
                 return _react2.default.createElement(_reactLeaflet.Polygon, {
                   key: index,
+                  color: color,
+                  opacity: shown ? 1 : 0.1,
+                  positions: coordinates });
+              case 'Polyline':
+              case 'LineString':
+                coordinates = obj.geometry.coordinates.map(function (couple) {
+                  return couple.reverse();
+                });
+                return _react2.default.createElement(_reactLeaflet.Polyline, {
+                  key: index,
+                  color: color,
                   opacity: shown ? 1 : 0.1,
                   positions: coordinates });
 

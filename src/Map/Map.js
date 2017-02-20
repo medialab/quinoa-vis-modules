@@ -1,5 +1,12 @@
 import React, {Component, PropTypes} from 'react';
-import {Map as MapComponent, Marker, Popup, TileLayer, Polygon} from 'react-leaflet';
+import {
+  Map as MapComponent,
+  Marker,
+  Popup,
+  TileLayer,
+  Polygon,
+  Polyline
+} from 'react-leaflet';
 import {divIcon} from 'leaflet';
 import {debounce} from 'lodash';
 // require leaflet code
@@ -157,12 +164,13 @@ class Map extends Component {
           {
             data && data.main.map((obj, index) => {
               const shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.indexOf(obj.category) > -1 : true;
+              const color = (viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default);
+              let coordinates;
               switch (obj.geometry.type) {
                 case 'Point':
                   const thatPosition = obj.geometry.coordinates;
 
                   if (!Number.isNaN(thatPosition[0]) && !Number.isNaN(thatPosition[1])) {
-                    const color = (viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default);
                     const thatIcon = divIcon({
                       className: 'point-marker-icon',
                       html: '<span class="shape" style="background:' + color + '"></span>'
@@ -182,10 +190,21 @@ class Map extends Component {
                   break;
 
                 case 'Polygon':
-                  const coordinates = obj.geometry.coordinates.map(couple => couple.reverse());
+                  coordinates = obj.geometry.coordinates.map(couple => couple.reverse());
                   return (
                     <Polygon
                       key={index}
+                      color={color}
+                      opacity={shown ? 1 : 0.1}
+                      positions={coordinates} />
+                  );
+                case 'Polyline':
+                case 'LineString':
+                  coordinates = obj.geometry.coordinates.map(couple => couple.reverse());
+                  return (
+                    <Polyline
+                      key={index}
+                      color={color}
                       opacity={shown ? 1 : 0.1}
                       positions={coordinates} />
                   );
