@@ -354,7 +354,7 @@ export const computeBoundaries = (data) => {
  * @return {array} stateRepresentation - invariant timeline-related state elements to be used when initing / reloading data or dataMap into component
  */
 export const computeDataRelatedState = (inputData, viewParameters) => {
-    const data = inputData.map((d) => ({
+    const data = inputData && inputData.main && inputData.main.map((d) => ({
       ...d,
       startDate: d.startDate && typeof d.startDate === 'string' ? new Date(d.startDate) : d.startDate,
       endDate: d.endDate && typeof d.endDate === 'string' ? new Date(d.endDate) : d.endDate

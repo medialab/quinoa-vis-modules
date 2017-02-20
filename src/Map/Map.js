@@ -143,7 +143,6 @@ class Map extends Component {
     const refMap = (c) => {
       this.map = c;
     };
-
     return (
       <figure className={'quinoa-map' + (allowUserViewChange ? '' : ' locked')}>
         <MapComponent
@@ -156,7 +155,7 @@ class Map extends Component {
             url={viewParameters.tilesUrl} />
 
           {
-            data.map((object, index) => {
+            data && data.main.map((object, index) => {
               switch (object.geometry.type) {
 
                 case 'Point':
@@ -207,14 +206,16 @@ Map.propTypes = {
   /*
    * Incoming data in json format
    */
-  data: PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string,
-    category: PropTypes.string,
-    geometry: PropTypes.shape({
-      type: PropTypes.string,
-      // coordinates: PropTypes.array
-    })
-  })),
+  data: PropTypes.shape({
+    main: PropTypes.arrayOf(PropTypes.shape({
+      title: PropTypes.string,
+      category: PropTypes.string,
+      geometry: PropTypes.shape({
+        type: PropTypes.string,
+        // coordinates: PropTypes.array
+      })
+    }))
+  }),
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not)
    */

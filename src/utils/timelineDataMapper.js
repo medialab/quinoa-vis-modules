@@ -72,43 +72,44 @@ export default function mapData (normalizedData = {main: []}, inputDataMap = {ma
   const data = normalizedData.main;
   const dataMap = inputDataMap.main;
 
-  return data.map(datapoint => {
-    return Object.keys(dataMap).reduce((obj, dataKey) => {
+  return {
+    main: data.map(datapoint => {
+      return Object.keys(dataMap).reduce((obj, dataKey) => {
+        return {
+          ...obj,
+          [dataKey]: (typeof dataMap[dataKey] === 'function')
+                     ? dataMap[dataKey](datapoint) // case accessor
+                     : datapoint[dataMap[dataKey]] // case prop name
+        };
+      }, {});
+    })
+    // compute dates (timeline specific)
+    .map(datapoint => {
+      const {
+        year,
+        month,
+        day,
+        time,
+        endYear,
+        endMonth,
+        endDay,
+        endTime
+      } = datapoint;
+
+      const startDate = computeDate(year, month, day, time);
+      const endDate = computeDate(endYear, endMonth, endDay, endTime);
+
       return {
-        ...obj,
-        [dataKey]: (typeof dataMap[dataKey] === 'function')
-                   ? dataMap[dataKey](datapoint) // case accessor
-                   : datapoint[dataMap[dataKey]] // case prop name
+        ...datapoint,
+        startDate,
+        endDate
       };
-    }, {});
-  })
-  // compute dates (timeline specific)
-  .map(datapoint => {
-    const {
-      year,
-      month,
-      day,
-      time,
-      endYear,
-      endMonth,
-      endDay,
-      endTime
-    } = datapoint;
-
-    const startDate = computeDate(year, month, day, time);
-    const endDate = computeDate(endYear, endMonth, endDay, endTime);
-
-    return {
-      ...datapoint,
-      startDate,
-      endDate
-    };
-  })
-  // sort by ascending date
-  .sort((a, b) => {
-    if (a.startDate.getTime() > b.startDate.getTime()) {
-      return 1;
-    }
-    return -1;
-  });
+    })
+    // sort by ascending date
+    .sort((a, b) => {
+      if (a.startDate.getTime() > b.startDate.getTime()) {
+        return 1;
+      }
+      return -1;
+    })};
 }

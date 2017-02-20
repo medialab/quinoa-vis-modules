@@ -164,7 +164,6 @@ var Map = function (_Component) {
       var refMap = function refMap(c) {
         _this2.map = c;
       };
-
       return _react2.default.createElement(
         'figure',
         { className: 'quinoa-map' + (allowUserViewChange ? '' : ' locked') },
@@ -178,7 +177,7 @@ var Map = function (_Component) {
             animate: true },
           _react2.default.createElement(_reactLeaflet.TileLayer, {
             url: viewParameters.tilesUrl }),
-          data.map(function (object, index) {
+          data && data.main.map(function (object, index) {
             switch (object.geometry.type) {
 
               case 'Point':
@@ -232,13 +231,15 @@ var Map = function (_Component) {
 }(_react.Component);
 
 Map.propTypes = {
-  data: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-    title: _react.PropTypes.string,
-    category: _react.PropTypes.string,
-    geometry: _react.PropTypes.shape({
-      type: _react.PropTypes.string
-    })
-  })),
+  data: _react.PropTypes.shape({
+    main: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+      title: _react.PropTypes.string,
+      category: _react.PropTypes.string,
+      geometry: _react.PropTypes.shape({
+        type: _react.PropTypes.string
+      })
+    }))
+  }),
   viewParameters: _react.PropTypes.shape({
     cameraX: _react.PropTypes.number,
     cameraY: _react.PropTypes.number,

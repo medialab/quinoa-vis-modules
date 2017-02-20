@@ -176,7 +176,6 @@ var Timeline = function (_React$Component) {
           globalEventsClusters = _state.eventsClusters,
           timeBoundaries = _state.timeBoundaries;
 
-
       var fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
       var toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
       var timeSpan = toDate - fromDate;
@@ -328,12 +327,14 @@ var Timeline = function (_React$Component) {
 }(_react2.default.Component);
 
 Timeline.propTypes = {
-  data: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-    category: _react.PropTypes.string,
-    name: _react.PropTypes.string,
-    startDate: _react.PropTypes.instanceOf(Date),
-    endDate: _react.PropTypes.instanceOf(Date)
-  })),
+  data: _react.PropTypes.shape({
+    main: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+      category: _react.PropTypes.string,
+      name: _react.PropTypes.string,
+      startDate: _react.PropTypes.instanceOf(Date),
+      endDate: _react.PropTypes.instanceOf(Date)
+    }))
+  }),
   viewParameters: _react.PropTypes.shape({
     fromDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
     toDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),

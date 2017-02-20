@@ -272,7 +272,7 @@ var computeBoundaries = exports.computeBoundaries = function computeBoundaries(d
 };
 
 var computeDataRelatedState = exports.computeDataRelatedState = function computeDataRelatedState(inputData, viewParameters) {
-  var data = inputData.map(function (d) {
+  var data = inputData && inputData.main && inputData.main.map(function (d) {
     return _extends({}, d, {
       startDate: d.startDate && typeof d.startDate === 'string' ? new Date(d.startDate) : d.startDate,
       endDate: d.endDate && typeof d.endDate === 'string' ? new Date(d.endDate) : d.endDate

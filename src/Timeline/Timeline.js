@@ -177,7 +177,6 @@ class Timeline extends React.Component {
       eventsClusters: globalEventsClusters,
       timeBoundaries
     } = this.state;
-
     /*
      * Step: filter the elements to display in the main timeline
      */
@@ -339,12 +338,14 @@ Timeline.propTypes = {
   /*
    * Incoming data in json format
    */
-  data: PropTypes.arrayOf(PropTypes.shape({
-    category: PropTypes.string,
-    name: PropTypes.string,
-    startDate: PropTypes.instanceOf(Date),
-    endDate: PropTypes.instanceOf(Date)
-  })),
+  data: PropTypes.shape({
+    main: PropTypes.arrayOf(PropTypes.shape({
+      category: PropTypes.string,
+      name: PropTypes.string,
+      startDate: PropTypes.instanceOf(Date),
+      endDate: PropTypes.instanceOf(Date)
+    }))
+  }),
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not - like Timeline spatialization algorithm for instance)
    */

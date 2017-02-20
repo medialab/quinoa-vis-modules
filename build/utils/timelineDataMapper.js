@@ -60,35 +60,36 @@ function mapData() {
   var data = normalizedData.main;
   var dataMap = inputDataMap.main;
 
-  return data.map(function (datapoint) {
-    return Object.keys(dataMap).reduce(function (obj, dataKey) {
-      return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap[dataKey] === 'function' ? dataMap[dataKey](datapoint) 
-      : datapoint[dataMap[dataKey]]));
-    }, {});
-  })
-  .map(function (datapoint) {
-    var year = datapoint.year,
-        month = datapoint.month,
-        day = datapoint.day,
-        time = datapoint.time,
-        endYear = datapoint.endYear,
-        endMonth = datapoint.endMonth,
-        endDay = datapoint.endDay,
-        endTime = datapoint.endTime;
+  return {
+    main: data.map(function (datapoint) {
+      return Object.keys(dataMap).reduce(function (obj, dataKey) {
+        return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap[dataKey] === 'function' ? dataMap[dataKey](datapoint) 
+        : datapoint[dataMap[dataKey]]));
+      }, {});
+    })
+    .map(function (datapoint) {
+      var year = datapoint.year,
+          month = datapoint.month,
+          day = datapoint.day,
+          time = datapoint.time,
+          endYear = datapoint.endYear,
+          endMonth = datapoint.endMonth,
+          endDay = datapoint.endDay,
+          endTime = datapoint.endTime;
 
 
-    var startDate = computeDate(year, month, day, time);
-    var endDate = computeDate(endYear, endMonth, endDay, endTime);
+      var startDate = computeDate(year, month, day, time);
+      var endDate = computeDate(endYear, endMonth, endDay, endTime);
 
-    return _extends({}, datapoint, {
-      startDate: startDate,
-      endDate: endDate
-    });
-  })
-  .sort(function (a, b) {
-    if (a.startDate.getTime() > b.startDate.getTime()) {
-      return 1;
-    }
-    return -1;
-  });
+      return _extends({}, datapoint, {
+        startDate: startDate,
+        endDate: endDate
+      });
+    })
+    .sort(function (a, b) {
+      if (a.startDate.getTime() > b.startDate.getTime()) {
+        return 1;
+      }
+      return -1;
+    }) };
 }
