@@ -143,7 +143,7 @@ class Network extends Component {
       ...this.state.viewParameters,
       allowUserViewChange: this.props.allowUserViewChange
     };
-    const showCats = this.state.viewParameters && this.state.viewParameters.showCategories;
+    const showCats = this.state.viewParameters && this.state.viewParameters.shownCategories;
     const visData = {
       nodes: this.state.data.nodes
         .map(node => {
@@ -274,7 +274,7 @@ Network.propTypes = {
     cameraRatio: PropTypes.number,
     cameraAngle: PropTypes.number,
     // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
-    // showCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
+    // shownCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     /*
      * Graph settings parameters
      */

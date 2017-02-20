@@ -168,7 +168,7 @@ var Network = function (_Component) {
       var props = _extends({}, this.state.viewParameters, {
         allowUserViewChange: this.props.allowUserViewChange
       });
-      var showCats = this.state.viewParameters && this.state.viewParameters.showCategories;
+      var showCats = this.state.viewParameters && this.state.viewParameters.shownCategories;
       var visData = {
         nodes: this.state.data.nodes.map(function (node) {
           var color = props.colorsMap.nodes && (props.colorsMap.nodes[node.category] || props.colorsMap.nodes.default) || props.colorsMap.default;

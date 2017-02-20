@@ -156,7 +156,7 @@ class Map extends Component {
 
           {
             data && data.main.map((obj, index) => {
-              const shown = viewParameters.showCategories ? obj.category && viewParameters.showCategories.main.indexOf(obj.category) > -1 : true;
+              const shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.indexOf(obj.category) > -1 : true;
               switch (obj.geometry.type) {
                 case 'Point':
                   const thatPosition = obj.geometry.coordinates;
@@ -222,7 +222,7 @@ Map.propTypes = {
    */
   viewParameters: PropTypes.shape({
     // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
-    // showCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
+    // shownCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     /*
      * Camera position related parameters
      */

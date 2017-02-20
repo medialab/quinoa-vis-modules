@@ -178,7 +178,7 @@ var Map = function (_Component) {
           _react2.default.createElement(_reactLeaflet.TileLayer, {
             url: viewParameters.tilesUrl }),
           data && data.main.map(function (obj, index) {
-            var shown = viewParameters.showCategories ? obj.category && viewParameters.showCategories.main.indexOf(obj.category) > -1 : true;
+            var shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.indexOf(obj.category) > -1 : true;
             switch (obj.geometry.type) {
               case 'Point':
                 var thatPosition = obj.geometry.coordinates;
