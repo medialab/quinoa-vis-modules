@@ -225,15 +225,16 @@ var Network = function (_Component) {
 
       var _props$allowUserViewC = this.props.allowUserViewChange,
           allowUserViewChange = _props$allowUserViewC === undefined ? true : _props$allowUserViewC;
+      var data = this.state.data;
 
 
-      return _react2.default.createElement(
+      return data ? _react2.default.createElement(
         'figure',
         { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
         _react2.default.createElement('div', { id: 'sigma-container', ref: function ref(div) {
             return _this3.container = div;
           } })
-      );
+      ) : 'Loading';
     }
   }]);
 

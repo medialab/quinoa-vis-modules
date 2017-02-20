@@ -215,12 +215,15 @@ class Network extends Component {
     const {
       allowUserViewChange = true
     } = this.props;
+    const {
+      data
+    } = this.state;
 
-    return (
+    return data ? (
       <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
         <div id="sigma-container" ref={div => (this.container = div)} />
       </figure>
-    );
+    ) : 'Loading';
   }
 }
 

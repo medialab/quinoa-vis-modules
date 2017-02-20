@@ -164,7 +164,7 @@ var Map = function (_Component) {
       var refMap = function refMap(c) {
         _this2.map = c;
       };
-      return _react2.default.createElement(
+      return data ? _react2.default.createElement(
         'figure',
         { className: 'quinoa-map' + (allowUserViewChange ? '' : ' locked') },
         _react2.default.createElement(
@@ -224,7 +224,7 @@ var Map = function (_Component) {
             }
           })
         )
-      );
+      ) : 'Loading';
     }
   }]);
 

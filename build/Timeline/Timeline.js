@@ -252,7 +252,7 @@ var Timeline = function (_React$Component) {
         _this2.setViewSpan(from, to, false);
       };
 
-      return _react2.default.createElement(
+      return data ? _react2.default.createElement(
         'figure',
         { className: 'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape') },
         _react2.default.createElement(
@@ -319,7 +319,7 @@ var Timeline = function (_React$Component) {
             )
           )
         )
-      );
+      ) : 'Loading';
     }
   }]);
 

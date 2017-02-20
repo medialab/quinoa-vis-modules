@@ -275,7 +275,7 @@ class Timeline extends React.Component {
     /*
      * Step: render component
      */
-    return (
+    return data ? (
       <figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
         <aside onWheel={onAsideWheel} className="mini-timeline">
           <TimeTicks ticks={miniTicks} scale={miniScale} />
@@ -330,7 +330,7 @@ class Timeline extends React.Component {
           </div>
         </section>
       </figure>
-    );
+    ) : 'Loading';
   }
 }
 

@@ -143,7 +143,7 @@ class Map extends Component {
     const refMap = (c) => {
       this.map = c;
     };
-    return (
+    return data ? (
       <figure className={'quinoa-map' + (allowUserViewChange ? '' : ' locked')}>
         <MapComponent
           ref={refMap}
@@ -199,7 +199,7 @@ class Map extends Component {
 
         </MapComponent>
       </figure>
-    );
+    ) : 'Loading';
   }
 }
 
