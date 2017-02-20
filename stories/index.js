@@ -52,6 +52,19 @@ storiesOf('Timeline', module)
       viewParameters = {timelineBaseViewParameters}
     />
   ))
+  .add('with a filter', () => (
+    <Timeline
+      allowUserViewChange ={true}
+      data={timelineData}
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {{
+        ...timelineBaseViewParameters,
+        showCategories: {
+          main: ['computation']
+        }
+      }}
+    />
+  ))
   .add('locked', () => (
     <Timeline
       allowUserViewChange ={false}
@@ -173,8 +186,10 @@ const mapGeoJSONBaseViewParameters = {
   colorsMap: {
     main: {
       osm_mapnik: 'orange',
-      noCategory: 'brown'
-    }
+      noCategory: 'brown',
+      default: 'brown'
+    },
+    default: 'brown'
   }
 };
 const geoJSONData = mapMapData(parseMapData(mapGeoJSONData, 'geoJSON'), {
@@ -188,6 +203,19 @@ storiesOf('Map', module)
       data={mapData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {mapBaseViewParameters}
+    />
+  ))
+  .add('with a filter', () => (
+    <Map
+      allowUserViewChange ={true}
+      data={mapData}
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {{
+        ...mapBaseViewParameters,
+        showCategories: {
+          main: ['osm_mapnik']
+        }
+      }}
     />
   ))
   .add('default (with geojson)', () => (
@@ -306,6 +334,9 @@ const networkJSONBaseViewParameters = {
       3: 'red',
       default: 'brown'
     },
+    edges: {
+      default: 'lightgrey'
+    },
     default: 'brown'
   }
 };
@@ -377,6 +408,9 @@ const networkGraphMLBaseViewParameters = {
       'animal': 'yellow',
       default: 'brown'
     },
+    edges: {
+      default: 'lightgrey'
+    },
     default: 'brown'
   }
 };
@@ -398,6 +432,19 @@ storiesOf('Network', module)
       data={networkJSONData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkJSONBaseViewParameters}
+    />
+  ))
+  .add('with json and filter', () => (
+    <Network
+      allowUserViewChange ={true}
+      data={networkJSONData}
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {{
+        ...networkJSONBaseViewParameters,
+        showCategories: {
+          nodes: [1]
+        }
+      }}
     />
   ))
   .add('with graphml', () => (

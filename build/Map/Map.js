@@ -177,32 +177,32 @@ var Map = function (_Component) {
             animate: true },
           _react2.default.createElement(_reactLeaflet.TileLayer, {
             url: viewParameters.tilesUrl }),
-          data && data.main.map(function (object, index) {
-            switch (object.geometry.type) {
-
+          data && data.main.map(function (obj, index) {
+            var shown = viewParameters.showCategories ? obj.category && viewParameters.showCategories.main.indexOf(obj.category) > -1 : true;
+            switch (obj.geometry.type) {
               case 'Point':
-                var thatPosition = object.geometry.coordinates;
+                var thatPosition = obj.geometry.coordinates;
 
                 if (!Number.isNaN(thatPosition[0]) && !Number.isNaN(thatPosition[1])) {
-                  var color = viewParameters.colorsMap.main && viewParameters.colorsMap.main[object.category] || viewParameters.colorsMap.main.default || viewParameters.colorsMap.default;
+                  var color = viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category] || viewParameters.colorsMap.main.default || viewParameters.colorsMap.default;
                   var thatIcon = (0, _leaflet.divIcon)({
                     className: 'point-marker-icon',
                     html: '<span class="shape" style="background:' + color + '"></span>'
                   });
-
                   return _react2.default.createElement(
                     _reactLeaflet.Marker,
                     {
                       key: index,
                       position: thatPosition,
-                      icon: thatIcon },
+                      icon: thatIcon,
+                      opacity: shown ? 1 : 0.1 },
                     _react2.default.createElement(
                       _reactLeaflet.Popup,
                       null,
                       _react2.default.createElement(
                         'span',
                         null,
-                        object.title
+                        obj.title
                       )
                     )
                   );
@@ -210,11 +210,12 @@ var Map = function (_Component) {
                 break;
 
               case 'Polygon':
-                var coordinates = object.geometry.coordinates.map(function (couple) {
+                var coordinates = obj.geometry.coordinates.map(function (couple) {
                   return couple.reverse();
                 });
                 return _react2.default.createElement(_reactLeaflet.Polygon, {
                   key: index,
+                  opacity: shown ? 1 : 0.1,
                   positions: coordinates });
 
               default:

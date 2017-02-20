@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {debounce} from 'lodash';
+import chroma from 'chroma-js';
 require('gexf');
 
 import './Network.scss';
@@ -142,17 +143,35 @@ class Network extends Component {
       ...this.state.viewParameters,
       allowUserViewChange: this.props.allowUserViewChange
     };
+    const showCats = this.state.viewParameters && this.state.viewParameters.showCategories;
     const visData = {
-      nodes: this.state.data.nodes.map(node => ({
-        ...node,
-        // dynamically set color
-        color: (props.colorsMap.nodes && (props.colorsMap.nodes[node.category] || props.colorsMap.nodes.default)) || props.colorsMap.default
-      })),
-      edges: this.state.data.edges.map(edge => ({
-        ...edge,
-        type: edge.type || 'undirected',
-        color: (props.colorsMap.edges && (props.colorsMap.edges[edge.category] || props.colorsMap.edges.default)) || props.colorsMap.default
-      }))
+      nodes: this.state.data.nodes
+        .map(node => {
+          const color = (props.colorsMap.nodes &&
+                  (props.colorsMap.nodes[node.category]
+                    || props.colorsMap.nodes.default))
+                  || props.colorsMap.default;
+          return {
+          ...node,
+          // dynamically set color
+          color: (!showCats || !showCats.nodes) || (showCats.nodes.indexOf(node.category) > -1)
+                  ? color : chroma(color).desaturate(3).brighten().alpha(0.2).hex()
+          };
+      }),
+      edges: this.state.data.edges
+        .map(edge => {
+          const color = (props.colorsMap.edges &&
+                    (props.colorsMap.edges[edge.category]
+                      || props.colorsMap.edges.default)
+                    )
+                    || props.colorsMap.default;
+          return {
+            ...edge,
+            type: edge.type || 'undirected',
+            color: (!showCats || !showCats.edges) || (showCats.edges.indexOf(edge.category) > -1)
+                  ? color : chroma(color).desaturate(3).brighten().alpha(0.2).hex()
+          };
+         })
     };
 
     const SIGMA_SETTINGS = {
@@ -252,6 +271,7 @@ Network.propTypes = {
     cameraRatio: PropTypes.number,
     cameraAngle: PropTypes.number,
     // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
+    // showCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     /*
      * Graph settings parameters
      */

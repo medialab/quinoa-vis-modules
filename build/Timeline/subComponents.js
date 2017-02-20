@@ -27,11 +27,13 @@ var TimeObject = exports.TimeObject = function TimeObject(_ref) {
       _ref$showLabel = _ref.showLabel,
       showLabel = _ref$showLabel === undefined ? true : _ref$showLabel,
       _ref$showTooltip = _ref.showTooltip,
-      showTooltip = _ref$showTooltip === undefined ? true : _ref$showTooltip;
+      showTooltip = _ref$showTooltip === undefined ? true : _ref$showTooltip,
+      _ref$shown = _ref.shown,
+      shown = _ref$shown === undefined ? true : _ref$shown;
   return _react2.default.createElement(
     'span',
     {
-      className: 'time-object' + (point.endDate ? ' period' : ' point'),
+      className: 'time-object' + (point.endDate ? ' period ' : ' point ') + (shown ? 'shown' : 'hidden'),
       style: {
         top: scale(point.startDate.getTime()) + '%',
         height: point.endDate ? scale(point.endDate.getTime()) - scale(point.startDate.getTime()) + '%' : undefined
@@ -140,6 +142,7 @@ var ClustersGroup = exports.ClustersGroup = function ClustersGroup(_ref4) {
             point: obj,
             scale: scale,
             color: viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category] || viewParameters.colorsMap.main.default || viewParameters.colorsMap.default,
+            shown: viewParameters.showCategories ? obj.category && viewParameters.showCategories.main.indexOf(obj.category) > -1 : true,
             showLabel: !obj.overlapped });
         })
       );

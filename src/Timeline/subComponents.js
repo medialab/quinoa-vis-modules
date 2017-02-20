@@ -13,10 +13,11 @@ export const TimeObject = ({
   scale,
   color,
   showLabel = true,
-  showTooltip = true
+  showTooltip = true,
+  shown = true
 }) => (
   <span
-    className={'time-object' + (point.endDate ? ' period' : ' point')}
+    className={'time-object' + (point.endDate ? ' period ' : ' point ') + (shown ? 'shown' : 'hidden')}
     style={{
       top: scale(point.startDate.getTime()) + '%',
       height: point.endDate ? scale(point.endDate.getTime()) - scale(point.startDate.getTime()) + '%' : undefined
@@ -104,14 +105,18 @@ export const ClustersGroup = ({
         {clusters
           .timeObjects
           .filter(obj => obj.column === column)
-          .map((obj, index) => (
-            <TimeObject
-              key={index}
-              point={obj}
-              scale={scale}
-              color={(viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default)}
-              showLabel={!obj.overlapped} />
-          ))
+          .map((obj, index) => {
+            return (
+              <TimeObject
+                key={index}
+                point={obj}
+                scale={scale}
+                color={(viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default)}
+                shown={viewParameters.showCategories ? obj.category && viewParameters.showCategories.main.indexOf(obj.category) > -1 : true}
+                showLabel={!obj.overlapped} />
+            );
+          }
+          )
         }
       </div>
     ))

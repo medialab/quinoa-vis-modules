@@ -350,6 +350,7 @@ Timeline.propTypes = {
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not - like Timeline spatialization algorithm for instance)
    */
   viewParameters: PropTypes.shape({
+    // showCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     /*
      * parameters related to camera position

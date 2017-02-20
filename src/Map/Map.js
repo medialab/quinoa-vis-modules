@@ -155,26 +155,26 @@ class Map extends Component {
             url={viewParameters.tilesUrl} />
 
           {
-            data && data.main.map((object, index) => {
-              switch (object.geometry.type) {
-
+            data && data.main.map((obj, index) => {
+              const shown = viewParameters.showCategories ? obj.category && viewParameters.showCategories.main.indexOf(obj.category) > -1 : true;
+              switch (obj.geometry.type) {
                 case 'Point':
-                  const thatPosition = object.geometry.coordinates;
+                  const thatPosition = obj.geometry.coordinates;
 
                   if (!Number.isNaN(thatPosition[0]) && !Number.isNaN(thatPosition[1])) {
-                    const color = (viewParameters.colorsMap.main && viewParameters.colorsMap.main[object.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default);
+                    const color = (viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default);
                     const thatIcon = divIcon({
                       className: 'point-marker-icon',
                       html: '<span class="shape" style="background:' + color + '"></span>'
                     });
-
                     return (
                       <Marker
                         key={index}
                         position={thatPosition}
-                        icon={thatIcon}>
+                        icon={thatIcon}
+                        opacity={shown ? 1 : 0.1}>
                         <Popup>
-                          <span>{object.title}</span>
+                          <span>{obj.title}</span>
                         </Popup>
                       </Marker>
                     );
@@ -182,10 +182,11 @@ class Map extends Component {
                   break;
 
                 case 'Polygon':
-                  const coordinates = object.geometry.coordinates.map(couple => couple.reverse());
+                  const coordinates = obj.geometry.coordinates.map(couple => couple.reverse());
                   return (
                     <Polygon
                       key={index}
+                      opacity={shown ? 1 : 0.1}
                       positions={coordinates} />
                   );
 
@@ -221,6 +222,7 @@ Map.propTypes = {
    */
   viewParameters: PropTypes.shape({
     // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
+    // showCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     /*
      * Camera position related parameters
      */

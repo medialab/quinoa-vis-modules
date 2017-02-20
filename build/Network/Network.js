@@ -14,6 +14,10 @@ var _react2 = _interopRequireDefault(_react);
 
 var _lodash = require('lodash');
 
+var _chromaJs = require('chroma-js');
+
+var _chromaJs2 = _interopRequireDefault(_chromaJs);
+
 require('./Network.scss');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -164,16 +168,19 @@ var Network = function (_Component) {
       var props = _extends({}, this.state.viewParameters, {
         allowUserViewChange: this.props.allowUserViewChange
       });
+      var showCats = this.state.viewParameters && this.state.viewParameters.showCategories;
       var visData = {
         nodes: this.state.data.nodes.map(function (node) {
+          var color = props.colorsMap.nodes && (props.colorsMap.nodes[node.category] || props.colorsMap.nodes.default) || props.colorsMap.default;
           return _extends({}, node, {
-            color: props.colorsMap.nodes && (props.colorsMap.nodes[node.category] || props.colorsMap.nodes.default) || props.colorsMap.default
+            color: !showCats || !showCats.nodes || showCats.nodes.indexOf(node.category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(3).brighten().alpha(0.2).hex()
           });
         }),
         edges: this.state.data.edges.map(function (edge) {
+          var color = props.colorsMap.edges && (props.colorsMap.edges[edge.category] || props.colorsMap.edges.default) || props.colorsMap.default;
           return _extends({}, edge, {
             type: edge.type || 'undirected',
-            color: props.colorsMap.edges && (props.colorsMap.edges[edge.category] || props.colorsMap.edges.default) || props.colorsMap.default
+            color: !showCats || !showCats.edges || showCats.edges.indexOf(edge.category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(3).brighten().alpha(0.2).hex()
           });
         })
       };

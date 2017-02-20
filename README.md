@@ -36,6 +36,43 @@ npm install --save https://github.com/medialab/quinoa-vis-modules
 
 # Components general structure and API
 
+## Examples of use
+
+```
+export const MyTimelineContainer = () => (
+    <div className="my-timeline-container">
+    <Timeline 
+      data={timelineData} 
+      allowUserViewChange ={true}
+      onUserViewChange={(e) => console.log('user changed the view', e)}
+      viewParameters = {{
+          fromDate: new Date().setFullYear(1900),
+          toDate: new Date().setFullYear(1960),
+          orientation: 'portrait',
+          colorsMap: {
+            main: {
+              cartography: '#F24D98',
+              computation: '#813B7C',
+              mathematics: '#59D044',
+              statistics: '#F3A002'
+            }
+          }
+        }}
+    />
+    </div>
+)
+```
+
+See [the story book](https://github.com/medialab/quinoa-vis-modules/blob/master/stories/index.js) for more examples of use.
+
+## Data shape
+
+The data provided to components *must* always be an object in which each property represents a *collection* of the data to represent.
+
+For now, timeline and map require both a single-collection dataset, that is to be provided with an object containing a property `main` containing the data.
+
+Network requires a two-collections dataset, made of a `nodes` collection and an `edge` collection.
+
 ## API
 
 Each quinoa-vis-module component *must* comply to the following API :
@@ -52,49 +89,10 @@ Method props :
 
 The ``viewParameters`` *must* contain all the parameters necessary to render successfully a view of the visualization. The particular structures of the ``viewParameters`` of each component is detailed below, but all ``viewParameters``props share some subprop :
 
-- ``colorsMap`` : object that specifies how to color objects. Keys are values to look for in a categorical set of values present in objects' data, value are css color descriptions (therefore accepted methods : names, rgb, rgba, hex)
+- ``colorsMap`` : object that specifies how to color objects. First-level keys correspond to data's collections names. Second-level keys are values to look for in a categorical set of values present in objects' data, value are css color descriptions (therefore accepted methods : names, rgb, rgba, hex)
+- ``showCategories`` : object that specifies how to visually filter objects. First-level keys correspond to data's collections names. Each of them contains an array of strings corresponding the categories to show.
 
-## Examples of use
-
-```
-export const MyTimelineContainer = () => (
-    <div className="my-timeline-container">
-    <Timeline 
-      data={timelineData} 
-      allowUserViewChange ={true}
-      onUserViewChange={(e) => console.log('user changed the view', e)}
-      viewParameters = {{
-          fromDate: new Date().setFullYear(1900),
-          toDate: new Date().setFullYear(1960),
-          orientation: 'portrait',
-          colorsMap: {
-            cartography: '#F24D98',
-            computation: '#813B7C',
-            mathematics: '#59D044',
-            statistics: '#F3A002'
-          }
-        }}
-    />
-    </div>
-)
-```
-
-See [the story book](https://github.com/medialab/quinoa-vis-modules/blob/master/stories/index.js) for more examples of use.
-
-## File structure
-
-Each ``src`` subfolder is dedicated to a specific quinoa visualization component.
-
-Example of the ``Timeline`` submodule :
-
-```
--Timeline
---Timeline.js // stateful main component
---Timeline.scss // component layout styling and general styling
---subComponents.js // mini components (mostly stateless) to be used by the main component
-```
-
-# ``viewParameters`` property models
+# visualization-specific ``viewParameters`` property models
 
 ## Timeline
 
