@@ -117,12 +117,6 @@ var Network = function (_Component) {
       if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
         this.rebootSigma();
         if (!nextProps.data.spatialized && sigInst) {
-          sigInst.startForceAtlas2({
-            startingIterations: 1000
-          });
-          setTimeout(function () {
-            return sigInst.stopForceAtlas2();
-          }, 1000);
         }
       }
     }

@@ -90,10 +90,10 @@ class Network extends Component {
       this.rebootSigma();
       // launch forceAtlas if graph is not spatialized
       if (!nextProps.data.spatialized && sigInst) {
-        sigInst.startForceAtlas2({
-          startingIterations: 1000
-        });
-        setTimeout(() => sigInst.stopForceAtlas2(), 1000);
+        // sigInst.startForceAtlas2({
+        //   startingIterations: 1000
+        // });
+        // setTimeout(() => sigInst.stopForceAtlas2(), 1000);
       }
     }
   }
