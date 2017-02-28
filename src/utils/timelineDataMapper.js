@@ -90,10 +90,10 @@ export default function mapData (normalizedData = {main: []}, inputDataMap = {ma
         month,
         day,
         time,
-        endYear,
-        endMonth,
-        endDay,
-        endTime
+        endYear = datapoint['end year'],
+        endMonth = datapoint['end month'],
+        endDay = datapoint['end day'],
+        endTime = datapoint['end time']
       } = datapoint;
 
       const startDate = computeDate(year, month, day, time);

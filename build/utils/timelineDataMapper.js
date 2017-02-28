@@ -72,10 +72,14 @@ function mapData() {
           month = datapoint.month,
           day = datapoint.day,
           time = datapoint.time,
-          endYear = datapoint.endYear,
-          endMonth = datapoint.endMonth,
-          endDay = datapoint.endDay,
-          endTime = datapoint.endTime;
+          _datapoint$endYear = datapoint.endYear,
+          endYear = _datapoint$endYear === undefined ? datapoint['end year'] : _datapoint$endYear,
+          _datapoint$endMonth = datapoint.endMonth,
+          endMonth = _datapoint$endMonth === undefined ? datapoint['end month'] : _datapoint$endMonth,
+          _datapoint$endDay = datapoint.endDay,
+          endDay = _datapoint$endDay === undefined ? datapoint['end day'] : _datapoint$endDay,
+          _datapoint$endTime = datapoint.endTime,
+          endTime = _datapoint$endTime === undefined ? datapoint['end time'] : _datapoint$endTime;
 
 
       var startDate = computeDate(year, month, day, time);
