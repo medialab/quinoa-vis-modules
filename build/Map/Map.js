@@ -216,8 +216,10 @@ var Map = function (_Component) {
                 });
                 return _react2.default.createElement(_reactLeaflet.Polygon, {
                   key: index,
-                  color: color,
+                  color: 'white',
+                  fillColor: color,
                   opacity: shown ? 1 : 0.1,
+                  stroke: true,
                   positions: coordinates });
               case 'Polyline':
               case 'LineString':

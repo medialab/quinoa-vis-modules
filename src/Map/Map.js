@@ -194,9 +194,12 @@ class Map extends Component {
                   return (
                     <Polygon
                       key={index}
-                      color={color}
+                      color={'white'}
+                      fillColor={color}
                       opacity={shown ? 1 : 0.1}
-                      positions={coordinates} />
+                      stroke={true}
+                      positions={coordinates} 
+                    />
                   );
                 case 'Polyline':
                 case 'LineString':
@@ -206,7 +209,8 @@ class Map extends Component {
                       key={index}
                       color={color}
                       opacity={shown ? 1 : 0.1}
-                      positions={coordinates} />
+                      positions={coordinates} 
+                    />
                   );
 
                 default:
