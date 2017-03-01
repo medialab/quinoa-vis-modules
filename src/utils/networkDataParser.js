@@ -160,7 +160,7 @@ export default function parseData (str = '', dataFormat = 'gexf') {
       return undefined;
     }
   }
-  else if (dataFormat === 'graphML') {
+  else if (dataFormat === 'graphml') {
     normalizedData = parseGraphML(str);
   }
   else {

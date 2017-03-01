@@ -65,6 +65,24 @@ storiesOf('Timeline', module)
       }}
     />
   ))
+  .add('without categories', () => (
+    <Timeline
+      allowUserViewChange ={true}
+      data={
+        mapTimelineData(parseTimelineData(timelineDataRaw), {main: {
+          ...timelineDataMap,
+          category: undefined
+        }})
+      }
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {{
+        ...timelineBaseViewParameters,
+        showCategories: {
+          main: ['computation']
+        }
+      }}
+    />
+  ))
   .add('locked', () => (
     <Timeline
       allowUserViewChange ={false}
@@ -192,7 +210,7 @@ const mapGeoJSONBaseViewParameters = {
     default: 'brown'
   }
 };
-const geoJSONData = mapMapData(parseMapData(mapGeoJSONData, 'geoJSON'), {
+const geoJSONData = mapMapData(parseMapData(mapGeoJSONData, 'geojson'), {
   main: mapGeoJSONDataMap
 });
 

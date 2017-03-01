@@ -58,7 +58,7 @@ function parseData() {
         });
       })
     };
-  } else if (dataFormat === 'geoJSON') {
+  } else if (dataFormat === 'geojson') {
     try {
       var data = JSON.parse(str);
       return {
