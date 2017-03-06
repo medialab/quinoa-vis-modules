@@ -91,12 +91,10 @@ var Network = function (_Component) {
         }
         this.setState({
           visData: visData,
-          data: nextProps.data,
-          viewParameters: nextProps.viewParameters
+          data: nextProps.data
         });
       }
-
-      if (this.props.viewParameters !== nextProps.viewParameters || this.state.viewParameters !== nextProps.viewParameters) {
+      if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters) || JSON.stringify(this.state.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
         var coords = {
           x: nextProps.viewParameters.cameraX,
           y: nextProps.viewParameters.cameraY,
@@ -145,7 +143,10 @@ var Network = function (_Component) {
         cameraAngle: nextCamera.angle
       };
       if (typeof this.props.onUserViewChange === 'function') {
-        this.props.onUserViewChange(_extends({}, this.state.viewParameters, coords), 'userevent');
+        this.props.onUserViewChange({
+          viewParameters: _extends({}, this.state.viewParameters, coords),
+          lastEeventType: 'userevent'
+        });
       }
     }
 

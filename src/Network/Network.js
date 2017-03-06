@@ -60,7 +60,7 @@ class Network extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (
-      this.props.data !== nextProps.data || 
+      this.props.data !== nextProps.data ||
       this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap ||
       this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories ||
       this.props.viewParameters.colorsMap !== nextProps.viewParameters.colorsMap
@@ -71,14 +71,12 @@ class Network extends Component {
       }
       this.setState({
         visData,
-        data: nextProps.data,
-        viewParameters: nextProps.viewParameters
+        data: nextProps.data
       });
     }
-
     if (
-      this.props.viewParameters !== nextProps.viewParameters ||
-      this.state.viewParameters !== nextProps.viewParameters
+      JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters) ||
+      JSON.stringify(this.state.viewParameters) !== JSON.stringify(nextProps.viewParameters)
     ) {
       const coords = {
         x: nextProps.viewParameters.cameraX,
@@ -147,9 +145,12 @@ class Network extends Component {
     };
     if (typeof this.props.onUserViewChange === 'function') {
       this.props.onUserViewChange({
-        ...this.state.viewParameters,
-        ...coords
-      }, 'userevent');
+        viewParameters: {
+          ...this.state.viewParameters,
+          ...coords
+        },
+        lastEeventType: 'userevent'
+      });
     }
   }
   /**
