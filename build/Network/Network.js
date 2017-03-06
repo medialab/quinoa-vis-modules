@@ -40,9 +40,10 @@ var Network = function (_Component) {
 
     var _this = _possibleConstructorReturn(this, (Network.__proto__ || Object.getPrototypeOf(Network)).call(this, props, context));
 
-    _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
+    _this.onCoordinatesUpdate = (0, _lodash.debounce)(_this.onCoordinatesUpdate.bind(_this), 100);
     var state = {
-      data: props.data
+      data: props.data,
+      viewParameters: _extends({}, props.viewParameters)
     };
 
     _this.state = state;
@@ -56,16 +57,6 @@ var Network = function (_Component) {
     value: function componentDidMount() {
       var _this2 = this;
 
-      var onCoordinatesUpdate = function onCoordinatesUpdate(event) {
-        var nextCamera = event.target;
-        var coords = {
-          cameraX: nextCamera.x,
-          cameraY: nextCamera.y,
-          cameraRatio: nextCamera.ratio,
-          cameraAngle: nextCamera.angle
-        };
-        _this2.onUserViewChange(coords, 'userevent');
-      };
       var visData = this.buildVisData(this.props.data, this.props.viewParameters);
       setTimeout(function () {
         if (_this2.sigma) {
@@ -86,26 +77,26 @@ var Network = function (_Component) {
           var camera = _this2.sigma.sigma.cameras[0];
           camera.isAnimated = true;
           camera.goTo(coords);
-          camera.bind('coordinatesUpdated', onCoordinatesUpdate);
+          camera.bind('coordinatesUpdated', _this2.onCoordinatesUpdate);
         }
       });
     }
   }, {
     key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps, nextState) {
-
-      if (this.props.data !== nextState.data) {
+    value: function componentWillReceiveProps(nextProps) {
+      if (this.props.data !== nextProps.data || this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap || this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories || this.props.viewParameters.colorsMap !== nextProps.viewParameters.colorsMap) {
         var visData = this.buildVisData(nextProps.data, this.props.viewParameters);
         if (this.sigma) {
           this.sigma.sigma.graph.clear();
         }
         this.setState({
           visData: visData,
-          data: nextProps.data
+          data: nextProps.data,
+          viewParameters: nextProps.viewParameters
         });
       }
 
-      if (this.props.viewParameters !== nextProps.viewParameters) {
+      if (this.props.viewParameters !== nextProps.viewParameters || this.state.viewParameters !== nextProps.viewParameters) {
         var coords = {
           x: nextProps.viewParameters.cameraX,
           y: nextProps.viewParameters.cameraY,
@@ -118,15 +109,8 @@ var Network = function (_Component) {
             duration: 500
           });
         }
-      }
-    }
-  }, {
-    key: 'componentWillUpdate',
-    value: function componentWillUpdate(nextProps, nextState) {
-      if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
-        this.props.onUserViewChange({
-          lastEventType: nextState.lastEventType,
-          viewParameters: nextState.viewParameters
+        this.setState({
+          viewParameters: _extends({}, nextProps.viewParameters)
         });
       }
     }
@@ -150,17 +134,19 @@ var Network = function (_Component) {
         })
       };
     }
-
-
   }, {
-    key: 'onUserViewChange',
-    value: function onUserViewChange(parameters) {
-      var lastEventType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'mouse';
-
-      this.setState({
-        lastEventType: lastEventType,
-        lastEventDate: new Date()
-      });
+    key: 'onCoordinatesUpdate',
+    value: function onCoordinatesUpdate(event) {
+      var nextCamera = event.target;
+      var coords = {
+        cameraX: nextCamera.x,
+        cameraY: nextCamera.y,
+        cameraRatio: nextCamera.ratio,
+        cameraAngle: nextCamera.angle
+      };
+      if (typeof this.props.onUserViewChange === 'function') {
+        this.props.onUserViewChange(_extends({}, this.state.viewParameters, coords), 'userevent');
+      }
     }
 
   }, {

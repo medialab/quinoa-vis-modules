@@ -20,9 +20,10 @@ class Network extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.onUserViewChange = debounce(this.onUserViewChange, 100);
+    this.onCoordinatesUpdate = debounce(this.onCoordinatesUpdate.bind(this), 100);
     const state = {
-      data: props.data
+      data: props.data,
+      viewParameters: {...props.viewParameters}
     };
 
     this.state = state;
@@ -31,17 +32,6 @@ class Network extends Component {
   }
 
   componentDidMount() {
-
-    const onCoordinatesUpdate = (event) => {
-      const nextCamera = event.target;
-      const coords = {
-        cameraX: nextCamera.x,
-        cameraY: nextCamera.y,
-        cameraRatio: nextCamera.ratio,
-        cameraAngle: nextCamera.angle,
-      };
-      this.onUserViewChange(coords, 'userevent');
-    };
     const visData = this.buildVisData(this.props.data, this.props.viewParameters);
     setTimeout(() => {
       if (this.sigma) {
@@ -62,26 +52,34 @@ class Network extends Component {
         const camera = this.sigma.sigma.cameras[0];
         camera.isAnimated = true;
         camera.goTo(coords);
-        camera.bind('coordinatesUpdated', onCoordinatesUpdate);
+        camera.bind('coordinatesUpdated', this.onCoordinatesUpdate);
       }
     });
   }
 
 
-  componentWillReceiveProps(nextProps, nextState) {
-
-    if (this.props.data !== nextState.data) {
+  componentWillReceiveProps(nextProps) {
+    if (
+      this.props.data !== nextProps.data || 
+      this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap ||
+      this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories ||
+      this.props.viewParameters.colorsMap !== nextProps.viewParameters.colorsMap
+    ) {
       const visData = this.buildVisData(nextProps.data, this.props.viewParameters);
       if (this.sigma) {
         this.sigma.sigma.graph.clear();
       }
       this.setState({
         visData,
-        data: nextProps.data
+        data: nextProps.data,
+        viewParameters: nextProps.viewParameters
       });
     }
 
-    if (this.props.viewParameters !== nextProps.viewParameters) {
+    if (
+      this.props.viewParameters !== nextProps.viewParameters ||
+      this.state.viewParameters !== nextProps.viewParameters
+    ) {
       const coords = {
         x: nextProps.viewParameters.cameraX,
         y: nextProps.viewParameters.cameraY,
@@ -98,14 +96,10 @@ class Network extends Component {
           }
         );
       }
-    }
-  }
-
-   componentWillUpdate(nextProps, nextState) {
-    if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
-      this.props.onUserViewChange({
-        lastEventType: nextState.lastEventType,
-        viewParameters: nextState.viewParameters
+      this.setState({
+        viewParameters: {
+          ...nextProps.viewParameters,
+        }
       });
     }
   }
@@ -143,15 +137,20 @@ class Network extends Component {
     };
   }
 
-  /**
-   * Lets instance parent to know when user has updated view
-   * @param {string} lastEventType - event type of the last event triggered by user
-   */
-  onUserViewChange (parameters, lastEventType = 'mouse') {
-    this.setState({
-      lastEventType,
-      lastEventDate: new Date()
-    });
+  onCoordinatesUpdate (event) {
+    const nextCamera = event.target;
+    const coords = {
+      cameraX: nextCamera.x,
+      cameraY: nextCamera.y,
+      cameraRatio: nextCamera.ratio,
+      cameraAngle: nextCamera.angle,
+    };
+    if (typeof this.props.onUserViewChange === 'function') {
+      this.props.onUserViewChange({
+        ...this.state.viewParameters,
+        ...coords
+      }, 'userevent');
+    }
   }
   /**
    * Renders the component
