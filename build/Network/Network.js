@@ -64,7 +64,7 @@ var Network = function (_Component) {
           cameraRatio: nextCamera.ratio,
           cameraAngle: nextCamera.angle
         };
-        _this2.onUserViewChange(coords);
+        _this2.onUserViewChange(coords, 'userevent');
       };
       var visData = this.buildVisData(this.props.data, this.props.viewParameters);
       setTimeout(function () {
@@ -118,6 +118,16 @@ var Network = function (_Component) {
             duration: 500
           });
         }
+      }
+    }
+  }, {
+    key: 'componentWillUpdate',
+    value: function componentWillUpdate(nextProps, nextState) {
+      if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
+        this.props.onUserViewChange({
+          lastEventType: nextState.lastEventType,
+          viewParameters: nextState.viewParameters
+        });
       }
     }
   }, {

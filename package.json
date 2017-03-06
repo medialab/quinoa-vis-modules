@@ -12,13 +12,13 @@
     "comb": "csscomb src",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "precommit-add-build": "git add build"
+    "precommit:add-build": "git add build"
   },
   "pre-commit": [
     "lint",
     "test",
     "build",
-    "precommit-add-build"
+    "precommit:add-build"
   ],
   "repository": {
     "type": "git",

@@ -40,7 +40,7 @@ class Network extends Component {
         cameraRatio: nextCamera.ratio,
         cameraAngle: nextCamera.angle,
       };
-      this.onUserViewChange(coords);
+      this.onUserViewChange(coords, 'userevent');
     };
     const visData = this.buildVisData(this.props.data, this.props.viewParameters);
     setTimeout(() => {
@@ -98,6 +98,15 @@ class Network extends Component {
           }
         );
       }
+    }
+  }
+
+   componentWillUpdate(nextProps, nextState) {
+    if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
+      this.props.onUserViewChange({
+        lastEventType: nextState.lastEventType,
+        viewParameters: nextState.viewParameters
+      });
     }
   }
 
