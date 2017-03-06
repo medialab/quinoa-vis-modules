@@ -323,6 +323,8 @@ storiesOf('Map', module)
  */
 
 import Network from '../src/Network/Network';
+import NetworkStoryContainer from './NetworkStoryContainer';
+
 import parseNetworkData from '../src/utils/networkDataParser';
 import mapNetworkData from '../src/utils/networkDataMapper';
 
@@ -347,15 +349,15 @@ const networkJSONBaseViewParameters = {
   sideMargin: 0,
   colorsMap: {
     nodes: {
-      1: 'blue',
-      2: 'green',
-      3: 'red',
-      default: 'brown'
+      1: '#813B7C',
+      2: '#41d9f4',
+      3: '#64f441',
+      default: '#F24D98'
     },
     edges: {
-      default: 'lightgrey'
+      default: '#c0c6c6'
     },
-    default: 'brown'
+    default: '#c0c6c6'
   }
 };
 const networkJSONData = mapNetworkData(parseNetworkData(JSON.stringify(networkJSONDataRaw), 'json'), networkJSONDataMap)
@@ -395,9 +397,9 @@ const networkGexfBaseViewParameters = {
       "rgb(0,204,51)": "rgb(0,204,51)",
       "rgb(51,153,255)": "rgb(51,153,255)",
       "rgb(255,204,51)": "rgb(255,204,51)",
-      default: 'brown'
+      default: '#c0c6c6'
     },
-    default: 'brown'
+    default: '#c0c6c6'
   }
 };
 
@@ -410,11 +412,13 @@ const networkGraphMLDataMap = {
     description: 'description'
   }
 };
+
 const networkGraphMLBaseViewParameters = {
-  cameraX: 0,
-  cameraY: 0,
-  cameraZoom: 2,
-  cameraRatio: 0,
+  cameraX: 20.29133217993082,
+  cameraY: -4.05826643598615,
+  cameraRatio: 1.176,
+  cameraAngle: 0,
+
   labelThreshold: 7,
   minNodeSize: 2,
   sideMargin: 0,
@@ -423,18 +427,17 @@ const networkGraphMLBaseViewParameters = {
     nodes: {
       'person': '#F24D98',
       'object': '#813B7C',
-      'animal': 'yellow',
-      default: 'brown'
+      'animal': '#e5f442',
+      default: '#c0c6c6'
     },
     edges: {
-      default: 'lightgrey'
+      default: '#c0c6c6'
     },
-    default: 'brown'
+    default: '#c0c6c6'
   }
 };
 
-const networkGraphMLData = mapNetworkData(parseNetworkData(networkGraphMLDataRaw, 'graphML'), networkGraphMLDataMap)
-
+const networkGraphMLData = mapNetworkData(parseNetworkData(networkGraphMLDataRaw, 'graphml'), networkGraphMLDataMap)
 storiesOf('Network', module)
   .add('with gexf', () => (
     <Network
@@ -442,6 +445,13 @@ storiesOf('Network', module)
       data={networkGexfData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkGexfBaseViewParameters}
+    />
+  ))
+  .add('camera transitions', () => (
+    <NetworkStoryContainer
+      data={networkGexfData}
+      baseParameters={networkGexfBaseViewParameters}
+      allowUserViewChange={true}
     />
   ))
   .add('with json', () => (
@@ -459,8 +469,8 @@ storiesOf('Network', module)
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {{
         ...networkJSONBaseViewParameters,
-        showCategories: {
-          nodes: [1]
+        shownCategories: {
+          nodes: [2, 3, 6]
         }
       }}
     />

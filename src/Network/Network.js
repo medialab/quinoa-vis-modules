@@ -1,12 +1,20 @@
+/* eslint no-undef: 0 */
+
 import React, {Component, PropTypes} from 'react';
+
 import {debounce} from 'lodash';
+
+import {
+  Sigma,
+  RandomizeNodePositions,
+  ForceAtlas2
+} from 'react-sigma';
+
 import chroma from 'chroma-js';
+
 require('gexf');
 
 import './Network.scss';
-
-let sigInst;
-let camera;
 
 class Network extends Component {
 
@@ -14,35 +22,15 @@ class Network extends Component {
     super(props, context);
     this.onUserViewChange = debounce(this.onUserViewChange, 100);
     const state = {
-      data: props.data,
-      viewParameters: props.viewParameters
+      data: props.data
     };
 
     this.state = state;
 
-    this.rebootSigma = this.rebootSigma.bind(this);
-    this.rebootSigma();
-    // launch forceAtlas if graph is not spatialized
-    if (!props.data.spatialized && sigInst) {
-      sigInst.startForceAtlas2({
-        startingIterations: 1000
-      });
-      setTimeout(() => sigInst.stopForceAtlas2(), 1000);
-    }
+    this.buildVisData = this.buildVisData.bind(this);
   }
 
   componentDidMount() {
-    this.rebootSigma();
-    // Adding the relevant renderer
-    this.renderer = sigInst.addRenderer({
-      container: this.container,
-      type: 'canvas',
-      camera
-    });
-    sigInst.refresh();
-
-    // // Hooking into the camera
-    // // this.releaseCamera = monkeyPatchCamera(this.updateSlide);
 
     const onCoordinatesUpdate = (event) => {
       const nextCamera = event.target;
@@ -52,100 +40,71 @@ class Network extends Component {
         cameraRatio: nextCamera.ratio,
         cameraAngle: nextCamera.angle,
       };
-      this.setState({
-        viewParameters: {
-          ...this.state.viewParameters,
-          ...coords
-        }
-      });
-      this.onUserViewChange(coords, 'userevent');
+      this.onUserViewChange(coords);
     };
+    const visData = this.buildVisData(this.props.data, this.props.viewParameters);
+    setTimeout(() => {
+      if (this.sigma) {
+        this.sigma.sigma.graph.clear();
+      }
+      this.setState({
+        visData,
+        data: this.props.data
+      });
 
-    camera.bind('coordinatesUpdated', onCoordinatesUpdate);
+      const coords = {
+        x: this.props.viewParameters.cameraX,
+        y: this.props.viewParameters.cameraY,
+        angle: this.props.viewParameters.cameraAngle,
+        ratio: this.props.viewParameters.cameraRatio,
+      };
+      if (this.sigma) {
+        const camera = this.sigma.sigma.cameras[0];
+        camera.isAnimated = true;
+        camera.goTo(coords);
+        camera.bind('coordinatesUpdated', onCoordinatesUpdate);
+      }
+    });
   }
 
+
   componentWillReceiveProps(nextProps, nextState) {
-    if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+
+    if (this.props.data !== nextState.data) {
+      const visData = this.buildVisData(nextProps.data, this.props.viewParameters);
+      if (this.sigma) {
+        this.sigma.sigma.graph.clear();
+      }
       this.setState({
-        viewParameters: nextProps.viewParameters
+        visData,
+        data: nextProps.data
       });
-        const coords = {
+    }
+
+    if (this.props.viewParameters !== nextProps.viewParameters) {
+      const coords = {
         x: nextProps.viewParameters.cameraX,
         y: nextProps.viewParameters.cameraY,
         angle: nextProps.viewParameters.cameraAngle,
         ratio: nextProps.viewParameters.cameraRatio,
       };
-      camera.goTo(coords);
-      sigInst.refresh();
-    }
-    // update state's data when props update data
-    if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
-      this.setState({
-        data: nextProps.data
-      });
-    }
-
-    // update sigma when state's data has changed
-    if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
-      this.rebootSigma();
-      // launch forceAtlas if graph is not spatialized
-      if (!nextProps.data.spatialized && sigInst) {
-        sigInst.startForceAtlas2({
-          startingIterations: 1000
-        });
-        setTimeout(() => sigInst.stopForceAtlas2(), 1000);
+      if (this.sigma) {
+        const camera = this.sigma.sigma.cameras[0];
+        sigma.misc.animation.camera(
+          camera,
+          coords,
+          {
+            duration: 500
+          }
+        );
       }
     }
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
-      this.props.onUserViewChange({
-        lastEventType: nextState.lastEventType,
-        viewParameters: nextState.viewParameters
-      });
-    }
-    if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
-      this.setState({
-        viewParameters: nextProps.viewParameters
-      });
-    }
-  }
-
-
-  componentDidUpdate(prevProps, prev) {
-    // If the graph has changed, we reset sigma
-    if (prev.data !== this.state.data) {
-      this.rebootSigma();
-    }
-    if (JSON.stringify(this.state.viewParameters.colorsMap) !== JSON.stringify(prev.viewParameters.colorsMap)) {
-      this.rebootSigma();
-    }
-  }
-
-  componentWillUnmount() {
-    if (sigInst) {
-      // Killing the renderer todo re set with new workflow
-      sigInst.graph.clear();
-      sigInst.refresh();
-      sigInst.killRenderer(this.renderer);
-      // sigInst = undefined;
-    }
-    // Releasing the camera
-    // this.releaseCamera();
-  }
-
-  /**
-   * Inits and re-spatialize sigma visualization
-   */
-  rebootSigma () {
-    const props = {
-      ...this.state.viewParameters,
-      allowUserViewChange: this.props.allowUserViewChange
-    };
-    const showCats = this.state.viewParameters && this.state.viewParameters.shownCategories;
-    const visData = {
-      nodes: this.state.data.nodes
+  buildVisData(data, props) {
+    const shownCats = this.props.viewParameters && this.props.viewParameters.shownCategories;
+    return {
+      nodes: data.nodes
         .map(node => {
           const color = (props.colorsMap.nodes &&
                   (props.colorsMap.nodes[node.category]
@@ -154,11 +113,11 @@ class Network extends Component {
           return {
           ...node,
           // dynamically set color
-          color: (!showCats || !showCats.nodes) || (showCats.nodes.indexOf(node.category) > -1)
-                  ? color : chroma(color).desaturate(3).brighten().alpha(0.2).hex()
+          color: (!shownCats || !shownCats.nodes) || (shownCats.nodes.indexOf(node.category) > -1)
+                  ? color : chroma(color).desaturate(3).brighten()/*.alpha(0.2)*/.hex()
           };
       }),
-      edges: this.state.data.edges
+      edges: data.edges
         .map(edge => {
           const color = (props.colorsMap.edges &&
                     (props.colorsMap.edges[edge.category]
@@ -168,41 +127,18 @@ class Network extends Component {
           return {
             ...edge,
             type: edge.type || 'undirected',
-            color: (!showCats || !showCats.edges) || (showCats.edges.indexOf(edge.category) > -1)
+            color: (!shownCats || !shownCats.edges) || (shownCats.edges.indexOf(edge.category) > -1)
                   ? color : chroma(color).desaturate(3).brighten().alpha(0.2).hex()
           };
          })
     };
-
-    const SIGMA_SETTINGS = {
-      labelThreshold: props.labelThreshold || 7,
-      minNodeSize: props.minNodeSize || 2,
-      edgeColor: 'default',
-      defaultEdgeColor: (props.viewParameters && props.viewParameters.colorsMap && props.viewParameters.colorsMap.noCategory) || '#D1D1D1',
-      sideMargin: props.sideMargin || 0,
-      enableCamera: props.allowUserViewChange
-    };
-    if (sigInst === undefined) {
-      sigInst = new sigma({
-        settings: SIGMA_SETTINGS,
-        graph: visData,
-      });
-      camera = sigInst.addCamera('main');
-      camera.isAnimated = true;
-    }
-    else {
-      sigInst.graph.clear();
-      sigInst.graph.read(visData);
-    }
-
-    sigInst.refresh();
   }
 
   /**
    * Lets instance parent to know when user has updated view
    * @param {string} lastEventType - event type of the last event triggered by user
    */
-  onUserViewChange (parameters, lastEventType) {
+  onUserViewChange (parameters, lastEventType = 'mouse') {
     this.setState({
       lastEventType,
       lastEventDate: new Date()
@@ -213,17 +149,58 @@ class Network extends Component {
    */
   render() {
     const {
-      allowUserViewChange = true
+      allowUserViewChange = true,
+      viewParameters
     } = this.props;
     const {
-      data
+      data,
+      visData
     } = this.state;
 
-    return data ? (
-      <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
-        <div id="sigma-container" ref={div => (this.container = div)} />
-      </figure>
-    ) : 'Loading';
+    const bindSigInst = comp => {
+      this.sigma = comp;
+    };
+
+    const settings = {
+      drawEdges: true,
+      ...viewParameters,
+      mouseEnabled: allowUserViewChange
+    };
+
+    if (visData) {
+      if (data.spatialized) {
+        return (
+          <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
+            <Sigma
+              style={{width: '100%', height: '100%'}}
+              graph={visData}
+              ref={bindSigInst}
+              settings={settings} />
+          </figure>
+        );
+      }
+      else {
+        return (
+          <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
+            <Sigma
+              style={{width: '100%', height: '100%'}}
+              graph={visData}
+              ref={bindSigInst}
+              settings={settings}>
+              <RandomizeNodePositions />
+              <ForceAtlas2
+                worker
+                barnesHutOptimize
+                barnesHutTheta={0.6}
+                startingIterations={100}
+                iterationsPerRender={100}
+                linLogMode />
+            </Sigma>
+          </figure>
+        );
+      }
+    }
+    return null;
   }
 }
 

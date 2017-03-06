@@ -197,9 +197,8 @@ class Map extends Component {
                       color={'white'}
                       fillColor={color}
                       opacity={shown ? 1 : 0.1}
-                      stroke={true}
-                      positions={coordinates} 
-                    />
+                      stroke
+                      positions={coordinates} />
                   );
                 case 'Polyline':
                 case 'LineString':
@@ -209,8 +208,7 @@ class Map extends Component {
                       key={index}
                       color={color}
                       opacity={shown ? 1 : 0.1}
-                      positions={coordinates} 
-                    />
+                      positions={coordinates} />
                   );
 
                 default:

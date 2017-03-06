@@ -14,6 +14,8 @@ var _react2 = _interopRequireDefault(_react);
 
 var _lodash = require('lodash');
 
+var _reactSigma = require('react-sigma');
+
 var _chromaJs = require('chroma-js');
 
 var _chromaJs2 = _interopRequireDefault(_chromaJs);
@@ -26,12 +28,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
 
 require('gexf');
-
-var sigInst = void 0;
-var camera = void 0;
 
 var Network = function (_Component) {
   _inherits(Network, _Component);
@@ -43,22 +42,12 @@ var Network = function (_Component) {
 
     _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
     var state = {
-      data: props.data,
-      viewParameters: props.viewParameters
+      data: props.data
     };
 
     _this.state = state;
 
-    _this.rebootSigma = _this.rebootSigma.bind(_this);
-    _this.rebootSigma();
-    if (!props.data.spatialized && sigInst) {
-      sigInst.startForceAtlas2({
-        startingIterations: 1000
-      });
-      setTimeout(function () {
-        return sigInst.stopForceAtlas2();
-      }, 1000);
-    }
+    _this.buildVisData = _this.buildVisData.bind(_this);
     return _this;
   }
 
@@ -66,15 +55,6 @@ var Network = function (_Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       var _this2 = this;
-
-      this.rebootSigma();
-      this.renderer = sigInst.addRenderer({
-        container: this.container,
-        type: 'canvas',
-        camera: camera
-      });
-      sigInst.refresh();
-
 
       var onCoordinatesUpdate = function onCoordinatesUpdate(event) {
         var nextCamera = event.target;
@@ -84,134 +64,89 @@ var Network = function (_Component) {
           cameraRatio: nextCamera.ratio,
           cameraAngle: nextCamera.angle
         };
-        _this2.setState({
-          viewParameters: _extends({}, _this2.state.viewParameters, coords)
-        });
-        _this2.onUserViewChange(coords, 'userevent');
+        _this2.onUserViewChange(coords);
       };
+      var visData = this.buildVisData(this.props.data, this.props.viewParameters);
+      setTimeout(function () {
+        if (_this2.sigma) {
+          _this2.sigma.sigma.graph.clear();
+        }
+        _this2.setState({
+          visData: visData,
+          data: _this2.props.data
+        });
 
-      camera.bind('coordinatesUpdated', onCoordinatesUpdate);
+        var coords = {
+          x: _this2.props.viewParameters.cameraX,
+          y: _this2.props.viewParameters.cameraY,
+          angle: _this2.props.viewParameters.cameraAngle,
+          ratio: _this2.props.viewParameters.cameraRatio
+        };
+        if (_this2.sigma) {
+          var camera = _this2.sigma.sigma.cameras[0];
+          camera.isAnimated = true;
+          camera.goTo(coords);
+          camera.bind('coordinatesUpdated', onCoordinatesUpdate);
+        }
+      });
     }
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps, nextState) {
-      if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+
+      if (this.props.data !== nextState.data) {
+        var visData = this.buildVisData(nextProps.data, this.props.viewParameters);
+        if (this.sigma) {
+          this.sigma.sigma.graph.clear();
+        }
         this.setState({
-          viewParameters: nextProps.viewParameters
+          visData: visData,
+          data: nextProps.data
         });
+      }
+
+      if (this.props.viewParameters !== nextProps.viewParameters) {
         var coords = {
           x: nextProps.viewParameters.cameraX,
           y: nextProps.viewParameters.cameraY,
           angle: nextProps.viewParameters.cameraAngle,
           ratio: nextProps.viewParameters.cameraRatio
         };
-        camera.goTo(coords);
-        sigInst.refresh();
-      }
-      if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
-        this.setState({
-          data: nextProps.data
-        });
-      }
-
-      if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
-        this.rebootSigma();
-        if (!nextProps.data.spatialized && sigInst) {
-          sigInst.startForceAtlas2({
-            startingIterations: 1000
+        if (this.sigma) {
+          var camera = this.sigma.sigma.cameras[0];
+          sigma.misc.animation.camera(camera, coords, {
+            duration: 500
           });
-          setTimeout(function () {
-            return sigInst.stopForceAtlas2();
-          }, 1000);
         }
       }
     }
   }, {
-    key: 'componentWillUpdate',
-    value: function componentWillUpdate(nextProps, nextState) {
-      if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
-        this.props.onUserViewChange({
-          lastEventType: nextState.lastEventType,
-          viewParameters: nextState.viewParameters
-        });
-      }
-      if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
-        this.setState({
-          viewParameters: nextProps.viewParameters
-        });
-      }
-    }
-  }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevProps, prev) {
-      if (prev.data !== this.state.data) {
-        this.rebootSigma();
-      }
-      if (JSON.stringify(this.state.viewParameters.colorsMap) !== JSON.stringify(prev.viewParameters.colorsMap)) {
-        this.rebootSigma();
-      }
-    }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      if (sigInst) {
-        sigInst.graph.clear();
-        sigInst.refresh();
-        sigInst.killRenderer(this.renderer);
-      }
-    }
-
-
-  }, {
-    key: 'rebootSigma',
-    value: function rebootSigma() {
-      var props = _extends({}, this.state.viewParameters, {
-        allowUserViewChange: this.props.allowUserViewChange
-      });
-      var showCats = this.state.viewParameters && this.state.viewParameters.shownCategories;
-      var visData = {
-        nodes: this.state.data.nodes.map(function (node) {
+    key: 'buildVisData',
+    value: function buildVisData(data, props) {
+      var shownCats = this.props.viewParameters && this.props.viewParameters.shownCategories;
+      return {
+        nodes: data.nodes.map(function (node) {
           var color = props.colorsMap.nodes && (props.colorsMap.nodes[node.category] || props.colorsMap.nodes.default) || props.colorsMap.default;
           return _extends({}, node, {
-            color: !showCats || !showCats.nodes || showCats.nodes.indexOf(node.category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(3).brighten().alpha(0.2).hex()
+            color: !shownCats || !shownCats.nodes || shownCats.nodes.indexOf(node.category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(3).brighten() .hex()
           });
         }),
-        edges: this.state.data.edges.map(function (edge) {
+        edges: data.edges.map(function (edge) {
           var color = props.colorsMap.edges && (props.colorsMap.edges[edge.category] || props.colorsMap.edges.default) || props.colorsMap.default;
           return _extends({}, edge, {
             type: edge.type || 'undirected',
-            color: !showCats || !showCats.edges || showCats.edges.indexOf(edge.category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(3).brighten().alpha(0.2).hex()
+            color: !shownCats || !shownCats.edges || shownCats.edges.indexOf(edge.category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(3).brighten().alpha(0.2).hex()
           });
         })
       };
-
-      var SIGMA_SETTINGS = {
-        labelThreshold: props.labelThreshold || 7,
-        minNodeSize: props.minNodeSize || 2,
-        edgeColor: 'default',
-        defaultEdgeColor: props.viewParameters && props.viewParameters.colorsMap && props.viewParameters.colorsMap.noCategory || '#D1D1D1',
-        sideMargin: props.sideMargin || 0,
-        enableCamera: props.allowUserViewChange
-      };
-      if (sigInst === undefined) {
-        sigInst = new sigma({
-          settings: SIGMA_SETTINGS,
-          graph: visData
-        });
-        camera = sigInst.addCamera('main');
-        camera.isAnimated = true;
-      } else {
-        sigInst.graph.clear();
-        sigInst.graph.read(visData);
-      }
-
-      sigInst.refresh();
     }
 
 
   }, {
     key: 'onUserViewChange',
-    value: function onUserViewChange(parameters, lastEventType) {
+    value: function onUserViewChange(parameters) {
+      var lastEventType = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'mouse';
+
       this.setState({
         lastEventType: lastEventType,
         lastEventDate: new Date()
@@ -223,18 +158,60 @@ var Network = function (_Component) {
     value: function render() {
       var _this3 = this;
 
-      var _props$allowUserViewC = this.props.allowUserViewChange,
-          allowUserViewChange = _props$allowUserViewC === undefined ? true : _props$allowUserViewC;
-      var data = this.state.data;
+      var _props = this.props,
+          _props$allowUserViewC = _props.allowUserViewChange,
+          allowUserViewChange = _props$allowUserViewC === undefined ? true : _props$allowUserViewC,
+          viewParameters = _props.viewParameters;
+      var _state = this.state,
+          data = _state.data,
+          visData = _state.visData;
 
 
-      return data ? _react2.default.createElement(
-        'figure',
-        { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
-        _react2.default.createElement('div', { id: 'sigma-container', ref: function ref(div) {
-            return _this3.container = div;
-          } })
-      ) : 'Loading';
+      var bindSigInst = function bindSigInst(comp) {
+        _this3.sigma = comp;
+      };
+
+      var settings = _extends({
+        drawEdges: true
+      }, viewParameters, {
+        mouseEnabled: allowUserViewChange
+      });
+
+      if (visData) {
+        if (data.spatialized) {
+          return _react2.default.createElement(
+            'figure',
+            { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
+            _react2.default.createElement(_reactSigma.Sigma, {
+              style: { width: '100%', height: '100%' },
+              graph: visData,
+              ref: bindSigInst,
+              settings: settings })
+          );
+        } else {
+          return _react2.default.createElement(
+            'figure',
+            { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
+            _react2.default.createElement(
+              _reactSigma.Sigma,
+              {
+                style: { width: '100%', height: '100%' },
+                graph: visData,
+                ref: bindSigInst,
+                settings: settings },
+              _react2.default.createElement(_reactSigma.RandomizeNodePositions, null),
+              _react2.default.createElement(_reactSigma.ForceAtlas2, {
+                worker: true,
+                barnesHutOptimize: true,
+                barnesHutTheta: 0.6,
+                startingIterations: 100,
+                iterationsPerRender: 100,
+                linLogMode: true })
+            )
+          );
+        }
+      }
+      return null;
     }
   }]);
 

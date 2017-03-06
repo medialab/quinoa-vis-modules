@@ -1,5 +1,3 @@
-const path = require('path');
-
 module.exports = {
   module: {
     loaders: [
@@ -8,18 +6,19 @@ module.exports = {
         loaders: [
             'file?hash=sha512&digest=hex&name=[hash].[ext]',
             'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
-        ],
-        include: path.resolve(__dirname, '../')
+        ]
       },
       {
         test: /\.scss$/,
-        loaders: ['style', 'css', 'sass'],
-        include: path.resolve(__dirname, '../')
+        loaders: ['style', 'css', 'sass']
       },
       {
         test: /\.css$/,
-        loaders: ['style', 'css'],
-        include: path.resolve(__dirname, '../')
+        loaders: ['style', 'css']
+      },
+      {
+        test: /\.txt$/,
+        loaders: ['raw-loader']
       }
     ]
   }
