@@ -108,11 +108,11 @@ class Network extends Component {
                   (viewParameters.colorsMap.nodes[node.category]
                     || viewParameters.colorsMap.nodes.default))
                   || viewParameters.colorsMap.default;
-          // console.log(shownCats && shownCats.nodes, node.category, (!shownCats || !shownCats.nodes) || (shownCats.nodes.indexOf(node.category) > -1));
+          const category = node.category === undefined ? 'default': node.category;
           return {
           ...node,
           // dynamically set color
-          color: (!shownCats || !shownCats.nodes) || (shownCats.nodes.indexOf(node.category) > -1)
+          color: (!shownCats || !shownCats.nodes) || (shownCats.nodes.indexOf(category) > -1)
                   ? color : chroma(color).desaturate(5).brighten().hex()
           };
       }),
@@ -123,10 +123,11 @@ class Network extends Component {
                       || viewParameters.colorsMap.edges.default)
                     )
                     || viewParameters.colorsMap.default;
+          const category = edge.category === undefined ? 'default': node.category;
           return {
             ...edge,
             type: edge.type || 'undirected',
-            color: (!shownCats || !shownCats.edges) || (shownCats.edges.indexOf(edge.category) > -1)
+            color: (!shownCats || !shownCats.edges) || (shownCats.edges.indexOf(category) > -1)
                   ? color : chroma(color).desaturate(5).brighten().alpha(0.2).hex()
           };
          })
