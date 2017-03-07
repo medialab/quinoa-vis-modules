@@ -104,11 +104,11 @@ class Network extends Component {
     return {
       nodes: data.nodes
         .map(node => {
+          const category = node.category === undefined ? 'default' : node.category;
           const color = (viewParameters.colorsMap.nodes &&
-                  (viewParameters.colorsMap.nodes[node.category]
+                  (viewParameters.colorsMap.nodes[category]
                     || viewParameters.colorsMap.nodes.default))
                   || viewParameters.colorsMap.default;
-          const category = node.category === undefined ? 'default': node.category;
           return {
           ...node,
           // dynamically set color
@@ -118,12 +118,12 @@ class Network extends Component {
       }),
       edges: data.edges
         .map(edge => {
+          const category = edge.category === undefined ? 'default' : node.category;
           const color = (viewParameters.colorsMap.edges &&
-                    (viewParameters.colorsMap.edges[edge.category]
+                    (viewParameters.colorsMap.edges[category]
                       || viewParameters.colorsMap.edges.default)
                     )
                     || viewParameters.colorsMap.default;
-          const category = edge.category === undefined ? 'default': node.category;
           return {
             ...edge,
             type: edge.type || 'undirected',
