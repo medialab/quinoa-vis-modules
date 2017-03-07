@@ -246,9 +246,9 @@ Network.propTypes = {
       target: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number
-      ]),
-      spatialized: PropTypes.bool
-    }))
+      ])
+    })),
+    spatialized: PropTypes.bool
   }),
   /*
    * Spatialization related

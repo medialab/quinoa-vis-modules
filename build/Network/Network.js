@@ -248,9 +248,9 @@ Network.propTypes = {
       weight: _react.PropTypes.number,
       id: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
       source: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
-      target: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
-      spatialized: _react.PropTypes.bool
-    }))
+      target: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number])
+    })),
+    spatialized: _react.PropTypes.bool
   }),
   forceAtlasActive: _react.PropTypes.bool,
   viewParameters: _react.PropTypes.shape({
