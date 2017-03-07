@@ -14,7 +14,9 @@ var _react2 = _interopRequireDefault(_react);
 
 var _lodash = require('lodash');
 
-var _reactSigma = require('react-sigma');
+var _Sigma = require('react-sigma/lib/Sigma');
+
+var _Sigma2 = _interopRequireDefault(_Sigma);
 
 var _chromaJs = require('chroma-js');
 
@@ -84,14 +86,15 @@ var Network = function (_Component) {
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (this.props.data !== nextProps.data || this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap || this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories || this.props.viewParameters.colorsMap !== nextProps.viewParameters.colorsMap) {
-        var visData = this.buildVisData(nextProps.data, this.props.viewParameters);
+      if (this.props.data !== nextProps.data || JSON.stringify(this.props.viewParameters.dataMap) !== JSON.stringify(nextProps.viewParameters.dataMap) || JSON.stringify(this.props.viewParameters.shownCategories) !== JSON.stringify(nextProps.viewParameters.shownCategories) || JSON.stringify(this.props.viewParameters.colorsMap) !== JSON.stringify(nextProps.viewParameters.colorsMap)) {
+        var visData = this.buildVisData(nextProps.data, nextProps.viewParameters);
         if (this.sigma) {
           this.sigma.sigma.graph.clear();
         }
         this.setState({
           visData: visData,
-          data: nextProps.data
+          data: nextProps.data,
+          viewParameters: nextProps.viewParameters
         });
       }
       if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters) || JSON.stringify(this.state.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
@@ -108,26 +111,26 @@ var Network = function (_Component) {
           });
         }
         this.setState({
-          viewParameters: _extends({}, nextProps.viewParameters)
+          viewParameters: nextProps.viewParameters
         });
       }
     }
   }, {
     key: 'buildVisData',
-    value: function buildVisData(data, props) {
-      var shownCats = this.props.viewParameters && this.props.viewParameters.shownCategories;
+    value: function buildVisData(data, viewParameters) {
+      var shownCats = viewParameters.shownCategories;
       return {
         nodes: data.nodes.map(function (node) {
-          var color = props.colorsMap.nodes && (props.colorsMap.nodes[node.category] || props.colorsMap.nodes.default) || props.colorsMap.default;
+          var color = viewParameters.colorsMap.nodes && (viewParameters.colorsMap.nodes[node.category] || viewParameters.colorsMap.nodes.default) || viewParameters.colorsMap.default;
           return _extends({}, node, {
-            color: !shownCats || !shownCats.nodes || shownCats.nodes.indexOf(node.category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(3).brighten() .hex()
+            color: !shownCats || !shownCats.nodes || shownCats.nodes.indexOf(node.category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(5).brighten().hex()
           });
         }),
         edges: data.edges.map(function (edge) {
-          var color = props.colorsMap.edges && (props.colorsMap.edges[edge.category] || props.colorsMap.edges.default) || props.colorsMap.default;
+          var color = viewParameters.colorsMap.edges && (viewParameters.colorsMap.edges[edge.category] || viewParameters.colorsMap.edges.default) || viewParameters.colorsMap.default;
           return _extends({}, edge, {
             type: edge.type || 'undirected',
-            color: !shownCats || !shownCats.edges || shownCats.edges.indexOf(edge.category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(3).brighten().alpha(0.2).hex()
+            color: !shownCats || !shownCats.edges || shownCats.edges.indexOf(edge.category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(5).brighten().alpha(0.2).hex()
           });
         })
       };
@@ -159,9 +162,7 @@ var Network = function (_Component) {
           _props$allowUserViewC = _props.allowUserViewChange,
           allowUserViewChange = _props$allowUserViewC === undefined ? true : _props$allowUserViewC,
           viewParameters = _props.viewParameters;
-      var _state = this.state,
-          data = _state.data,
-          visData = _state.visData;
+      var visData = this.state.visData;
 
 
       var bindSigInst = function bindSigInst(comp) {
@@ -175,38 +176,15 @@ var Network = function (_Component) {
       });
 
       if (visData) {
-        if (data.spatialized) {
-          return _react2.default.createElement(
-            'figure',
-            { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
-            _react2.default.createElement(_reactSigma.Sigma, {
-              style: { width: '100%', height: '100%' },
-              graph: visData,
-              ref: bindSigInst,
-              settings: settings })
-          );
-        } else {
-          return _react2.default.createElement(
-            'figure',
-            { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
-            _react2.default.createElement(
-              _reactSigma.Sigma,
-              {
-                style: { width: '100%', height: '100%' },
-                graph: visData,
-                ref: bindSigInst,
-                settings: settings },
-              _react2.default.createElement(_reactSigma.RandomizeNodePositions, null),
-              _react2.default.createElement(_reactSigma.ForceAtlas2, {
-                worker: true,
-                barnesHutOptimize: true,
-                barnesHutTheta: 0.6,
-                startingIterations: 100,
-                iterationsPerRender: 100,
-                linLogMode: true })
-            )
-          );
-        }
+        return _react2.default.createElement(
+          'figure',
+          { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
+          _react2.default.createElement(_Sigma2.default, {
+            style: { width: '100%', height: '100%' },
+            graph: visData,
+            ref: bindSigInst,
+            settings: settings })
+        );
       }
       return null;
     }

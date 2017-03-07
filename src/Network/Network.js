@@ -4,11 +4,7 @@ import React, {Component, PropTypes} from 'react';
 
 import {debounce} from 'lodash';
 
-import {
-  Sigma,
-  RandomizeNodePositions,
-  ForceAtlas2
-} from 'react-sigma';
+import Sigma from 'react-sigma/lib/Sigma';
 
 import chroma from 'chroma-js';
 
@@ -61,17 +57,18 @@ class Network extends Component {
   componentWillReceiveProps(nextProps) {
     if (
       this.props.data !== nextProps.data ||
-      this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap ||
-      this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories ||
-      this.props.viewParameters.colorsMap !== nextProps.viewParameters.colorsMap
+      JSON.stringify(this.props.viewParameters.dataMap) !== JSON.stringify(nextProps.viewParameters.dataMap) ||
+      JSON.stringify(this.props.viewParameters.shownCategories) !== JSON.stringify(nextProps.viewParameters.shownCategories) ||
+      JSON.stringify(this.props.viewParameters.colorsMap) !== JSON.stringify(nextProps.viewParameters.colorsMap)
     ) {
-      const visData = this.buildVisData(nextProps.data, this.props.viewParameters);
+      const visData = this.buildVisData(nextProps.data, nextProps.viewParameters);
       if (this.sigma) {
         this.sigma.sigma.graph.clear();
       }
       this.setState({
         visData,
-        data: nextProps.data
+        data: nextProps.data,
+        viewParameters: nextProps.viewParameters
       });
     }
     if (
@@ -95,41 +92,40 @@ class Network extends Component {
         );
       }
       this.setState({
-        viewParameters: {
-          ...nextProps.viewParameters,
-        }
+        viewParameters: nextProps.viewParameters
       });
     }
   }
 
-  buildVisData(data, props) {
-    const shownCats = this.props.viewParameters && this.props.viewParameters.shownCategories;
+  buildVisData(data, viewParameters) {
+    const shownCats = viewParameters.shownCategories;
     return {
       nodes: data.nodes
         .map(node => {
-          const color = (props.colorsMap.nodes &&
-                  (props.colorsMap.nodes[node.category]
-                    || props.colorsMap.nodes.default))
-                  || props.colorsMap.default;
+          const color = (viewParameters.colorsMap.nodes &&
+                  (viewParameters.colorsMap.nodes[node.category]
+                    || viewParameters.colorsMap.nodes.default))
+                  || viewParameters.colorsMap.default;
+          // console.log(shownCats && shownCats.nodes, node.category, (!shownCats || !shownCats.nodes) || (shownCats.nodes.indexOf(node.category) > -1));
           return {
           ...node,
           // dynamically set color
           color: (!shownCats || !shownCats.nodes) || (shownCats.nodes.indexOf(node.category) > -1)
-                  ? color : chroma(color).desaturate(3).brighten()/*.alpha(0.2)*/.hex()
+                  ? color : chroma(color).desaturate(5).brighten().hex()
           };
       }),
       edges: data.edges
         .map(edge => {
-          const color = (props.colorsMap.edges &&
-                    (props.colorsMap.edges[edge.category]
-                      || props.colorsMap.edges.default)
+          const color = (viewParameters.colorsMap.edges &&
+                    (viewParameters.colorsMap.edges[edge.category]
+                      || viewParameters.colorsMap.edges.default)
                     )
-                    || props.colorsMap.default;
+                    || viewParameters.colorsMap.default;
           return {
             ...edge,
             type: edge.type || 'undirected',
             color: (!shownCats || !shownCats.edges) || (shownCats.edges.indexOf(edge.category) > -1)
-                  ? color : chroma(color).desaturate(3).brighten().alpha(0.2).hex()
+                  ? color : chroma(color).desaturate(5).brighten().alpha(0.2).hex()
           };
          })
     };
@@ -162,7 +158,6 @@ class Network extends Component {
       viewParameters
     } = this.props;
     const {
-      data,
       visData
     } = this.state;
 
@@ -177,37 +172,15 @@ class Network extends Component {
     };
 
     if (visData) {
-      if (data.spatialized) {
-        return (
-          <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
-            <Sigma
-              style={{width: '100%', height: '100%'}}
-              graph={visData}
-              ref={bindSigInst}
-              settings={settings} />
-          </figure>
-        );
-      }
-      else {
-        return (
-          <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
-            <Sigma
-              style={{width: '100%', height: '100%'}}
-              graph={visData}
-              ref={bindSigInst}
-              settings={settings}>
-              <RandomizeNodePositions />
-              <ForceAtlas2
-                worker
-                barnesHutOptimize
-                barnesHutTheta={0.6}
-                startingIterations={100}
-                iterationsPerRender={100}
-                linLogMode />
-            </Sigma>
-          </figure>
-        );
-      }
+      return (
+        <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
+          <Sigma
+            style={{width: '100%', height: '100%'}}
+            graph={visData}
+            ref={bindSigInst}
+            settings={settings} />
+        </figure>
+      );
     }
     return null;
   }
