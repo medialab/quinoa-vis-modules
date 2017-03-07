@@ -324,6 +324,7 @@ storiesOf('Map', module)
 
 import Network from '../src/Network/Network';
 import NetworkStoryContainer from './NetworkStoryContainer';
+import NetworkSpatializerContainer from './NetworkSpatializerContainer';
 
 import parseNetworkData from '../src/utils/networkDataParser';
 import mapNetworkData from '../src/utils/networkDataMapper';
@@ -439,10 +440,19 @@ const networkGraphMLBaseViewParameters = {
 
 const networkGraphMLData = mapNetworkData(parseNetworkData(networkGraphMLDataRaw, 'graphml'), networkGraphMLDataMap)
 storiesOf('Network', module)
-  .add('with gexf', () => (
+  .add('with gexf (default)', () => (
     <Network
       allowUserViewChange ={true}
       data={networkGexfData}
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {networkGexfBaseViewParameters}
+    />
+  ))
+  .add('with gexf and force atlas active', () => (
+    <Network
+      allowUserViewChange ={true}
+      data={networkGexfData}
+      forceAtlasActive = {true}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkGexfBaseViewParameters}
     />
@@ -473,6 +483,13 @@ storiesOf('Network', module)
           nodes: [2, 3, 6]
         }
       }}
+    />
+  ))
+  .add('with json and force atlas active', () => (
+    <NetworkSpatializerContainer
+      allowUserViewChange ={true}
+      data={networkJSONData}
+      baseParameters={networkJSONBaseViewParameters}
     />
   ))
   .add('with graphml', () => (

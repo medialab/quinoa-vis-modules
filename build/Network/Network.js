@@ -18,6 +18,10 @@ var _Sigma = require('react-sigma/lib/Sigma');
 
 var _Sigma2 = _interopRequireDefault(_Sigma);
 
+var _ForceAtlas = require('react-sigma/lib/ForceAtlas2');
+
+var _ForceAtlas2 = _interopRequireDefault(_ForceAtlas);
+
 var _chromaJs = require('chroma-js');
 
 var _chromaJs2 = _interopRequireDefault(_chromaJs);
@@ -43,6 +47,7 @@ var Network = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Network.__proto__ || Object.getPrototypeOf(Network)).call(this, props, context));
 
     _this.onCoordinatesUpdate = (0, _lodash.debounce)(_this.onCoordinatesUpdate.bind(_this), 100);
+    _this.getNodesPositions = _this.getNodesPositions.bind(_this);
     var state = {
       data: props.data,
       viewParameters: _extends({}, props.viewParameters)
@@ -136,6 +141,18 @@ var Network = function (_Component) {
       };
     }
   }, {
+    key: 'getNodesPositions',
+    value: function getNodesPositions() {
+      var nodes = this.sigma.sigma.graph.nodes();
+      return nodes.map(function (node) {
+        return {
+          x: node.x,
+          y: node.y,
+          id: node.id
+        };
+      });
+    }
+  }, {
     key: 'onCoordinatesUpdate',
     value: function onCoordinatesUpdate(event) {
       var nextCamera = event.target;
@@ -161,6 +178,8 @@ var Network = function (_Component) {
       var _props = this.props,
           _props$allowUserViewC = _props.allowUserViewChange,
           allowUserViewChange = _props$allowUserViewC === undefined ? true : _props$allowUserViewC,
+          _props$forceAtlasActi = _props.forceAtlasActive,
+          forceAtlasActive = _props$forceAtlasActi === undefined ? false : _props$forceAtlasActi,
           viewParameters = _props.viewParameters;
       var visData = this.state.visData;
 
@@ -176,7 +195,24 @@ var Network = function (_Component) {
       });
 
       if (visData) {
-        return _react2.default.createElement(
+        return forceAtlasActive ? _react2.default.createElement(
+          'figure',
+          { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
+          _react2.default.createElement(
+            _Sigma2.default,
+            {
+              style: { width: '100%', height: '100%' },
+              graph: visData,
+              ref: bindSigInst,
+              settings: settings },
+            _react2.default.createElement(_ForceAtlas2.default, {
+              worker: true,
+              barnesHutOptimize: true,
+              barnesHutTheta: 0.6,
+              iterationsPerRender: 10,
+              linLogMode: true })
+          )
+        ) : _react2.default.createElement(
           'figure',
           { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
           _react2.default.createElement(_Sigma2.default, {
@@ -216,6 +252,7 @@ Network.propTypes = {
       spatialized: _react.PropTypes.bool
     }))
   }),
+  forceAtlasActive: _react.PropTypes.bool,
   viewParameters: _react.PropTypes.shape({
     cameraX: _react.PropTypes.number,
     cameraY: _react.PropTypes.number,

@@ -5,6 +5,7 @@ import React, {Component, PropTypes} from 'react';
 import {debounce} from 'lodash';
 
 import Sigma from 'react-sigma/lib/Sigma';
+import ForceAtlas2 from 'react-sigma/lib/ForceAtlas2';
 
 import chroma from 'chroma-js';
 
@@ -17,6 +18,7 @@ class Network extends Component {
   constructor(props, context) {
     super(props, context);
     this.onCoordinatesUpdate = debounce(this.onCoordinatesUpdate.bind(this), 100);
+    this.getNodesPositions = this.getNodesPositions.bind(this);
     const state = {
       data: props.data,
       viewParameters: {...props.viewParameters}
@@ -131,6 +133,15 @@ class Network extends Component {
     };
   }
 
+  getNodesPositions () {
+    const nodes = this.sigma.sigma.graph.nodes();
+    return nodes.map(node => ({
+      x: node.x,
+      y: node.y,
+      id: node.id
+    }));
+  }
+
   onCoordinatesUpdate (event) {
     const nextCamera = event.target;
     const coords = {
@@ -155,6 +166,7 @@ class Network extends Component {
   render() {
     const {
       allowUserViewChange = true,
+      forceAtlasActive = false,
       viewParameters
     } = this.props;
     const {
@@ -172,7 +184,24 @@ class Network extends Component {
     };
 
     if (visData) {
-      return (
+      return forceAtlasActive ?
+      (
+        <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
+          <Sigma
+            style={{width: '100%', height: '100%'}}
+            graph={visData}
+            ref={bindSigInst}
+            settings={settings}>
+            <ForceAtlas2
+              worker
+              barnesHutOptimize
+              barnesHutTheta={0.6}
+              iterationsPerRender={10}
+              linLogMode />
+          </Sigma>
+        </figure>
+      )
+      : (
         <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
           <Sigma
             style={{width: '100%', height: '100%'}}
@@ -221,6 +250,10 @@ Network.propTypes = {
       spatialized: PropTypes.bool
     }))
   }),
+  /*
+   * Spatialization related
+   */
+   forceAtlasActive: PropTypes.bool,
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not)
    */
