@@ -163,7 +163,7 @@ class Map extends Component {
 
           {
             data && data.main.map((obj, index) => {
-              const shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.indexOf(obj.category) > -1 : true;
+              const shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.find(cat => obj.category + '' === cat + '') !== undefined : true;
               const color = (viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default);
               let coordinates;
               switch (obj.geometry.type) {

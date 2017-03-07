@@ -129,7 +129,9 @@ var Network = function (_Component) {
           var category = node.category === undefined ? 'default' : node.category;
           var color = viewParameters.colorsMap.nodes && (viewParameters.colorsMap.nodes[category] || viewParameters.colorsMap.nodes.default) || viewParameters.colorsMap.default;
           return _extends({}, node, {
-            color: !shownCats || !shownCats.nodes || shownCats.nodes.indexOf(category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(5).brighten().hex()
+            color: !shownCats || !shownCats.nodes || shownCats.nodes.find(function (cat) {
+              return cat + '' === category + '';
+            }) !== undefined ? color : (0, _chromaJs2.default)(color).desaturate(5).brighten().hex()
           });
         }),
         edges: data.edges.map(function (edge) {
@@ -137,7 +139,9 @@ var Network = function (_Component) {
           var color = viewParameters.colorsMap.edges && (viewParameters.colorsMap.edges[category] || viewParameters.colorsMap.edges.default) || viewParameters.colorsMap.default;
           return _extends({}, edge, {
             type: edge.type || 'undirected',
-            color: !shownCats || !shownCats.edges || shownCats.edges.indexOf(category) > -1 ? color : (0, _chromaJs2.default)(color).desaturate(5).brighten().alpha(0.2).hex()
+            color: !shownCats || !shownCats.edges || shownCats.edges.find(function (cat) {
+              return cat + '' === category + '';
+            }) !== undefined ? color : (0, _chromaJs2.default)(color).desaturate(5).brighten().alpha(0.2).hex()
           });
         })
       };

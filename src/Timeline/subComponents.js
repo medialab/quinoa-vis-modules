@@ -112,7 +112,7 @@ export const ClustersGroup = ({
                 point={obj}
                 scale={scale}
                 color={(viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default)}
-                shown={viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.indexOf(obj.category) > -1 : true}
+                shown={viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.find(cat => obj.category + '' === cat + '') !== undefined : true}
                 showLabel={!obj.overlapped} />
             );
           }

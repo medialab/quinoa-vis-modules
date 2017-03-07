@@ -112,7 +112,7 @@ class Network extends Component {
           return {
           ...node,
           // dynamically set color
-          color: (!shownCats || !shownCats.nodes) || (shownCats.nodes.indexOf(category) > -1)
+          color: (!shownCats || !shownCats.nodes) || (shownCats.nodes.find(cat => cat + '' === category + '') !== undefined)
                   ? color : chroma(color).desaturate(5).brighten().hex()
           };
       }),
@@ -127,7 +127,7 @@ class Network extends Component {
           return {
             ...edge,
             type: edge.type || 'undirected',
-            color: (!shownCats || !shownCats.edges) || (shownCats.edges.indexOf(category) > -1)
+            color: (!shownCats || !shownCats.edges) || (shownCats.edges.find(cat => cat + '' === category + '') !== undefined)
                   ? color : chroma(color).desaturate(5).brighten().alpha(0.2).hex()
           };
          })

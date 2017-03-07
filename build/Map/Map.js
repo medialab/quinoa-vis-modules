@@ -178,7 +178,9 @@ var Map = function (_Component) {
           _react2.default.createElement(_reactLeaflet.TileLayer, {
             url: viewParameters.tilesUrl }),
           data && data.main.map(function (obj, index) {
-            var shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.indexOf(obj.category) > -1 : true;
+            var shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.find(function (cat) {
+              return obj.category + '' === cat + '';
+            }) !== undefined : true;
             var color = viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category] || viewParameters.colorsMap.main.default || viewParameters.colorsMap.default;
             var coordinates = void 0;
             switch (obj.geometry.type) {
