@@ -59,13 +59,13 @@ var Map = function (_Component) {
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+      if (this.props.viewParameters !== nextProps.viewParameters) {
         this.setState({
           viewParameters: nextProps.viewParameters
         });
       }
 
-      if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
+      if (this.props.data !== nextProps.data) {
         this.setState({
           data: nextProps.data
         });
