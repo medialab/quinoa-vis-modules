@@ -59,9 +59,9 @@ class Network extends Component {
   componentWillReceiveProps(nextProps) {
     if (
       this.props.data !== nextProps.data ||
-      JSON.stringify(this.props.viewParameters.dataMap) !== JSON.stringify(nextProps.viewParameters.dataMap) ||
-      JSON.stringify(this.props.viewParameters.shownCategories) !== JSON.stringify(nextProps.viewParameters.shownCategories) ||
-      JSON.stringify(this.props.viewParameters.colorsMap) !== JSON.stringify(nextProps.viewParameters.colorsMap)
+      this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap ||
+      this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories ||
+      this.props.viewParameters.colorsMap !== nextProps.viewParameters.colorsMap
     ) {
       const visData = this.buildVisData(nextProps.data, nextProps.viewParameters);
       if (this.sigma) {
@@ -74,7 +74,7 @@ class Network extends Component {
       });
     }
     if (
-      JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters) ||
+      // this.props.viewParameters !== nextProps.viewParameters  // ||
       JSON.stringify(this.state.viewParameters) !== JSON.stringify(nextProps.viewParameters)
     ) {
       const coords = {

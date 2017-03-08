@@ -91,7 +91,7 @@ var Network = function (_Component) {
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (this.props.data !== nextProps.data || JSON.stringify(this.props.viewParameters.dataMap) !== JSON.stringify(nextProps.viewParameters.dataMap) || JSON.stringify(this.props.viewParameters.shownCategories) !== JSON.stringify(nextProps.viewParameters.shownCategories) || JSON.stringify(this.props.viewParameters.colorsMap) !== JSON.stringify(nextProps.viewParameters.colorsMap)) {
+      if (this.props.data !== nextProps.data || this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap || this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories || this.props.viewParameters.colorsMap !== nextProps.viewParameters.colorsMap) {
         var visData = this.buildVisData(nextProps.data, nextProps.viewParameters);
         if (this.sigma) {
           this.sigma.sigma.graph.clear();
@@ -102,7 +102,8 @@ var Network = function (_Component) {
           viewParameters: nextProps.viewParameters
         });
       }
-      if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters) || JSON.stringify(this.state.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+      if (
+      JSON.stringify(this.state.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
         var coords = {
           x: nextProps.viewParameters.cameraX,
           y: nextProps.viewParameters.cameraY,
