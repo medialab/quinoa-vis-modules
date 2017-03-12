@@ -136,7 +136,7 @@ var Network = function (_Component) {
           });
         }),
         edges: data.edges.map(function (edge) {
-          var category = edge.category === undefined ? 'default' : node.category;
+          var category = edge.category === undefined ? 'default' : edge.category;
           var color = viewParameters.colorsMap.edges && (viewParameters.colorsMap.edges[category] || viewParameters.colorsMap.edges.default) || viewParameters.colorsMap.default;
           return _extends({}, edge, {
             type: edge.type || 'undirected',

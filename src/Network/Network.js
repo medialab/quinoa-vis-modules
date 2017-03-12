@@ -118,7 +118,7 @@ class Network extends Component {
       }),
       edges: data.edges
         .map(edge => {
-          const category = edge.category === undefined ? 'default' : node.category;
+          const category = edge.category === undefined ? 'default' : edge.category;
           const color = (viewParameters.colorsMap.edges &&
                     (viewParameters.colorsMap.edges[category]
                       || viewParameters.colorsMap.edges.default)
