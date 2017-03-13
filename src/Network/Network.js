@@ -99,6 +99,22 @@ class Network extends Component {
     }
   }
 
+  componentDidUpdate(prevState) {
+    // forcing update for graph settings changes
+    if (prevState.viewParameters.labelThreshold !== this.state.viewParameters.labelThreshold) {
+      if (this.sigma) {
+        this.sigma.sigma.renderers[0].settings('labelThreshold', this.state.viewParameters.labelThreshold);
+        this.sigma.sigma.refresh();
+      }
+    }
+    if (prevState.viewParameters.minNodeSize !== this.state.viewParameters.minNodeSize) {
+      if (this.sigma) {
+        this.sigma.sigma.renderers[0].settings('minNodeSize', this.state.viewParameters.minNodeSize);
+        this.sigma.sigma.refresh();
+      }
+    }
+  }
+
   buildVisData(data, viewParameters) {
     const shownCats = viewParameters.shownCategories;
     return {

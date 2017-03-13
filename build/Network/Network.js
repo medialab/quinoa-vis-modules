@@ -122,6 +122,22 @@ var Network = function (_Component) {
       }
     }
   }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevState) {
+      if (prevState.viewParameters.labelThreshold !== this.state.viewParameters.labelThreshold) {
+        if (this.sigma) {
+          this.sigma.sigma.renderers[0].settings('labelThreshold', this.state.viewParameters.labelThreshold);
+          this.sigma.sigma.refresh();
+        }
+      }
+      if (prevState.viewParameters.minNodeSize !== this.state.viewParameters.minNodeSize) {
+        if (this.sigma) {
+          this.sigma.sigma.renderers[0].settings('minNodeSize', this.state.viewParameters.minNodeSize);
+          this.sigma.sigma.refresh();
+        }
+      }
+    }
+  }, {
     key: 'buildVisData',
     value: function buildVisData(data, viewParameters) {
       var shownCats = viewParameters.shownCategories;
