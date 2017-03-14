@@ -1,5 +1,12 @@
 import React, {Component, PropTypes} from 'react';
-import {Map as MapComponent, Marker, Popup, TileLayer, Polygon} from 'react-leaflet';
+import {
+  Map as MapComponent,
+  Marker,
+  Popup,
+  TileLayer,
+  Polygon,
+  Polyline
+} from 'react-leaflet';
 import {divIcon} from 'leaflet';
 import {debounce} from 'lodash';
 // require leaflet code
@@ -34,13 +41,13 @@ class Map extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+    if (this.props.viewParameters !== nextProps.viewParameters) {
       this.setState({
         viewParameters: nextProps.viewParameters
       });
     }
 
-    if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
+    if (this.props.data !== nextProps.data) {
       this.setState({
         data: nextProps.data
       });
@@ -143,8 +150,7 @@ class Map extends Component {
     const refMap = (c) => {
       this.map = c;
     };
-
-    return (
+    return data ? (
       <figure className={'quinoa-map' + (allowUserViewChange ? '' : ' locked')}>
         <MapComponent
           ref={refMap}
@@ -156,26 +162,27 @@ class Map extends Component {
             url={viewParameters.tilesUrl} />
 
           {
-            data.map((object, index) => {
-              switch (object.geometry.type) {
-
+            data && data.main.map((obj, index) => {
+              const shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.find(cat => obj.category + '' === cat + '') !== undefined : true;
+              const color = (viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default);
+              let coordinates;
+              switch (obj.geometry.type) {
                 case 'Point':
-                  const thatPosition = object.geometry.coordinates;
+                  const thatPosition = obj.geometry.coordinates;
 
                   if (!Number.isNaN(thatPosition[0]) && !Number.isNaN(thatPosition[1])) {
-                    const color = viewParameters.colorsMap[object.category] || viewParameters.colorsMap.noCategory;
                     const thatIcon = divIcon({
                       className: 'point-marker-icon',
                       html: '<span class="shape" style="background:' + color + '"></span>'
                     });
-
                     return (
                       <Marker
                         key={index}
                         position={thatPosition}
-                        icon={thatIcon}>
+                        icon={thatIcon}
+                        opacity={shown ? 1 : 0.1}>
                         <Popup>
-                          <span>{object.title}</span>
+                          <span>{obj.title}</span>
                         </Popup>
                       </Marker>
                     );
@@ -183,10 +190,24 @@ class Map extends Component {
                   break;
 
                 case 'Polygon':
-                  const coordinates = object.geometry.coordinates.map(couple => couple.reverse());
+                  coordinates = obj.geometry.coordinates.map(couple => couple.reverse());
                   return (
                     <Polygon
                       key={index}
+                      color={'white'}
+                      fillColor={color}
+                      opacity={shown ? 1 : 0.1}
+                      stroke
+                      positions={coordinates} />
+                  );
+                case 'Polyline':
+                case 'LineString':
+                  coordinates = obj.geometry.coordinates.map(couple => couple.reverse());
+                  return (
+                    <Polyline
+                      key={index}
+                      color={color}
+                      opacity={shown ? 1 : 0.1}
                       positions={coordinates} />
                   );
 
@@ -199,7 +220,7 @@ class Map extends Component {
 
         </MapComponent>
       </figure>
-    );
+    ) : 'Loading';
   }
 }
 
@@ -207,19 +228,22 @@ Map.propTypes = {
   /*
    * Incoming data in json format
    */
-  data: PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string,
-    category: PropTypes.string,
-    geometry: PropTypes.shape({
-      type: PropTypes.string,
-      // coordinates: PropTypes.array
-    })
-  })),
+  data: PropTypes.shape({
+    main: PropTypes.arrayOf(PropTypes.shape({
+      title: PropTypes.string,
+      category: PropTypes.string,
+      geometry: PropTypes.shape({
+        type: PropTypes.string,
+        // coordinates: PropTypes.array
+      })
+    }))
+  }),
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not)
    */
   viewParameters: PropTypes.shape({
     // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
+    // shownCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     /*
      * Camera position related parameters
      */

@@ -62,6 +62,10 @@
                     right: 0;
 
                     pointer-events: all;
+
+                    &.hidden{
+                        opacity: .1;
+                    }
                     .name-container
                     {
                         position: absolute;
@@ -161,7 +165,7 @@
     {
         pointer-events: none;
 
-        @include transition(all $time-short ease);
+        // @include transition(all $time-short ease);
         opacity: .5;
         .tick
         {
@@ -175,7 +179,7 @@
             border-top: 1px solid darkblue;
             color: darkblue;
 
-            @include transition(all $time-short ease);
+            // @include transition(all $time-short ease);
 
             .legend{
               background: white;

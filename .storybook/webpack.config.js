@@ -21,9 +21,6 @@ module.exports = {
         loaders: ['style', 'css'],
         include: path.resolve(__dirname, '../')
       }
-    ],
-    externals: {
-        "sigma": "sigma"
-    }
+    ]
   }
 };

@@ -1,23 +1,20 @@
-require('script!../sigma/sigma.min.js');
-require('script!../sigma/sigma.layout.forceAtlas2.min.js');
-require('script!../sigma/sigma.parsers.gexf.min.js');
-require('script!../sigma/sigma.plugins.saveCamera.js');
-
 import QuinoaNetwork from './Network/Network';
 import QuinoaMap from './Map/Map';
 import QuinoaTimeline from './Timeline/Timeline';
+import QuinoaSVGViewer from './SVGViewer/SVGViewer';
 
 import QMapDataMapper from './utils/mapDataMapper';
 import QTimelineDataMapper from './utils/timelineDataMapper';
 import QNetworkDataMapper from './utils/networkDataMapper';
 
-import QMapDataParser from './utils/mapDataMapper';
+import QMapDataParser from './utils/mapDataParser';
 import QTimelineDataParser from './utils/timelineDataParser';
 import QNetworkDataParser from './utils/networkDataParser';
 
 export const Network = QuinoaNetwork;
 export const Map = QuinoaMap;
-export const Timline = QuinoaTimeline;
+export const SVGViewer = QuinoaSVGViewer;
+export const Timeline = QuinoaTimeline;
 
 export const parseMapData = QMapDataParser;
 export const parseTimelineData = QTimelineDataParser;

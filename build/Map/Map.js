@@ -59,13 +59,13 @@ var Map = function (_Component) {
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+      if (this.props.viewParameters !== nextProps.viewParameters) {
         this.setState({
           viewParameters: nextProps.viewParameters
         });
       }
 
-      if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
+      if (this.props.data !== nextProps.data) {
         this.setState({
           data: nextProps.data
         });
@@ -164,8 +164,7 @@ var Map = function (_Component) {
       var refMap = function refMap(c) {
         _this2.map = c;
       };
-
-      return _react2.default.createElement(
+      return data ? _react2.default.createElement(
         'figure',
         { className: 'quinoa-map' + (allowUserViewChange ? '' : ' locked') },
         _react2.default.createElement(
@@ -178,32 +177,35 @@ var Map = function (_Component) {
             animate: true },
           _react2.default.createElement(_reactLeaflet.TileLayer, {
             url: viewParameters.tilesUrl }),
-          data.map(function (object, index) {
-            switch (object.geometry.type) {
-
+          data && data.main.map(function (obj, index) {
+            var shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.find(function (cat) {
+              return obj.category + '' === cat + '';
+            }) !== undefined : true;
+            var color = viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category] || viewParameters.colorsMap.main.default || viewParameters.colorsMap.default;
+            var coordinates = void 0;
+            switch (obj.geometry.type) {
               case 'Point':
-                var thatPosition = object.geometry.coordinates;
+                var thatPosition = obj.geometry.coordinates;
 
                 if (!Number.isNaN(thatPosition[0]) && !Number.isNaN(thatPosition[1])) {
-                  var color = viewParameters.colorsMap[object.category] || viewParameters.colorsMap.noCategory;
                   var thatIcon = (0, _leaflet.divIcon)({
                     className: 'point-marker-icon',
                     html: '<span class="shape" style="background:' + color + '"></span>'
                   });
-
                   return _react2.default.createElement(
                     _reactLeaflet.Marker,
                     {
                       key: index,
                       position: thatPosition,
-                      icon: thatIcon },
+                      icon: thatIcon,
+                      opacity: shown ? 1 : 0.1 },
                     _react2.default.createElement(
                       _reactLeaflet.Popup,
                       null,
                       _react2.default.createElement(
                         'span',
                         null,
-                        object.title
+                        obj.title
                       )
                     )
                   );
@@ -211,11 +213,25 @@ var Map = function (_Component) {
                 break;
 
               case 'Polygon':
-                var coordinates = object.geometry.coordinates.map(function (couple) {
+                coordinates = obj.geometry.coordinates.map(function (couple) {
                   return couple.reverse();
                 });
                 return _react2.default.createElement(_reactLeaflet.Polygon, {
                   key: index,
+                  color: 'white',
+                  fillColor: color,
+                  opacity: shown ? 1 : 0.1,
+                  stroke: true,
+                  positions: coordinates });
+              case 'Polyline':
+              case 'LineString':
+                coordinates = obj.geometry.coordinates.map(function (couple) {
+                  return couple.reverse();
+                });
+                return _react2.default.createElement(_reactLeaflet.Polyline, {
+                  key: index,
+                  color: color,
+                  opacity: shown ? 1 : 0.1,
                   positions: coordinates });
 
               default:
@@ -224,7 +240,7 @@ var Map = function (_Component) {
             }
           })
         )
-      );
+      ) : 'Loading';
     }
   }]);
 
@@ -232,13 +248,15 @@ var Map = function (_Component) {
 }(_react.Component);
 
 Map.propTypes = {
-  data: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-    title: _react.PropTypes.string,
-    category: _react.PropTypes.string,
-    geometry: _react.PropTypes.shape({
-      type: _react.PropTypes.string
-    })
-  })),
+  data: _react.PropTypes.shape({
+    main: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+      title: _react.PropTypes.string,
+      category: _react.PropTypes.string,
+      geometry: _react.PropTypes.shape({
+        type: _react.PropTypes.string
+      })
+    }))
+  }),
   viewParameters: _react.PropTypes.shape({
     cameraX: _react.PropTypes.number,
     cameraY: _react.PropTypes.number,

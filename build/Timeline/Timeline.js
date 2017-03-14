@@ -52,13 +52,13 @@ var Timeline = function (_React$Component) {
   _createClass(Timeline, [{
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+      if (this.props.viewParameters !== nextProps.viewParameters) {
         this.setState({
           viewParameters: nextProps.viewParameters
         });
       }
 
-      if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
+      if (this.props.data !== nextProps.data) {
         var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters);
         this.setState(_extends({}, newStateParts));
       }
@@ -176,7 +176,6 @@ var Timeline = function (_React$Component) {
           globalEventsClusters = _state.eventsClusters,
           timeBoundaries = _state.timeBoundaries;
 
-
       var fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
       var toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
       var timeSpan = toDate - fromDate;
@@ -253,7 +252,7 @@ var Timeline = function (_React$Component) {
         _this2.setViewSpan(from, to, false);
       };
 
-      return _react2.default.createElement(
+      return data ? _react2.default.createElement(
         'figure',
         { className: 'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape') },
         _react2.default.createElement(
@@ -320,7 +319,7 @@ var Timeline = function (_React$Component) {
             )
           )
         )
-      );
+      ) : 'Loading';
     }
   }]);
 
@@ -328,12 +327,14 @@ var Timeline = function (_React$Component) {
 }(_react2.default.Component);
 
 Timeline.propTypes = {
-  data: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-    category: _react.PropTypes.string,
-    name: _react.PropTypes.string,
-    startDate: _react.PropTypes.instanceOf(Date),
-    endDate: _react.PropTypes.instanceOf(Date)
-  })),
+  data: _react.PropTypes.shape({
+    main: _react.PropTypes.arrayOf(_react.PropTypes.shape({
+      category: _react.PropTypes.string,
+      name: _react.PropTypes.string,
+      startDate: _react.PropTypes.instanceOf(Date),
+      endDate: _react.PropTypes.instanceOf(Date)
+    }))
+  }),
   viewParameters: _react.PropTypes.shape({
     fromDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
     toDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),

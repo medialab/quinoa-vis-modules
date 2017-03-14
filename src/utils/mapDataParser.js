@@ -68,7 +68,7 @@ export default function parseData (str = '', dataFormat = 'csv') {
               })
     };
   }
- else if (dataFormat === 'geoJSON') {
+ else if (dataFormat === 'geojson') {
     try {
       const data = JSON.parse(str);
       return {

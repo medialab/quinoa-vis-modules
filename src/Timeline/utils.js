@@ -330,9 +330,9 @@ export const computeEvents = (data, thresholdTime) => {
  * @return {object} boundaries - cf
  */
 export const computeBoundaries = (data) => {
-    const minimumDate = min(data, (d) => d.startDate.getTime());
+    const minimumDate = min(data, (d) => d.startDate && d.startDate.getTime());
     const maximumDate = max(data, (d) => {
-      return d.endDate ? d.endDate.getTime() : d.startDate.getTime();
+      return d.endDate ? d.endDate && d.endDate.getTime() : d.startDate.getTime();
     });
     // padding max and min of 1% of total time ambitus
     const ambitus = maximumDate - minimumDate;
@@ -349,11 +349,16 @@ export const computeBoundaries = (data) => {
 
 /**
  * Compute multiple timeline-related representations and utils out of a couple of data+dataMap
- * @param {array} data - initial data
+ * @param {array} inputData - initial data
  * @param {object} viewParameters - initial view parameters
  * @return {array} stateRepresentation - invariant timeline-related state elements to be used when initing / reloading data or dataMap into component
  */
-export const computeDataRelatedState = (data, viewParameters) => {
+export const computeDataRelatedState = (inputData, viewParameters) => {
+    const data = inputData && inputData.main && inputData.main.map((d) => ({
+      ...d,
+      startDate: d.startDate && typeof d.startDate === 'string' ? new Date(d.startDate) : d.startDate,
+      endDate: d.endDate && typeof d.endDate === 'string' ? new Date(d.endDate) : d.endDate
+    }));
     const timeBoundaries = computeBoundaries(data);
     const miniTicks = computeTicks(timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay);
     const displaceThreshold = (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay) / 1000;

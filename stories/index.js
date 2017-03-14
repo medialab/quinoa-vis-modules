@@ -2,6 +2,7 @@ import React from 'react';
 import { storiesOf, action, linkTo } from '@kadira/storybook';
 import Welcome from './Welcome';
 
+
 storiesOf('Welcome', module)
   .add('to Storybook', () => (
     <Welcome showApp={linkTo('Timeline')}/>
@@ -28,13 +29,15 @@ const timelineDataMap = {
 const timelineBaseViewParameters = {
   fromDate: new Date().setFullYear(1900),
   toDate: new Date().setFullYear(1960),
-  dataMap: timelineDataMap,
   colorsMap: {
-    cartography: '#F24D98',
-    computation: '#813B7C',
-    mathematics: '#59D044',
-    statistics: '#F3A002',
-    noCategory: 'brown'
+    main: {
+      cartography: '#F24D98',
+      computation: '#813B7C',
+      mathematics: '#59D044',
+      statistics: '#F3A002',
+      default: 'brown'
+    },
+    default: 'brown'
   }
 };
 
@@ -42,17 +45,48 @@ const timelineData = mapTimelineData(parseTimelineData(timelineDataRaw), {main: 
 
 storiesOf('Timeline', module)
   .add('default', () => (
-    <Timeline 
+    <Timeline
       allowUserViewChange ={true}
-      data={timelineData} 
+      data={timelineData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
     />
   ))
+  .add('with a filter', () => (
+    <Timeline
+      allowUserViewChange ={true}
+      data={timelineData}
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {{
+        ...timelineBaseViewParameters,
+        showCategories: {
+          main: ['computation']
+        }
+      }}
+    />
+  ))
+  .add('without categories', () => (
+    <Timeline
+      allowUserViewChange ={true}
+      data={
+        mapTimelineData(parseTimelineData(timelineDataRaw), {main: {
+          ...timelineDataMap,
+          category: undefined
+        }})
+      }
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {{
+        ...timelineBaseViewParameters,
+        showCategories: {
+          main: ['computation']
+        }
+      }}
+    />
+  ))
   .add('locked', () => (
-    <Timeline 
+    <Timeline
       allowUserViewChange ={false}
-      data={timelineData} 
+      data={timelineData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {timelineBaseViewParameters}
     />
@@ -90,9 +124,9 @@ storiesOf('Timeline', module)
         left: '1%',
         background: 'white'
       }}>
-      <Timeline 
+      <Timeline
         allowUserViewChange ={true}
-        data={timelineData} 
+        data={timelineData}
         onUserViewChange={(e) => console.log('on view change', e)}
         viewParameters = {timelineBaseViewParameters}
       />
@@ -106,9 +140,9 @@ storiesOf('Timeline', module)
         top: '1%',
         background: 'white'
       }}>
-      <Timeline 
+      <Timeline
         allowUserViewChange ={true}
-        data={timelineData} 
+        data={timelineData}
         onUserViewChange={(e) => console.log('on view change', e)}
         viewParameters = {timelineBaseViewParameters}
       />
@@ -141,9 +175,12 @@ const mapBaseViewParameters = {
   cameraY: 2.3455482,
   cameraZoom: 4,
   colorsMap: {
-    'accélérée': '#F24D98',
-    'normale': '#813B7C',
-    noCategory: 'brown'
+    main: {
+      'accélérée': '#F24D98',
+      'normale': '#813B7C',
+      default: 'brown'
+    },
+    default: 'brown'
   },
   tilesUrl: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png'
 };
@@ -165,35 +202,52 @@ const mapGeoJSONBaseViewParameters = {
   cameraZoom: 4,
   tilesUrl: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png',
   colorsMap: {
-    osm_mapnik: 'orange',
-    noCategory: 'brown'
+    main: {
+      osm_mapnik: 'orange',
+      noCategory: 'brown',
+      default: 'brown'
+    },
+    default: 'brown'
   }
 };
-const geoJSONData = mapMapData(parseMapData(mapGeoJSONData, 'geoJSON'), {
+const geoJSONData = mapMapData(parseMapData(mapGeoJSONData, 'geojson'), {
   main: mapGeoJSONDataMap
 });
 
 storiesOf('Map', module)
   .add('default', () => (
-    <Map 
+    <Map
       allowUserViewChange ={true}
-      data={mapData} 
+      data={mapData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {mapBaseViewParameters}
     />
   ))
-  .add('default (with geojson)', () => (
-    <Map 
+  .add('with a filter', () => (
+    <Map
       allowUserViewChange ={true}
-      data={geoJSONData} 
+      data={mapData}
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {{
+        ...mapBaseViewParameters,
+        showCategories: {
+          main: ['osm_mapnik']
+        }
+      }}
+    />
+  ))
+  .add('default (with geojson)', () => (
+    <Map
+      allowUserViewChange ={true}
+      data={geoJSONData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {mapGeoJSONBaseViewParameters}
     />
   ))
   .add('locked', () => (
-    <Map 
+    <Map
       allowUserViewChange ={false}
-      data={mapData} 
+      data={mapData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {mapBaseViewParameters}
     />
@@ -238,9 +292,9 @@ storiesOf('Map', module)
         left: '1%',
         background: 'white'
       }}>
-      <Map 
+      <Map
         allowUserViewChange ={true}
-        data={mapData} 
+        data={mapData}
         onUserViewChange={(e) => console.log('on view change', e)}
         viewParameters = {mapBaseViewParameters}
       />
@@ -254,9 +308,9 @@ storiesOf('Map', module)
         top: '1%',
         background: 'white'
       }}>
-      <Map 
+      <Map
         allowUserViewChange ={true}
-        data={mapData} 
+        data={mapData}
         onUserViewChange={(e) => console.log('on view change', e)}
         viewParameters = {mapBaseViewParameters}
       />
@@ -269,6 +323,9 @@ storiesOf('Map', module)
  */
 
 import Network from '../src/Network/Network';
+import NetworkStoryContainer from './NetworkStoryContainer';
+import NetworkSpatializerContainer from './NetworkSpatializerContainer';
+
 import parseNetworkData from '../src/utils/networkDataParser';
 import mapNetworkData from '../src/utils/networkDataMapper';
 
@@ -291,12 +348,17 @@ const networkJSONBaseViewParameters = {
   labelThreshold: 7,
   minNodeSize: 2,
   sideMargin: 0,
-  dataMap: networkJSONDataMap,
   colorsMap: {
-    1: 'blue',
-    2: 'green',
-    3: 'red',
-    noCategory: 'brown'
+    nodes: {
+      1: '#813B7C',
+      2: '#41d9f4',
+      3: '#64f441',
+      default: '#F24D98'
+    },
+    edges: {
+      default: '#c0c6c6'
+    },
+    default: '#c0c6c6'
   }
 };
 const networkJSONData = mapNetworkData(parseNetworkData(JSON.stringify(networkJSONDataRaw), 'json'), networkJSONDataMap)
@@ -317,25 +379,28 @@ const networkGexfBaseViewParameters = {
   sideMargin: 0,
   dataMap: networkGexfDataMap,
   colorsMap: {
-    "rgb(255,51,51)": "rgb(255,51,51)",
-    "rgb(0,204,204)": "rgb(0,204,204)",
-    "rgb(255,255,51)": "rgb(255,255,51)",
-    "rgb(204,204,255)": "rgb(204,204,255)",
-    "rgb(153,0,0)": "rgb(153,0,0)",
-    "rgb(102,102,0)": "rgb(102,102,0)",
-    "rgb(255,204,102)": "rgb(255,204,102)",
-    "rgb(153,255,0)": "rgb(153,255,0)",
-    "rgb(102,0,102)": "rgb(102,0,102)",
-    "rgb(153,255,255)": "rgb(153,255,255)",
-    "rgb(102,255,102)": "rgb(102,255,102)",
-    "rgb(0,153,0)": "rgb(0,153,0)",
-    "rgb(255,153,153)": "rgb(255,153,153)",
-    "rgb(255,255,0)": "rgb(255,255,0)",
-    "rgb(204,0,0)": "rgb(204,0,0)",
-    "rgb(0,204,51)": "rgb(0,204,51)",
-    "rgb(51,153,255)": "rgb(51,153,255)",
-    "rgb(255,204,51)": "rgb(255,204,51)",
-    noCategory: 'brown'
+    nodes: {
+      "rgb(255,51,51)": "rgb(255,51,51)",
+      "rgb(0,204,204)": "rgb(0,204,204)",
+      "rgb(255,255,51)": "rgb(255,255,51)",
+      "rgb(204,204,255)": "rgb(204,204,255)",
+      "rgb(153,0,0)": "rgb(153,0,0)",
+      "rgb(102,102,0)": "rgb(102,102,0)",
+      "rgb(255,204,102)": "rgb(255,204,102)",
+      "rgb(153,255,0)": "rgb(153,255,0)",
+      "rgb(102,0,102)": "rgb(102,0,102)",
+      "rgb(153,255,255)": "rgb(153,255,255)",
+      "rgb(102,255,102)": "rgb(102,255,102)",
+      "rgb(0,153,0)": "rgb(0,153,0)",
+      "rgb(255,153,153)": "rgb(255,153,153)",
+      "rgb(255,255,0)": "rgb(255,255,0)",
+      "rgb(204,0,0)": "rgb(204,0,0)",
+      "rgb(0,204,51)": "rgb(0,204,51)",
+      "rgb(51,153,255)": "rgb(51,153,255)",
+      "rgb(255,204,51)": "rgb(255,204,51)",
+      default: '#c0c6c6'
+    },
+    default: '#c0c6c6'
   }
 };
 
@@ -348,55 +413,117 @@ const networkGraphMLDataMap = {
     description: 'description'
   }
 };
+
 const networkGraphMLBaseViewParameters = {
-  cameraX: 0,
-  cameraY: 0,
-  cameraZoom: 2,
-  cameraRatio: 0,
+  cameraX: 20.29133217993082,
+  cameraY: -4.05826643598615,
+  cameraRatio: 1.176,
+  cameraAngle: 0,
+
   labelThreshold: 7,
   minNodeSize: 2,
   sideMargin: 0,
   dataMap: networkGraphMLDataMap,
   colorsMap: {
-    'person': '#F24D98',
-    'object': '#813B7C',
-    'animal': 'yellow',
-    noCategory: 'brown'
+    nodes: {
+      'person': '#F24D98',
+      'object': '#813B7C',
+      'animal': '#e5f442',
+      default: '#c0c6c6'
+    },
+    edges: {
+      default: '#c0c6c6'
+    },
+    default: '#c0c6c6'
   }
 };
 
-const networkGraphMLData = mapNetworkData(parseNetworkData(networkGraphMLDataRaw, 'graphML'), networkGraphMLDataMap)
-
+const networkGraphMLData = mapNetworkData(parseNetworkData(networkGraphMLDataRaw, 'graphml'), networkGraphMLDataMap)
 storiesOf('Network', module)
-  .add('with gexf', () => (
-    <Network 
+  .add('with gexf (default)', () => (
+    <Network
       allowUserViewChange ={true}
-      data={networkGexfData} 
+      data={networkGexfData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkGexfBaseViewParameters}
     />
   ))
-  .add('with json', () => (
-    <Network 
+  .add('with gexf and force atlas active', () => (
+    <Network
       allowUserViewChange ={true}
-      data={networkJSONData} 
+      data={networkGexfData}
+      forceAtlasActive = {true}
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {networkGexfBaseViewParameters}
+    />
+  ))
+  .add('camera transitions', () => (
+    <NetworkStoryContainer
+      data={networkGexfData}
+      baseParameters={networkGexfBaseViewParameters}
+      allowUserViewChange={true}
+    />
+  ))
+  .add('with json', () => (
+    <Network
+      allowUserViewChange ={true}
+      data={networkJSONData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkJSONBaseViewParameters}
     />
   ))
-  .add('with graphml', () => (
-    <Network 
+  .add('with json and filter', () => (
+    <Network
       allowUserViewChange ={true}
-      data={networkGraphMLData} 
+      data={networkJSONData}
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {{
+        ...networkJSONBaseViewParameters,
+        shownCategories: {
+          nodes: [2, 3, 6]
+        }
+      }}
+    />
+  ))
+  .add('with json and force atlas active', () => (
+    <NetworkSpatializerContainer
+      allowUserViewChange ={true}
+      data={networkJSONData}
+      baseParameters={networkJSONBaseViewParameters}
+    />
+  ))
+  .add('with graphml', () => (
+    <Network
+      allowUserViewChange ={true}
+      data={networkGraphMLData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkGraphMLBaseViewParameters}
     />
   ))
   .add('Locked', () => (
-    <Network 
+    <Network
       allowUserViewChange ={false}
-      data={networkGexfData} 
+      data={networkGexfData}
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {networkGexfBaseViewParameters}
     />
   ));
+
+/**
+ * SVGVIEWER COMPONENT STORIES
+ */
+
+import SVGViewer from '../src/SVGViewer/SVGViewer';
+import TEST_RAW_SVG from 'raw-loader!./mock_data/svgviewer-test.svg.txt'
+const TEST_SVG_FILE = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/tiger.svg';
+
+storiesOf('SVGViewer', module)
+  .add('default, fetch remote SVG file', () => (
+    <SVGViewer file={TEST_SVG_FILE} />
+  ))
+  .add('default, load raw SVG file', () => (
+    <SVGViewer svgString={TEST_RAW_SVG} />
+  ))
+  .add('locked', () => (
+    <SVGViewer file={TEST_SVG_FILE} allowUserViewChange={false} />
+  ))

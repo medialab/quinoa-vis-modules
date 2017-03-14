@@ -41,13 +41,13 @@ class Timeline extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+    if (this.props.viewParameters !== nextProps.viewParameters) {
       this.setState({
         viewParameters: nextProps.viewParameters
       });
     }
 
-    if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
+    if (this.props.data !== nextProps.data) {
       const newStateParts = computeDataRelatedState(nextProps.data, nextProps.viewParameters);
       this.setState({
         ...newStateParts
@@ -177,7 +177,6 @@ class Timeline extends React.Component {
       eventsClusters: globalEventsClusters,
       timeBoundaries
     } = this.state;
-
     /*
      * Step: filter the elements to display in the main timeline
      */
@@ -276,7 +275,7 @@ class Timeline extends React.Component {
     /*
      * Step: render component
      */
-    return (
+    return data ? (
       <figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
         <aside onWheel={onAsideWheel} className="mini-timeline">
           <TimeTicks ticks={miniTicks} scale={miniScale} />
@@ -331,7 +330,7 @@ class Timeline extends React.Component {
           </div>
         </section>
       </figure>
-    );
+    ) : 'Loading';
   }
 }
 
@@ -339,16 +338,19 @@ Timeline.propTypes = {
   /*
    * Incoming data in json format
    */
-  data: PropTypes.arrayOf(PropTypes.shape({
-    category: PropTypes.string,
-    name: PropTypes.string,
-    startDate: PropTypes.instanceOf(Date),
-    endDate: PropTypes.instanceOf(Date)
-  })),
+  data: PropTypes.shape({
+    main: PropTypes.arrayOf(PropTypes.shape({
+      category: PropTypes.string,
+      name: PropTypes.string,
+      startDate: PropTypes.instanceOf(Date),
+      endDate: PropTypes.instanceOf(Date)
+    }))
+  }),
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not - like Timeline spatialization algorithm for instance)
    */
   viewParameters: PropTypes.shape({
+    // shownCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     /*
      * parameters related to camera position

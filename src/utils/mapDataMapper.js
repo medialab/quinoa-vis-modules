@@ -10,16 +10,17 @@
  * @return {array} newData - ready-to-be-used data
  */
 export default function mapMapData (normalizedData = {main: []}, dataMap = {main: {}}) {
-  return normalizedData.main.map(datapoint => {
-    return Object.keys(dataMap.main).reduce((obj, dataKey) => {
-            return {
-              ...obj,
-              [dataKey]: typeof dataMap.main[dataKey] === 'function' ?
-                          dataMap.main[dataKey](datapoint) // case accessor
-                          : datapoint[dataMap.main[dataKey]] // case prop name
-            };
-          }, {
-            geometry: datapoint.geometry
-          });
-  });
+  return {
+    main: normalizedData.main.map(datapoint => {
+      return Object.keys(dataMap.main).reduce((obj, dataKey) => {
+              return {
+                ...obj,
+                [dataKey]: typeof dataMap.main[dataKey] === 'function' ?
+                            dataMap.main[dataKey](datapoint) // case accessor
+                            : datapoint[dataMap.main[dataKey]] // case prop name
+              };
+            }, {
+              geometry: datapoint.geometry
+            });
+    })};
 }

@@ -1,191 +1,234 @@
+/* eslint no-undef: 0 */
+
 import React, {Component, PropTypes} from 'react';
+
 import {debounce} from 'lodash';
+
+import Sigma from 'react-sigma/lib/Sigma';
+import ForceAtlas2 from 'react-sigma/lib/ForceAtlas2';
+
+import chroma from 'chroma-js';
+
 require('gexf');
 
 import './Network.scss';
-
-let sigInst;
-let camera;
 
 class Network extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.onUserViewChange = debounce(this.onUserViewChange, 100);
+    this.onCoordinatesUpdate = debounce(this.onCoordinatesUpdate.bind(this), 100);
+    this.getNodesPositions = this.getNodesPositions.bind(this);
     const state = {
       data: props.data,
-      viewParameters: props.viewParameters
+      viewParameters: {...props.viewParameters}
     };
 
     this.state = state;
 
-    this.rebootSigma = this.rebootSigma.bind(this);
+    this.buildVisData = this.buildVisData.bind(this);
   }
 
   componentDidMount() {
-    this.rebootSigma();
-    // Adding the relevant renderer
-    this.renderer = sigInst.addRenderer({
-      container: this.container,
-      type: 'canvas',
-      camera
-    });
-    sigInst.refresh();
-
-    // // Hooking into the camera
-    // // this.releaseCamera = monkeyPatchCamera(this.updateSlide);
-
-    const onCoordinatesUpdate = (event) => {
-      const nextCamera = event.target;
-      const coords = {
-        cameraX: nextCamera.x,
-        cameraY: nextCamera.y,
-        cameraRatio: nextCamera.ratio,
-        cameraAngle: nextCamera.angle,
-      };
+    const visData = this.buildVisData(this.props.data, this.props.viewParameters);
+    setTimeout(() => {
+      if (this.sigma) {
+        this.sigma.sigma.graph.clear();
+      }
       this.setState({
-        viewParameters: {
-          ...this.state.viewParameters,
-          ...coords
-        }
+        visData,
+        data: this.props.data
       });
-      this.onUserViewChange(coords, 'userevent');
-    };
 
-    camera.bind('coordinatesUpdated', onCoordinatesUpdate);
+      const coords = {
+        x: this.props.viewParameters.cameraX,
+        y: this.props.viewParameters.cameraY,
+        angle: this.props.viewParameters.cameraAngle,
+        ratio: this.props.viewParameters.cameraRatio,
+      };
+      if (this.sigma) {
+        const camera = this.sigma.sigma.cameras[0];
+        camera.isAnimated = true;
+        camera.goTo(coords);
+        camera.bind('coordinatesUpdated', this.onCoordinatesUpdate);
+      }
+    });
   }
 
-  componentWillReceiveProps(nextProps, nextState) {
-    if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      this.props.data !== nextProps.data ||
+      this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap ||
+      this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories ||
+      this.props.viewParameters.colorsMap !== nextProps.viewParameters.colorsMap
+    ) {
+      const visData = this.buildVisData(nextProps.data, nextProps.viewParameters);
+      if (this.sigma) {
+        this.sigma.sigma.graph.clear();
+      }
       this.setState({
+        visData,
+        data: nextProps.data,
         viewParameters: nextProps.viewParameters
       });
-        const coords = {
+    }
+    if (
+      // this.props.viewParameters !== nextProps.viewParameters  // ||
+      JSON.stringify(this.state.viewParameters) !== JSON.stringify(nextProps.viewParameters)
+    ) {
+      const coords = {
         x: nextProps.viewParameters.cameraX,
         y: nextProps.viewParameters.cameraY,
         angle: nextProps.viewParameters.cameraAngle,
         ratio: nextProps.viewParameters.cameraRatio,
       };
-      camera.goTo(coords);
-      sigInst.refresh();
-    }
-    // update state's data when props update data
-    if (JSON.stringify(this.props.data) !== JSON.stringify(nextProps.data)) {
+      if (this.sigma) {
+        const camera = this.sigma.sigma.cameras[0];
+        sigma.misc.animation.camera(
+          camera,
+          coords,
+          {
+            duration: 500
+          }
+        );
+      }
       this.setState({
-        data: nextProps.data
+        viewParameters: nextProps.viewParameters
       });
-    }
-
-    // update sigma when state's data has changed
-    if (JSON.stringify(this.state.data) !== JSON.stringify(nextState.data)) {
-      this.rebootSigma();
     }
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
+  componentDidUpdate(prevState) {
+    // forcing update for graph settings changes
+    if (prevState.viewParameters.labelThreshold !== this.state.viewParameters.labelThreshold) {
+      if (this.sigma) {
+        this.sigma.sigma.renderers[0].settings('labelThreshold', this.state.viewParameters.labelThreshold);
+        this.sigma.sigma.refresh();
+      }
+    }
+    if (prevState.viewParameters.minNodeSize !== this.state.viewParameters.minNodeSize) {
+      if (this.sigma) {
+        this.sigma.sigma.renderers[0].settings('minNodeSize', this.state.viewParameters.minNodeSize);
+        this.sigma.sigma.refresh();
+      }
+    }
+  }
+
+  buildVisData(data, viewParameters) {
+    const shownCats = viewParameters.shownCategories;
+    return {
+      nodes: data.nodes
+        .map(node => {
+          const category = node.category === undefined ? 'default' : node.category;
+          const color = (viewParameters.colorsMap.nodes &&
+                  (viewParameters.colorsMap.nodes[category]
+                    || viewParameters.colorsMap.nodes.default))
+                  || viewParameters.colorsMap.default;
+          return {
+          ...node,
+          // dynamically set color
+          color: (!shownCats || !shownCats.nodes) || (shownCats.nodes.find(cat => cat + '' === category + '') !== undefined)
+                  ? color : chroma(color).desaturate(5).brighten().hex()
+          };
+      }),
+      edges: data.edges
+        .map(edge => {
+          const category = edge.category === undefined ? 'default' : edge.category;
+          const color = (viewParameters.colorsMap.edges &&
+                    (viewParameters.colorsMap.edges[category]
+                      || viewParameters.colorsMap.edges.default)
+                    )
+                    || viewParameters.colorsMap.default;
+          return {
+            ...edge,
+            type: edge.type || 'undirected',
+            color: (!shownCats || !shownCats.edges) || (shownCats.edges.find(cat => cat + '' === category + '') !== undefined)
+                  ? color : chroma(color).desaturate(5).brighten().alpha(0.2).hex()
+          };
+         })
+    };
+  }
+
+  getNodesPositions () {
+    const nodes = this.sigma.sigma.graph.nodes();
+    return nodes.map(node => ({
+      x: node.x,
+      y: node.y,
+      id: node.id
+    }));
+  }
+
+  onCoordinatesUpdate (event) {
+    const nextCamera = event.target;
+    const coords = {
+      cameraX: nextCamera.x,
+      cameraY: nextCamera.y,
+      cameraRatio: nextCamera.ratio,
+      cameraAngle: nextCamera.angle,
+    };
+    if (typeof this.props.onUserViewChange === 'function') {
       this.props.onUserViewChange({
-        lastEventType: nextState.lastEventType,
-        viewParameters: nextState.viewParameters
+        viewParameters: {
+          ...this.state.viewParameters,
+          ...coords
+        },
+        lastEeventType: 'userevent'
       });
     }
-  }
-
-
-  componentDidUpdate(prevProps, prev) {
-    // If the graph has changed, we reset sigma
-    if (prev.data !== this.state.data) {
-      sigInst.graph.clear();
-      this.rebootSigma();
-    }
-  }
-
-  componentWillUnmount() {
-    if (sigInst) {
-      // Killing the renderer todo re set with new workflow
-      // sigInst.killRenderer(this.renderer);
-    }
-    // Releasing the camera
-    // this.releaseCamera();
-  }
-
-  /**
-   * Inits and re-spatialize sigma visualization
-   */
-  rebootSigma () {
-    const props = {
-      ...this.state.viewParameters,
-      allowUserViewChange: this.props.allowUserViewChange
-    };
-
-    const visData = {
-      nodes: this.state.data.nodes.map(node => ({
-        ...node,
-        // dynamically set color
-        color: props.colorsMap[node.category] || props.colorsMap.noCategory
-      })),
-      edges: this.state.data.edges.map(edge => ({
-        ...edge,
-        type: edge.type || 'undirected'
-      }))
-    };
-
-    const SIGMA_SETTINGS = {
-      labelThreshold: props.labelThreshold || 7,
-      minNodeSize: props.minNodeSize || 2,
-      edgeColor: 'default',
-      defaultEdgeColor: (props.colorsMap && props.colorsMap.noCategory) || '#D1D1D1',
-      sideMargin: props.sideMargin || 0,
-      enableCamera: props.allowUserViewChange
-    };
-    sigInst = new sigma({
-      // settings: SIGMA_SETTINGS,
-      // graph: state.data,
-      // container: 'sigma-container'
-      settings: SIGMA_SETTINGS,
-      graph: visData,
-      // container: this.container,
-      // renderer: {
-      //   container: this.container,
-      //   type: 'svg'
-      // }
-    });
-    camera = sigInst.addCamera('main');
-    camera.isAnimated = true;
-
-    // launch forceAtlas if graph is not spatialized
-    if (!this.state.data.spatialized) {
-      sigInst.refresh();
-      sigInst.startForceAtlas2({
-        startingIterations: 1000
-      });
-      setTimeout(() => sigInst.stopForceAtlas2(), 1000);
-    }
-  }
-
-  /**
-   * Lets instance parent to know when user has updated view
-   * @param {string} lastEventType - event type of the last event triggered by user
-   */
-  onUserViewChange (parameters, lastEventType) {
-    this.setState({
-      lastEventType,
-      lastEventDate: new Date()
-    });
   }
   /**
    * Renders the component
    */
   render() {
     const {
-      allowUserViewChange = true
+      allowUserViewChange = true,
+      forceAtlasActive = false,
+      viewParameters
     } = this.props;
+    const {
+      visData
+    } = this.state;
 
-    return (
-      <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
-        <div id="sigma-container" ref={div => (this.container = div)} />
-      </figure>
-    );
+    const bindSigInst = comp => {
+      this.sigma = comp;
+    };
+
+    const settings = {
+      drawEdges: true,
+      ...viewParameters,
+      mouseEnabled: allowUserViewChange
+    };
+
+    if (visData) {
+      return forceAtlasActive ?
+      (
+        <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
+          <Sigma
+            style={{width: '100%', height: '100%'}}
+            graph={visData}
+            ref={bindSigInst}
+            settings={settings}>
+            <ForceAtlas2
+              worker
+              barnesHutOptimize
+              barnesHutTheta={0.6}
+              iterationsPerRender={10}
+              linLogMode />
+          </Sigma>
+        </figure>
+      )
+      : (
+        <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
+          <Sigma
+            style={{width: '100%', height: '100%'}}
+            graph={visData}
+            ref={bindSigInst}
+            settings={settings} />
+        </figure>
+      );
+    }
+    return null;
   }
 }
 
@@ -201,7 +244,7 @@ Network.propTypes = {
       size: PropTypes.number,
       x: PropTypes.number,
       y: PropTypes.number,
-      id: PropTypes.string
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
     })),
     edges: PropTypes.arrayOf(PropTypes.shape({
       label: PropTypes.string,
@@ -209,7 +252,10 @@ Network.propTypes = {
       category: PropTypes.string,
       description: PropTypes.string,
       weight: PropTypes.number,
-      id: PropTypes.string,
+      id: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]),
       source: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number
@@ -217,10 +263,14 @@ Network.propTypes = {
       target: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number
-      ]),
-      spatialized: PropTypes.bool
-    }))
+      ])
+    })),
+    spatialized: PropTypes.bool
   }),
+  /*
+   * Spatialization related
+   */
+   forceAtlasActive: PropTypes.bool,
   /*
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not)
    */
@@ -233,6 +283,7 @@ Network.propTypes = {
     cameraRatio: PropTypes.number,
     cameraAngle: PropTypes.number,
     // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
+    // shownCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     /*
      * Graph settings parameters
      */

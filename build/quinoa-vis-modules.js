@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.mapNetworkData = exports.mapTimelineData = exports.mapMapData = exports.parseNetworkData = exports.parseTimelineData = exports.parseMapData = exports.Timline = exports.Map = exports.Network = undefined;
+exports.mapNetworkData = exports.mapTimelineData = exports.mapMapData = exports.parseNetworkData = exports.parseTimelineData = exports.parseMapData = exports.Timeline = exports.SVGViewer = exports.Map = exports.Network = undefined;
 
 var _Network = require('./Network/Network');
 
@@ -17,6 +17,10 @@ var _Timeline = require('./Timeline/Timeline');
 
 var _Timeline2 = _interopRequireDefault(_Timeline);
 
+var _SVGViewer = require('./SVGViewer/SVGViewer');
+
+var _SVGViewer2 = _interopRequireDefault(_SVGViewer);
+
 var _mapDataMapper = require('./utils/mapDataMapper');
 
 var _mapDataMapper2 = _interopRequireDefault(_mapDataMapper);
@@ -29,6 +33,10 @@ var _networkDataMapper = require('./utils/networkDataMapper');
 
 var _networkDataMapper2 = _interopRequireDefault(_networkDataMapper);
 
+var _mapDataParser = require('./utils/mapDataParser');
+
+var _mapDataParser2 = _interopRequireDefault(_mapDataParser);
+
 var _timelineDataParser = require('./utils/timelineDataParser');
 
 var _timelineDataParser2 = _interopRequireDefault(_timelineDataParser);
@@ -39,16 +47,12 @@ var _networkDataParser2 = _interopRequireDefault(_networkDataParser);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-require('script!../sigma/sigma.min.js');
-require('script!../sigma/sigma.layout.forceAtlas2.min.js');
-require('script!../sigma/sigma.parsers.gexf.min.js');
-require('script!../sigma/sigma.plugins.saveCamera.js');
-
 var Network = exports.Network = _Network2.default;
 var Map = exports.Map = _Map2.default;
-var Timline = exports.Timline = _Timeline2.default;
+var SVGViewer = exports.SVGViewer = _SVGViewer2.default;
+var Timeline = exports.Timeline = _Timeline2.default;
 
-var parseMapData = exports.parseMapData = _mapDataMapper2.default;
+var parseMapData = exports.parseMapData = _mapDataParser2.default;
 var parseTimelineData = exports.parseTimelineData = _timelineDataParser2.default;
 var parseNetworkData = exports.parseNetworkData = _networkDataParser2.default;
 

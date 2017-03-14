@@ -15,12 +15,13 @@ function mapMapData() {
   var normalizedData = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { main: [] };
   var dataMap = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { main: {} };
 
-  return normalizedData.main.map(function (datapoint) {
-    return Object.keys(dataMap.main).reduce(function (obj, dataKey) {
-      return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap.main[dataKey] === 'function' ? dataMap.main[dataKey](datapoint) 
-      : datapoint[dataMap.main[dataKey]]));
-    }, {
-      geometry: datapoint.geometry
-    });
-  });
+  return {
+    main: normalizedData.main.map(function (datapoint) {
+      return Object.keys(dataMap.main).reduce(function (obj, dataKey) {
+        return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap.main[dataKey] === 'function' ? dataMap.main[dataKey](datapoint) 
+        : datapoint[dataMap.main[dataKey]]));
+      }, {
+        geometry: datapoint.geometry
+      });
+    }) };
 }

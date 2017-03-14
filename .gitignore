@@ -4,3 +4,4 @@ npm-debug.log
 storybook-static
 src/.DS_Store
 stories/.DS_Store
+.vscode

@@ -144,7 +144,7 @@ function parseData() {
     } catch (e) {
       return undefined;
     }
-  } else if (dataFormat === 'graphML') {
+  } else if (dataFormat === 'graphml') {
     normalizedData = parseGraphML(str);
   } else {
   }
