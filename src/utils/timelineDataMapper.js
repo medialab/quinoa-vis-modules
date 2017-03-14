@@ -3,6 +3,32 @@
  * @module utils/timelineDataMapper
  */
 
+import {
+  timeYear,
+  timeMonth,
+  // timeWeek, // not used so far
+  timeDay,
+  timeHour,
+  timeMinute,
+  timeSecond
+  // timeMillisecond // not used so far
+} from 'd3-time';
+
+// import {min, max} from 'd3-array';
+// import {scaleLinear} from 'd3-scale';
+// import {timeFormat} from 'd3-time-format';
+
+/**
+ * timerelated constants
+ */
+const SECOND = 1000;
+const MINUTE = SECOND * 60;
+const HOUR = MINUTE * 60;
+const DAY = HOUR * 24;
+// const WEEK = DAY * 7; // not used so far
+const MONTH = DAY * 31;
+const YEAR = DAY * 365;
+
 /**
  * Computes data's discretised date values to a javascript date object
  * @param {number} thatYear - year as a number
@@ -19,8 +45,17 @@ export const computeDate = (thatYear, thatMonth, thatDay, time) => {
   const date = new Date();
   date.setFullYear(thatYear);
 
-  thatMonth = thatMonth ? date.setMonth(thatMonth - 1) : date.setMonth(0);
-  thatDay = thatDay ? date.setDate(thatDay) : date.setDate(1);
+  if (thatMonth) {
+    date.setMonth(thatMonth - 1);
+  } else {
+    date.setMonth(0);
+  }
+
+  if (thatDay) {
+    date.setDate(thatDay);
+  } else {
+    date.setDate(1);
+  }
 
   // computing time, taking into account different levels of precision
   // valid syntaxes :
@@ -113,3 +148,103 @@ export default function mapData (normalizedData = {main: []}, inputDataMap = {ma
       return -1;
     })};
 }
+
+/**
+ * Computes data's discretised date values to a javascript date object
+ * @param {number} time - time span to analyze
+ * @return {object} utils - proper unit, proper ticks timespan, and proper date formatting pattern
+ */
+export const setTicks = function (time) {
+  const timeVars = (unit, span, format) => {
+    return {unit, span, format};
+  };
+
+  const year = (span, format) => timeVars(timeYear, span, format);
+  const month = (span, format) => timeVars(timeMonth, span, format);
+  const day = (span, format) => timeVars(timeDay, span, format);
+  const hour = (span, format) => timeVars(timeHour, span, format);
+  const minute = (span, format) => timeVars(timeMinute, span, format);
+  const second = (span, format) => timeVars(timeSecond, span, format);
+
+  // > 1000 years
+  if (time > YEAR * 1000) {
+    return year(500, '%Y');
+  }
+
+  // > 500 years
+  if (time > YEAR * 500) {
+    return year(250, '%Y');
+  }
+
+  // > 250 years
+  if (time > YEAR * 250) {
+    return year(125, '%Y');
+  }
+
+  // > 50 years
+  if (time > YEAR * 100) {
+    return year(50, '%Y');
+  }
+
+  //10 - 50 years
+  if (time > YEAR * 10) {
+    return year(10, '%Y');
+  }
+
+  // 3-10 years
+  if (time > YEAR * 3) {
+    return year(1, '%Y');
+  }
+
+  // 1-3 years
+  if (time > YEAR) {
+    return month(6, '%m/%Y');
+  }
+
+  // 6-12 months
+  if (time > MONTH * 6) {
+    return month(1, '%m/%Y');
+  }
+
+  // 1-6 months
+  if (time > MONTH) {
+    return day(15, '%m/%d/%Y');
+  }
+
+  // 15-30 days
+  if (time > 15 * DAY) {
+    return day(3, '%m/%d/%Y');
+  }
+
+  // 1-15 days
+  if (time > DAY) {
+    return day(1, '%m/%d/%Y');
+  }
+
+  // 6-24 hours
+  if (time > 6 * HOUR) {
+    return hour(1, '%m/%d/%Y, %I %p');
+  }
+
+  // 1-6 hours
+  if (time > HOUR) {
+    return minute(30, '%H:%M');
+  }
+
+  // 30-60 minutes
+  if (time > 30 * MINUTE) {
+    return minute(10, '%H:%M');
+  }
+
+  // 10-30 minutes
+  if (time > 10 * MINUTE) {
+    return minute(5, '%H:%M');
+  }
+
+  // 1-10 minutes
+  if (time > MINUTE) {
+    return minute(1, '%H:%M');
+  }
+
+  return second(30, '%H:%M:%S');
+};
