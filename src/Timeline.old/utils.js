@@ -207,7 +207,7 @@ else if (time > MINUTE) {//1-10 minutes
 export const computeTicks = (minimumDateDisplay, maximumDateDisplay) => {
     const ticksParams = setTicks(maximumDateDisplay - minimumDateDisplay);
     const formatDate = timeFormat(ticksParams.format);
-    // todo : find a better method than that to compute clean ticks without computing a bunch of dates
+    // todo : find a better method than that to compute clean ticks
     const baseDate = new Date();
     baseDate.setFullYear(-100000);
     baseDate.setDate(1);
@@ -230,48 +230,43 @@ export const computeTicks = (minimumDateDisplay, maximumDateDisplay) => {
  * @param {number} eventPadding - time (in millisec) to use to decide whether two events are overlapping
  * @return {object} periods - object containing a of list events enriched with a column indication, and the list of columns
  */
-export const clusterEvents = (events, eventPadding) => {
-  const container = events
-    .reduce((periods, event) => {
-      let previous;
-      if (periods.timeObjects.length) {
-        previous = periods.timeObjects[periods.timeObjects.length - 1];
-      }
-      if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
-        event.column = previous.column + 1;
-        previous.overlapped = true;
-        event.overlapped = false;
-        if (periods.columns[periods.columns.length - 1] < event.column) {
-          periods.columns.push(event.column);
+export const clusterEvents = (events, eventPadding) =>
+    events
+      .reduce((periods, event) => {
+        let previous;
+        if (periods.timeObjects.length) {
+          previous = periods.timeObjects[periods.timeObjects.length - 1];
         }
-      }
-      else {
-        event.column = 1;
-      }
-      periods.timeObjects.push(event);
-      return periods;
-    }, {
-      timeObjects: [],
-      columns: [1]
-    });
-  container.clusters = container.columns.map(column => ({
-    column,
-    timeObjects: container.timeObjects.filter(event => event.column === column)
-  }));
-  return container;
-};
+        if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
+          event.column = previous.column + 1;
+          previous.overlapped = true;
+          event.overlapped = false;
+          if (periods.columns[periods.columns.length - 1] < event.column) {
+            periods.columns.push(event.column);
+          }
+        }
+        else {
+          event.column = 1;
+        }
+        periods.timeObjects.push(event);
+        return periods;
+      }, {
+        timeObjects: [],
+        columns: [1]
+      });
+
 /**
  * Organizes a list of periods objects into separate columns that optimize their spreading in space
  * @param {number} data - array of periods
  * @return {object} periods - object containing a of list periods enriched with a column indication, and the list of columns
  */
-export const clusterPeriods = (data) => {
+export const computePeriods = (data) => {
     let maxColumn = 1;
-    const periodsObjects = data.filter(point => point.endDate !== undefined);
-    periodsObjects.forEach((period, index) => {
+    const periodsClusters = data.filter(point => point.endDate !== undefined);
+    periodsClusters.forEach((period, index) => {
       let previous;
       if (index > 0) {
-        previous = periodsObjects[index - 1];
+        previous = periodsClusters[index - 1];
       }
       if (previous && period.startDate < previous.endDate) {
         period.column = previous.column + 1;
@@ -289,21 +284,45 @@ export const clusterPeriods = (data) => {
     for (let count = 0; count < maxColumn; count ++) {
       clustersColumns.push(count + 1);
     }
-    const periodsClusters = clustersColumns.reduce((clusters, column) => {
-      return [
-        ...clusters,
-        {
-          column,
-          timeObjects: periodsObjects.filter(period => period.column === column)
-        }
-      ];
-    }, []);
     return {
       columns: clustersColumns,
-      timeObjects: periodsObjects,
-      clusters: periodsClusters
+      timeObjects: periodsClusters
     };
 };
+
+/**
+ * Organizes a list of event objects into separate columns that optimize their spreading in space
+ * @param {number} events - array of events
+ * @param {number} eventPadding - time (in millisec) to use to decide whether two events are overlapping
+ * @return {object} periods - object containing a of list events enriched with a column indication, and the list of columns
+ */
+export const computeEvents = (data, thresholdTime) => {
+    let maxColumn = 1;
+    const eventsClusters = data.filter(point => point.endDate === undefined).map(point => Object.assign({}, point));
+    eventsClusters.forEach((event, index) => {
+      let previous;
+      if (index > 0) {
+        previous = eventsClusters[index - 1];
+      }
+      if (previous && event.startDate - previous.startDate <= thresholdTime) {
+        event.column = previous.column + 1;
+        if (previous.column + 1 > maxColumn) {
+          maxColumn = previous.column + 1;
+        }
+      }
+      else {
+        event.column = 1;
+      }
+    });
+    const clustersColumns = [];
+    for (let count = 0; count < maxColumn; count ++) {
+      clustersColumns.push(count + 1);
+    }
+    return {
+      columns: clustersColumns,
+      timeObjects: eventsClusters
+    };
+  };
 
 /**
  * Computes invariant timeline boundaries
@@ -328,94 +347,6 @@ export const computeBoundaries = (data) => {
     };
    };
 
-export const normalizeData = (inputData) =>
-  inputData && inputData.main &&
-  inputData.main
-  .map((d, id) => ({
-    ...d,
-    startDate: d.startDate && typeof d.startDate === 'string' ? new Date(d.startDate) : d.startDate,
-    endDate: d.endDate && typeof d.endDate === 'string' ? new Date(d.endDate) : d.endDate,
-    type: d.endDate ? 'period' : 'event',
-    id
-  }));
-
-export const clusterTimeObjects = (data, timeBoundaries) => {
-  const inputPeriods = data.filter(d => d.type === 'period');
-  const inputEvents = data.filter(d => d.type === 'event');
-  const ambitus = timeBoundaries[1] - timeBoundaries[0];
-  const padding = ambitus / 1000;
-  let maxColumn = 1;
-  const activeColumn = 0;
-  let previous;
-  let column;
-  let previousPeriods;
-  const finalEvents = inputEvents
-  // .filter(obj =>
-  //     obj.startDate.getTime() > timeBoundaries[0] &&
-  //     obj.startDate.getTime() < timeBoundaries[1]
-  //   )
-  .reduce((events, event, index) => {
-    if (events.length && index > 0) {
-      previous = events[index - 1];
-    }
- else {
-      event.column = 1;
-      return [...events, event];
-    }
-    if (previous && previous.column !== undefined && event.startDate.getTime() - previous.startDate.getTime() < padding) {
-      event.column = previous.column + 1;
-      maxColumn = event.column;
-      previous.overlapped = true;
-      event.overlapped = false;
-    }
-    else {
-      event.column = 1;
-    }
-    return [...events, event];
-  }, []);
-  maxColumn = 1;
-  const finalPeriods = inputPeriods
-  // .filter(obj =>
-  //     (obj.startDate.getTime() > timeBoundaries[0] &&
-  //     obj.startDate.getTime() < timeBoundaries[1]) ||
-  //    (obj.endDate.getTime() > timeBoundaries[0] &&
-  //     obj.endDate.getTime() < timeBoundaries[1]) ||
-  //     (obj.startDate.getTime() < timeBoundaries[0] &&
-  //     obj.endDate.getTime() > timeBoundaries[1])
-    // )
-  .reduce((periods, period, index) => {
-    if (periods.length && index > 0) {
-      previous = periods[index - 1];
-      previousPeriods = periods.slice(0, index - 1);
-    }
- else {
-      period.column = 1;
-      return [...periods, period];
-    }
-    const previousColumn = previous.column;
-    for (let i = 0; i <= previousColumn; i++) {
-      const slotTaken = previousPeriods.find(previous =>
-        previous &&
-        (period.endDate > previous.startDate && period.startDate < previous.endDate)
-      );
-      if (slotTaken === undefined) {
-        period.column = i;
-        break;
-      }
-    }
-    if (period.column === undefined) {
-      maxColumn ++;
-      period.column = maxColumn;
-    }
-
-    return [...periods, period];
-  }, []);
-  return finalPeriods.concat(finalEvents.map(evt => ({
-    ...evt,
-    column: evt.column + maxColumn
-  })));
-};
-
 /**
  * Compute multiple timeline-related representations and utils out of a couple of data+dataMap
  * @param {array} inputData - initial data
@@ -423,12 +354,10 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
  * @return {array} stateRepresentation - invariant timeline-related state elements to be used when initing / reloading data or dataMap into component
  */
 export const computeDataRelatedState = (inputData, viewParameters) => {
-    const data = inputData && inputData.main && inputData.main.map((d, id) => ({
+    const data = inputData && inputData.main && inputData.main.map((d) => ({
       ...d,
       startDate: d.startDate && typeof d.startDate === 'string' ? new Date(d.startDate) : d.startDate,
-      endDate: d.endDate && typeof d.endDate === 'string' ? new Date(d.endDate) : d.endDate,
-      type: d.endDate ? 'period' : 'event',
-      id
+      endDate: d.endDate && typeof d.endDate === 'string' ? new Date(d.endDate) : d.endDate
     }));
     const timeBoundaries = computeBoundaries(data);
     const miniTicks = computeTicks(timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay);
@@ -440,8 +369,7 @@ export const computeDataRelatedState = (inputData, viewParameters) => {
       data,
       viewParameters,
       miniScale: scaleLinear().range([0, 100]).domain([timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay]),
-      timeBoundaries,
-      periodsClusters: clusterPeriods(data),
-      eventsClusters: clusterEvents(data, displaceThreshold)
+      periodsClusters: computePeriods(data),
+      eventsClusters: computeEvents(data, displaceThreshold)
     };
 };

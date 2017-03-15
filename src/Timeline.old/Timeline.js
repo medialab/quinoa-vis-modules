@@ -9,7 +9,6 @@ import {timeFormat} from 'd3-time-format';
 import {debounce} from 'lodash';
 
 import {
-  normalizeData,
   setTicks,
   computeTicks,
   clusterEvents,
@@ -23,9 +22,6 @@ import {
   ClustersGroup
 } from './subComponents.js';
 import './Timeline.scss';
-
-import MiniTimeline from './MiniTimeline';
-import MainTimeline from './MainTimeline';
 
 /**
  * Timeline main component
@@ -232,35 +228,107 @@ class Timeline extends React.Component {
         this.pan(false, delta);
       }
     };
-
+    const onAsideWheel = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (!this.props.allowUserViewChange) {
+        return;
+      }
+      const delta = (toDate - fromDate) / 2;
+      const forward = e.deltaY > 0;
+      if (forward && toDate + delta <= timeBoundaries.maximumDateDisplay) {
+        this.pan(true, delta);
+      }
+      if (!forward && fromDate - delta >= timeBoundaries.minimumDateDisplay) {
+        this.pan(false, delta);
+      }
+    };
     const zoomIn = () => this.zoom(1.1);
     const zoomOut = () => this.zoom(0.9);
     const panBackward = () => this.pan(false, (toDate - fromDate) / 10);
     const panForward = () => this.pan(true, (toDate - fromDate) / 10);
+
+    const onBrushClick = (fromInput, toInput) => {
+      if (fromInput && toInput) {
+        this.setViewSpan(fromInput, toInput);
+      }
+      /*
+      // brush-resizing related
+      const from = fromInput !== undefined ?
+      fromInput
+      : {
+          portionY: Math.abs(viewParameters.fromDate / (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay))
+        };
+      const to = toInput !== undefined ?
+      toInput
+      : {
+          portionY: Math.abs(viewParameters.toDate / (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay))
+        };
+      this.setViewSpan(from, to);
+      */
+    };
+
+    const onBrushManipulation = (from, to) => {
+      this.setViewSpan(from, to, false);
+    };
 
     /*
      * Step: render component
      */
     return data ? (
       <figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
-        <MiniTimeline
-          viewParameters={viewParameters}
-          timeBoundaries={timeBoundaries}
-          scale={miniScale}
-          data={normalizeData(this.props.data)} />
-        <MainTimeline
-          eventsClusters={globalEventsClusters}
-          periodsClusters={periodsClusters}
-          viewParameters={viewParameters}
-          timeBoundaries={timeBoundaries}
-          scale={miniScale}
-          data={normalizeData(this.props.data)} 
-          onWheel={onMainWheel}
-        />
-        <div className="time-boundaries-container">
-          <div id="from-date">{formatDate(new Date(fromDate))}</div>
-          <div id="to-date">{formatDate(new Date(toDate))}</div>
-        </div>
+        <aside onWheel={onAsideWheel} className="mini-timeline">
+          <TimeTicks ticks={miniTicks} scale={miniScale} />
+          <Brush
+            onSimpleClick={this.jump}
+            scale={miniScale}
+            fromDate={viewParameters.fromDate}
+            toDate={viewParameters.toDate}
+            active={allowUserViewChange}
+            onSpanEventDefinition={onBrushClick}
+            onSpanAbsoluteDefinition={onBrushManipulation} />
+          <div className="time-objects-container">
+            <ClustersGroup
+              viewParameters={viewParameters}
+              scale={miniScale}
+              clusters={periodsClusters} />
+            <ClustersGroup
+              viewParameters={viewParameters}
+              scale={miniScale}
+              clusters={globalEventsClusters} />
+
+          </div>
+        </aside>
+        <section className="main-timeline" onWheel={onMainWheel}>
+          <TimeTicks ticks={mainTicks} scale={timelineScale} />
+
+          <div className="time-objects-container">
+            {displayedPeriods.length ?
+              <ClustersGroup
+                viewParameters={viewParameters}
+                scale={timelineScale}
+                clusters={{
+                  columns: periodsClusters.columns,
+                  timeObjects: displayedPeriods
+                }} /> : ''}
+            {eventsClusters.timeObjects.length ?
+              <ClustersGroup
+                viewParameters={viewParameters}
+                scale={timelineScale}
+                clusters={eventsClusters} /> : ''}
+          </div>
+          {allowUserViewChange ?
+            <Controls
+              zoomIn={zoomIn}
+              zoomOut={zoomOut}
+              panForward={panForward}
+              panBackward={panBackward} />
+          : ''}
+          <div className="time-boundaries-container">
+            <div id="from-date">{formatDate(new Date(fromDate))}</div>
+            <div id="to-date">{formatDate(new Date(toDate))}</div>
+          </div>
+        </section>
       </figure>
     ) : 'Loading';
   }
@@ -273,9 +341,7 @@ Timeline.propTypes = {
   data: PropTypes.shape({
     main: PropTypes.arrayOf(PropTypes.shape({
       category: PropTypes.string,
-      title: PropTypes.string,
       name: PropTypes.string,
-      description: PropTypes.string,
       startDate: PropTypes.instanceOf(Date),
       endDate: PropTypes.instanceOf(Date)
     }))
