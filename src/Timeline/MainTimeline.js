@@ -12,10 +12,15 @@ export default class MainTimeline extends Component {
   constructor(props) {
     super(props);
     this.updateDimensions = this.updateDimensions.bind(this);
+    this.onMouseDown = this.onMouseDown.bind(this);
+    this.onMouseUp = this.onMouseUp.bind(this);
+    this.onMouseMove = this.onMouseMove.bind(this);
+
     this.state = {
       width: undefined,
       height: undefined,
-      data: clusterTimeObjects(props.data, [props.viewParameters.fromDate, props.viewParameters.toDate])
+      data: clusterTimeObjects(props.data, [props.viewParameters.fromDate, props.viewParameters.toDate]),
+      grabbing: false
     };
   }
 
@@ -38,6 +43,32 @@ export default class MainTimeline extends Component {
     window.removeEventListener('resize', updateDimensions);
   }
 
+  onMouseDown(evt) {
+    const bbox = evt.target.getBBox();
+    const height = bbox.height;
+    const y = evt.clientY;
+    this.setState({
+      grabbing: true,
+      prevY: y
+    });
+  }
+  onMouseMove(evt) {
+    if (this.state.grabbing) {
+      const bbox = evt.target.getBBox();
+      const height = bbox.height;
+      const y = evt.clientY;
+      const diff = this.state.prevY - y;
+      const dateDiff =  (diff / this.state.height) * (this.props.viewParameters.toDate - this.props.viewParameters.fromDate)
+      this.props.onPan(dateDiff > 0, Math.abs(dateDiff));
+    }
+  }
+  onMouseUp(evt) {
+    this.setState({
+      grabbing: false,
+      prevY: undefined
+    })
+  }
+
   updateDimensions () {
     if (this.node) {
       const bRect = this.node.getBoundingClientRect();
@@ -54,14 +85,32 @@ export default class MainTimeline extends Component {
       periodsClusters,
       eventsClusters,
       timeBoundaries,
-      onWheel
+      onZoom
     } = this.props;
+    const {
+      onMouseDown,
+      onMouseMove,
+      onMouseUp
+    } = this;
     const {
       width,
       height,
-      data
+      data,
+      grabbing
     } = this.state;
-    const bindRef = svg => this.node = svg;
+    const bindRef = svg => {
+      this.node = svg
+    };
+    const bindCaptorRef = rect => {
+      this.captor = rect;
+    };
+
+    const onWheel = (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const forward = e.deltaY > 0;
+      onZoom(1 - e.deltaY/200);
+    }
 
     return (
       <section className="main-timeline" onWheel={onWheel}>
@@ -69,7 +118,22 @@ export default class MainTimeline extends Component {
           className="main-timeline-container"
           ref={bindRef}>
           <g
-            className="ticks-container" />
+            className="ticks-container" 
+          />
+          <rect 
+            className="timeline-captor"
+            width={width}
+            height={height}
+            style={{
+              cursor: grabbing ? 'grabbing': 'grab'
+            }}
+            x={0}
+            y={0}
+            ref={bindCaptorRef}
+            onMouseDown={onMouseDown}
+            onMouseMove={onMouseMove}
+            onMouseUp={onMouseUp}
+          />
           <ObjectsContainer
             viewParameters={viewParameters}
             data={data}

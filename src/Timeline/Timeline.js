@@ -88,11 +88,13 @@ class Timeline extends React.Component {
   pan (forward, delta) {
     const from = this.state.viewParameters.fromDate + (forward ? delta : -delta);
     const to = this.state.viewParameters.toDate + (forward ? delta : -delta);
-    this.setViewSpan(from, to, false);
-    this.onUserViewChange({
-      fromDate: from,
-      toDate: to
-    }, 'wheel');
+    if (from >= this.state.timeBoundaries.minimumDateDisplay && to <= this.state.timeBoundaries.maximumDateDisplay) {
+      this.setViewSpan(from, to, false);
+      this.onUserViewChange({
+        fromDate: from,
+        toDate: to
+      }, 'wheel');
+    }
   }
 
   /**
@@ -254,7 +256,9 @@ class Timeline extends React.Component {
           viewParameters={viewParameters}
           scale={miniScale}
           data={normalizeData(this.props.data)}
-          onWheel={onMainWheel} />
+          onZoom={this.zoom} 
+          onPan={this.pan}
+        />
       </figure>
     ) : 'Loading';
   }

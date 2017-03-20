@@ -257,6 +257,12 @@
             top: $gutter-medium;
             right: $gutter-medium;
         }
+
+        .timeline-captor
+        {
+            cursor: grab;
+            fill-opacity: 0;
+        }
     }
     .time-boundaries-container
     {

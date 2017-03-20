@@ -10,8 +10,8 @@ export default class TimeObject extends Component {
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
+    this.onMouseWheel = this.onMouseWheel.bind(this);
     this.updateBrush = this.updateBrush.bind(this);
-    console.log(props.from, props.to, props.timeBoundaries);
     const {
       from,
       to,
@@ -29,7 +29,7 @@ export default class TimeObject extends Component {
   }
 
   componentDidMount() {
-    const {props, state} = this;
+    // const {props, state} = this;
   }
 
   componentWillReceiveProps(next) {
@@ -67,17 +67,17 @@ export default class TimeObject extends Component {
     const fromDate = this.props.timeBoundaries[0] + beginPortionInState * ambitus;
     const toDate = this.props.timeBoundaries[0] + endPortionInState * ambitus;
 
-    if (fromDate && toDate) {
+    if (fromDate && toDate && fromDate >= this.props.timeBoundaries[0] && toDate <= this.props.timeBoundaries[1]) {
       this.props.onUpdate(fromDate, toDate, false);
+      this.setState({
+        beginPortion: beginPortionInState,
+        endPortion: endPortionInState,
+        from: fromDate,
+        to: toDate,
+        state,
+        previousPortion: portion
+      });
     }
-    this.setState({
-      beginPortion: beginPortionInState,
-      endPortion: endPortionInState,
-      from: fromDate,
-      to: toDate,
-      state,
-      previousPortion: portion
-    });
   }
 
   onMouseDown (evt) {
@@ -103,17 +103,6 @@ export default class TimeObject extends Component {
       state = 'drawing';
       this.updateBrush({beginPortion: portion, endPortion : portion + portion/1000}, state, portion);
     }
-  }
-
-  onMouseUp (evt) {
-    const bbox = evt.target.getBBox();
-    const height = bbox.height;
-    const y = evt.clientY;
-    // this.updateBrush({endPortion: y / height}, this.state.state);
-    this.setState({
-      state: undefined,
-      previousPortion: undefined
-    });
   }
 
   onMouseMove (evt) {
@@ -158,6 +147,25 @@ export default class TimeObject extends Component {
     }
   }
 
+  onMouseUp (evt) {
+    const bbox = evt.target.getBBox();
+    const height = bbox.height;
+    const y = evt.clientY;
+    // this.updateBrush({endPortion: y / height}, this.state.state);
+    this.setState({
+      state: undefined,
+      previousPortion: undefined
+    });
+  }
+
+  onMouseWheel (evt) {
+    const direction = evt.deltaY > 0 ? 1 : -1;
+    const displacement = direction * (this.state.endPortion - this.state.beginPortion) / 5;
+    const newBegin = this.state.beginPortion + displacement;
+    const newEnd = this.state.endPortion + displacement;
+    this.updateBrush({beginPortion: newBegin, endPortion: newEnd}, undefined);
+  }
+
   render() {
     const {
       // from,
@@ -169,7 +177,8 @@ export default class TimeObject extends Component {
     const {
       onMouseDown,
       onMouseUp,
-      onMouseMove
+      onMouseMove,
+      onMouseWheel
     } = this;
     const {
       beginPortion: from,
@@ -197,6 +206,7 @@ export default class TimeObject extends Component {
           onMouseDown={onMouseDown}
           onMouseUp={onMouseUp}
           onMouseMove={onMouseMove}
+          onWheel={onMouseWheel}
           ref={bindRef}
           style={{cursor}}
         />
