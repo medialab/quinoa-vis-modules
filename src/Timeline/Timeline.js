@@ -27,6 +27,11 @@ import './Timeline.scss';
 import MiniTimeline from './MiniTimeline';
 import MainTimeline from './MainTimeline';
 
+import {interpolateNumber} from 'd3-interpolate';
+import {timer} from 'd3-timer';
+
+let transition;
+
 /**
  * Timeline main component
  */
@@ -46,9 +51,36 @@ class Timeline extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.viewParameters !== nextProps.viewParameters) {
-      this.setState({
-        viewParameters: nextProps.viewParameters
-      });
+      const transitionsDuration = 500;
+      const prevFrom = this.state.viewParameters.fromDate;
+      const prevTo = this.state.viewParameters.toDate;
+      const newFrom = nextProps.viewParameters.fromDate;
+      const newTo = nextProps.viewParameters.toDate;
+      const interpFrom = interpolateNumber(prevFrom, newFrom);
+      const interpTo = interpolateNumber(prevTo, newTo);
+      const onTick = elapsed => {
+        console.log(elapsed);
+        const t = elapsed < transitionsDuration ? elapsed / transitionsDuration : 1;
+        const fromDate = interpFrom(t);
+        const toDate = interpTo(t);
+        this.setState({
+          viewParameters: {
+            ...this.state.viewParameters,
+            fromDate,
+            toDate
+          }
+        })
+        if (t >= 1 && transition) {
+          transition.stop();
+          transition = null;
+        }
+      };
+
+      transition = timer(onTick, transitionsDuration);
+
+      // this.setState({
+      //   viewParameters: nextProps.viewParameters
+      // });
     }
 
     if (this.props.data !== nextProps.data) {

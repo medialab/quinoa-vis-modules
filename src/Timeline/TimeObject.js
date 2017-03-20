@@ -121,7 +121,7 @@ export default class TimeObject extends Component {
     if (this.transition) {
       this.transition.restart(onTick, 0, transitionsDuration);
     }
- else {
+    else {
       this.transition = timer(onTick, transitionsDuration);
     }
 

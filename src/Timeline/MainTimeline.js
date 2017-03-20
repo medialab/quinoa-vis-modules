@@ -57,7 +57,7 @@ export default class MainTimeline extends Component {
       const bbox = evt.target.getBBox();
       const height = bbox.height;
       const y = evt.clientY;
-      const diff = this.state.prevY - y;
+      const diff = (this.state.prevY - y) / 5;
       const dateDiff =  (diff / this.state.height) * (this.props.viewParameters.toDate - this.props.viewParameters.fromDate)
       this.props.onPan(dateDiff > 0, Math.abs(dateDiff));
     }
@@ -108,8 +108,15 @@ export default class MainTimeline extends Component {
     const onWheel = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      const forward = e.deltaY > 0;
-      onZoom(1 - e.deltaY/200);
+      const direction = e.deltaY > 0;
+      let displacement = e.deltaY / 200;
+      if (displacement > .9) {
+        displacement = .9;
+      }
+      if (displacement < -.9) {
+        displacement = -.9;
+      }
+      this.props.onZoom(1 + displacement);
     }
 
     return (
@@ -144,7 +151,7 @@ export default class MainTimeline extends Component {
             width={width * .9}
             height={height}
             transform={'scale(.9)translate(' + width * .1 + ' 0)'}
-            transitionsDuration={1000}
+            transitionsDuration={500}
             timeBoundaries={[viewParameters.fromDate, viewParameters.toDate]} />
           <g
             className="labels-container" />

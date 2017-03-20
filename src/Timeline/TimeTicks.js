@@ -3,6 +3,8 @@ import React, {Component} from 'react';
 import {scaleLinear} from 'd3-scale';
 import {computeTicks} from './utils';
 
+import TimeTick from './TimeTick';
+
 export default class TimeTicks extends Component {
   constructor(props) {
     super(props);
@@ -27,7 +29,8 @@ export default class TimeTicks extends Component {
       width,
       height,
       minimumDate,
-      maximumDate
+      maximumDate,
+      transitionsDuration
     } = this.props;
     const bindRef = g => this.node = g;
     const ticks = computeTicks(minimumDate, maximumDate);
@@ -39,24 +42,14 @@ export default class TimeTicks extends Component {
           ticks.map((tick, index) => {
             const y = scaleY(tick.time);
             return (
-              <g 
-                className="tick"
-                transform={'translate(0 ' + y + ')'}
+              <TimeTick
                 key={index}
-              >
-                <line
-                  x1={0}
-                  x2={width}
-                  y1={0}
-                  y2={0}
-                />
-                <text
-                  y={textHeight}
-                  fontSize={textHeight}
-                >
-                  {tick.legend}
-                </text>
-              </g>
+                tick={tick}
+                y={y}
+                textHeight={textHeight}
+                width={width}
+                transitionsDuration={transitionsDuration}
+              />
             );
           })
         }
