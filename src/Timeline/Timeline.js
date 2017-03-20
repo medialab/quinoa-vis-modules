@@ -247,7 +247,9 @@ class Timeline extends React.Component {
           viewParameters={viewParameters}
           timeBoundaries={timeBoundaries}
           scale={miniScale}
-          data={normalizeData(this.props.data)} />
+          data={normalizeData(this.props.data)} 
+          onTimespanUpdate={this.setViewSpan}
+        />
         <MainTimeline
           viewParameters={viewParameters}
           scale={miniScale}

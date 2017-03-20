@@ -52,7 +52,8 @@ export default class MiniTimeline extends Component {
       viewParameters,
       periodsClusters,
       eventsClusters,
-      timeBoundaries
+      timeBoundaries,
+      onTimespanUpdate
     } = this.props;
     const {
       width,
@@ -77,11 +78,13 @@ export default class MiniTimeline extends Component {
             transitionsDuration={500}
             timeBoundaries={[timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay]} />
           <Brush
-            timeBoundaries={timeBoundaries}
+            timeBoundaries={[timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay]}
             from={viewParameters.fromDate}
             to={viewParameters.toDate}
             width={width}
-            height={height} />
+            height={height} 
+            onUpdate={onTimespanUpdate}
+          />
         </svg>
       </aside>
     );
