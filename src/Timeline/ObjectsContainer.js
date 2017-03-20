@@ -81,7 +81,8 @@ export default class ObjectsContainer extends Component {
       eventsClusters,
       width,
       height,
-      transitionsDuration
+      transitionsDuration,
+      transform
     } = this.props;
     const {
       scaleX,
@@ -91,7 +92,10 @@ export default class ObjectsContainer extends Component {
     } = this.state;
     const bindRef = g => this.node = g;
     return scaleX && scaleY && width && height ? (
-      <g className="objects-container">
+      <g 
+        className="objects-container"
+        transform={transform || ""}
+      >
         {
           timeObjects.map((timeObject, index) => {
             return (

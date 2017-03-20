@@ -209,7 +209,7 @@ export const computeTicks = (minimumDateDisplay, maximumDateDisplay) => {
     const formatDate = timeFormat(ticksParams.format);
     // todo : find a better method than that to compute clean ticks without computing a bunch of dates
     const baseDate = new Date();
-    baseDate.setFullYear(-100000);
+    baseDate.setFullYear(-100001);
     baseDate.setDate(1);
     baseDate.setHours(0);
     baseDate.setMinutes(0);

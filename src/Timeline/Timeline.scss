@@ -166,42 +166,6 @@
             }
         }
     }
-    .time-graduations-container
-    {
-        pointer-events: none;
-
-        // @include transition(all $time-short ease);
-        opacity: .5;
-        .tick
-        {
-            position: absolute;
-            left: 0;
-
-            width: 100%;
-            margin: 0;
-            padding: 0;
-
-            border-top: 1px solid darkblue;
-            color: darkblue;
-
-            // @include transition(all $time-short ease);
-
-            .legend{
-              background: white;
-              position : relative;
-              top : -.5em;
-              padding-right: $gutter-small;
-            }
-        }
-    }
-    &.portrait
-    {
-        flex-direction: row;
-    }
-    &.landscape
-    {
-        flex-direction: column;
-    }
     .mini-timeline
     {
         position: relative;
@@ -216,25 +180,6 @@
             left: 0;
             top: 0;
         }
-
-        // .time-objects-container
-        // {
-        //     display: flex;
-        //     flex-flow: row nowrap;
-        //     align-items: stretch;
-        //     position: relative;
-        //     .clusters-container
-        //     {
-        //         display: flex;
-        //         flex-flow: row nowrap;
-        //         align-items: stretch;
-        //         position: relative;
-        //     }
-        //     .cluster{
-        //         flex: 1;
-        //         position: relative;
-        //     }
-        // }
     }
     .main-timeline
     {
@@ -309,6 +254,16 @@
             rect
             {fill: rgba(0,0,0,.3);}
             pointer-events: none;
+        }
+    }
+
+    .ticks-container
+    {
+        .tick
+        {
+            line{
+                stroke: rgba(0,0,0,0.3);
+            }
         }
     }
 }

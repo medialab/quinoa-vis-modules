@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 
 import ObjectsContainer from './ObjectsContainer';
 
-import Brush from './Brush';
+import TimeTicks from './TimeTicks';
 
 import {
   clusterTimeObjects
@@ -117,8 +117,12 @@ export default class MainTimeline extends Component {
         <svg
           className="main-timeline-container"
           ref={bindRef}>
-          <g
-            className="ticks-container" 
+          <TimeTicks
+            width={width}
+            height={height}
+            transitionsDuration={500}
+            minimumDate={viewParameters.fromDate}
+            maximumDate={viewParameters.toDate}
           />
           <rect 
             className="timeline-captor"
@@ -137,8 +141,9 @@ export default class MainTimeline extends Component {
           <ObjectsContainer
             viewParameters={viewParameters}
             data={data}
-            width={width}
+            width={width * .9}
             height={height}
+            transform={'scale(.9)translate(' + width * .1 + ' 0)'}
             transitionsDuration={1000}
             timeBoundaries={[viewParameters.fromDate, viewParameters.toDate]} />
           <g

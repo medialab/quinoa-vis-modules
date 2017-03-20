@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 
 import ObjectsContainer from './ObjectsContainer';
 import Brush from './Brush';
+import TimeTicks from './TimeTicks';
 
 import {
   clusterTimeObjects
@@ -66,14 +67,20 @@ export default class MiniTimeline extends Component {
         <svg
           className="mini-timeline-container"
           ref={bindRef}>
-          <g
-            className="ticks-container" />
+          <TimeTicks
+            width={width}
+            height={height}
+            transitionsDuration={500}
+            minimumDate={timeBoundaries.minimumDateDisplay}
+            maximumDate={timeBoundaries.maximumDateDisplay}
+          />
           <ObjectsContainer
             viewParameters={viewParameters}
             data={data}
             periodsClusters={periodsClusters}
             eventsClusters={eventsClusters}
-            width={width}
+            width={width * .9}
+            transform={'scale(.9)translate(' + width * .1 + ' 0)'}
             height={height}
             transitionsDuration={500}
             timeBoundaries={[timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay]} />
