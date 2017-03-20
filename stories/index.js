@@ -13,6 +13,7 @@ storiesOf('Welcome', module)
  */
 
 import Timeline from '../src/Timeline/Timeline';
+import OldTimeline from '../src/Timeline.old/Timeline';
 
 
 import TimelineStoryContainer from './TimelineStoryContainer';
@@ -46,6 +47,14 @@ const timelineData = mapTimelineData(parseTimelineData(timelineDataRaw), {main: 
 storiesOf('Timeline', module)
   .add('default', () => (
     <Timeline
+      allowUserViewChange ={true}
+      data={timelineData}
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {timelineBaseViewParameters}
+    />
+  ))
+  .add('old', () => (
+    <OldTimeline
       allowUserViewChange ={true}
       data={timelineData}
       onUserViewChange={(e) => console.log('on view change', e)}

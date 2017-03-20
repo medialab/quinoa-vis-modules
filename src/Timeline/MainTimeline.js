@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 
 import ObjectsContainer from './ObjectsContainer';
+
 import Brush from './Brush';
 
 import {
@@ -61,6 +62,7 @@ export default class MainTimeline extends Component {
       data
     } = this.state;
     const bindRef = svg => this.node = svg;
+
     return (
       <section className="main-timeline" onWheel={onWheel}>
         <svg
@@ -73,7 +75,7 @@ export default class MainTimeline extends Component {
             data={data}
             width={width}
             height={height}
-            transitionsDuration={500}
+            transitionsDuration={1000}
             timeBoundaries={[viewParameters.fromDate, viewParameters.toDate]} />
           <g
             className="labels-container" />

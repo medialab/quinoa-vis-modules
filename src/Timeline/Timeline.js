@@ -249,18 +249,10 @@ class Timeline extends React.Component {
           scale={miniScale}
           data={normalizeData(this.props.data)} />
         <MainTimeline
-          eventsClusters={globalEventsClusters}
-          periodsClusters={periodsClusters}
           viewParameters={viewParameters}
-          timeBoundaries={timeBoundaries}
           scale={miniScale}
-          data={normalizeData(this.props.data)} 
-          onWheel={onMainWheel}
-        />
-        <div className="time-boundaries-container">
-          <div id="from-date">{formatDate(new Date(fromDate))}</div>
-          <div id="to-date">{formatDate(new Date(toDate))}</div>
-        </div>
+          data={normalizeData(this.props.data)}
+          onWheel={onMainWheel} />
       </figure>
     ) : 'Loading';
   }

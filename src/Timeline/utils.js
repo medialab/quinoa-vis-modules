@@ -328,6 +328,11 @@ export const computeBoundaries = (data) => {
     };
    };
 
+/**
+ * Improves received data by forcing each point to have an id, casting it as period or event, and ensuring dates are deserialized to date objects
+ * @param {array} inputDate - the unnormalized data
+ * @return {array} newDate - the normalized data
+ */
 export const normalizeData = (inputData) =>
   inputData && inputData.main &&
   inputData.main
@@ -343,61 +348,44 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
   const inputPeriods = data.filter(d => d.type === 'period');
   const inputEvents = data.filter(d => d.type === 'event');
   const ambitus = timeBoundaries[1] - timeBoundaries[0];
-  const padding = ambitus / 1000;
+  const padding = Math.pow(ambitus, 1) / Math.sqrt(data.length);
   let maxColumn = 1;
   const activeColumn = 0;
   let previous;
   let column;
+  let previousEvents;
   let previousPeriods;
-  const finalEvents = inputEvents
-  // .filter(obj =>
-  //     obj.startDate.getTime() > timeBoundaries[0] &&
-  //     obj.startDate.getTime() < timeBoundaries[1]
-  //   )
-  .reduce((events, event, index) => {
-    if (events.length && index > 0) {
-      previous = events[index - 1];
-    }
- else {
-      event.column = 1;
-      return [...events, event];
-    }
-    if (previous && previous.column !== undefined && event.startDate.getTime() - previous.startDate.getTime() < padding) {
-      event.column = previous.column + 1;
-      maxColumn = event.column;
-      previous.overlapped = true;
-      event.overlapped = false;
-    }
-    else {
-      event.column = 1;
-    }
-    return [...events, event];
-  }, []);
-  maxColumn = 1;
-  const finalPeriods = inputPeriods
-  // .filter(obj =>
-  //     (obj.startDate.getTime() > timeBoundaries[0] &&
-  //     obj.startDate.getTime() < timeBoundaries[1]) ||
-  //    (obj.endDate.getTime() > timeBoundaries[0] &&
-  //     obj.endDate.getTime() < timeBoundaries[1]) ||
-  //     (obj.startDate.getTime() < timeBoundaries[0] &&
-  //     obj.endDate.getTime() > timeBoundaries[1])
-    // )
+  // filter only periods within the display time boundaries
+  const visiblePeriods = inputPeriods
+  .filter(obj =>
+    (
+     obj.startDate.getTime() > timeBoundaries[0] &&
+     obj.startDate.getTime() < timeBoundaries[1]
+    ) ||
+    (
+      obj.endDate.getTime() > timeBoundaries[0] &&
+      obj.endDate.getTime() < timeBoundaries[1]
+    ) ||
+    (
+      obj.startDate.getTime() < timeBoundaries[0] &&
+      obj.endDate.getTime() > timeBoundaries[1]
+    )
+  );
+  const finalPeriods = visiblePeriods
   .reduce((periods, period, index) => {
     if (periods.length && index > 0) {
       previous = periods[index - 1];
       previousPeriods = periods.slice(0, index - 1);
     }
- else {
+    else {
       period.column = 1;
       return [...periods, period];
     }
     const previousColumn = previous.column;
     for (let i = 0; i <= previousColumn; i++) {
-      const slotTaken = previousPeriods.find(previous =>
-        previous &&
-        (period.endDate > previous.startDate && period.startDate < previous.endDate)
-      );
+      const slotTaken = previousPeriods
+        .filter(p => p.column === i)
+        .find(previous => period.endDate > previous.startDate && period.startDate < previous.endDate);
       if (slotTaken === undefined) {
         period.column = i;
         break;
@@ -410,10 +398,65 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
 
     return [...periods, period];
   }, []);
-  return finalPeriods.concat(finalEvents.map(evt => ({
-    ...evt,
-    column: evt.column + maxColumn
-  })));
+  const maxPeriodColumn = maxColumn;
+  maxColumn = maxPeriodColumn + 1;
+  // filter only periods within the display time boundaries
+  const visibleEvents = inputEvents
+  .filter(obj =>
+      obj.startDate.getTime() >= timeBoundaries[0] &&
+      obj.startDate.getTime() <= timeBoundaries[1]
+    );
+  const finalEvents = visibleEvents
+  .reduce((events, event, index) => {
+    // if (events.length && index > 0) {
+    //   previous = events[index - 1];
+    // }
+    // else {
+    //   event.column = 1;
+    //   return [...events, event];
+    // }
+    // // console.log(index, event.startDate.getTime() - previous.startDate.getTime() < padding);
+    // if (previous && previous.column !== undefined && event.startDate.getTime() - previous.startDate.getTime() < padding) {
+    //   event.column = previous.column + 1;
+    //   if (event.column > maxColumn) {
+    //     maxColumn = event.column;
+    //   }
+    //   // maxColumn = event.column;
+    //   previous.overlapped = true;
+    //   event.overlapped = false;
+    // }
+    // else {
+    //   event.column = 1;
+    // }
+    // return [...events, event];
+
+    if (events.length && index > 0) {
+      previous = events[index - 1];
+      previousEvents = events.slice(0, index - 1);
+    }
+    else {
+      event.column = maxPeriodColumn + 1;
+      return [...events, event];
+    }
+    const previousColumn = previous.column;
+    for (let i = maxPeriodColumn + 1; i <= maxColumn; i++) {
+      const slotTaken = previousEvents
+        .filter(p => p.column === i)
+        .find(previous => Math.abs(event.startDate.getTime() - previous.startDate.getTime()) < padding);
+      if (slotTaken === undefined) {
+        event.column = i;
+        break;
+      }
+    }
+    if (event.column === undefined) {
+      maxColumn ++;
+      event.column = maxColumn;
+    }
+
+    return [...events, event];
+  }, []);
+
+  return finalPeriods.concat(finalEvents);
 };
 
 /**
@@ -432,7 +475,7 @@ export const computeDataRelatedState = (inputData, viewParameters) => {
     }));
     const timeBoundaries = computeBoundaries(data);
     const miniTicks = computeTicks(timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay);
-    const displaceThreshold = (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay) / 1000;
+    const displaceThreshold = (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay) / 10;
     // data time boundaries in order to display the mini-timeline
     return {
       timeBoundaries,

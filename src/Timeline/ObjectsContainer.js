@@ -52,7 +52,7 @@ export default class ObjectsContainer extends Component {
           column: object.column || 1
         };
       }
-      const isVisible = object.endDate ? 
+      const isVisible = object.endDate ?
         object.startDate >= timeBoundaries[0] && object.startDate <= timeBoundaries[1] ||
         object.endDate >= timeBoundaries[0] && object.endDate <= timeBoundaries[1] ||
         object.startDate <= timeBoundaries[0] && object.endDate >= timeBoundaries[1]
@@ -67,7 +67,7 @@ export default class ObjectsContainer extends Component {
     const columnsCount = max(timeObjects, d => d.column);
     const columnWidth = width / columnsCount;
     this.setState({
-      scaleX: scaleLinear().domain([0, columnsCount]).range([0, width - columnWidth]),
+      scaleX: scaleLinear().domain([1, columnsCount + 1]).range([0, width]),
       scaleY: scaleLinear().domain([timeBoundaries[0], timeBoundaries[1]]).range([0, height]),
       columnWidth,
       timeObjects
