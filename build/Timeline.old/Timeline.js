@@ -12,25 +12,17 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _d3Ease = require('d3-ease');
+var _d3Scale = require('d3-scale');
+
+var _d3TimeFormat = require('d3-time-format');
 
 var _lodash = require('lodash');
 
 var _utils = require('./utils');
 
+var _subComponents = require('./subComponents.js');
+
 require('./Timeline.scss');
-
-var _MiniTimeline = require('./MiniTimeline');
-
-var _MiniTimeline2 = _interopRequireDefault(_MiniTimeline);
-
-var _MainTimeline = require('./MainTimeline');
-
-var _MainTimeline2 = _interopRequireDefault(_MainTimeline);
-
-var _d3Interpolate = require('d3-interpolate');
-
-var _d3Timer = require('d3-timer');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -39,9 +31,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
-
-var transition = void 0;
-
 
 var Timeline = function (_React$Component) {
   _inherits(Timeline, _React$Component);
@@ -63,36 +52,10 @@ var Timeline = function (_React$Component) {
   _createClass(Timeline, [{
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      var _this2 = this;
-
       if (this.props.viewParameters !== nextProps.viewParameters) {
-        (function () {
-          var transitionsDuration = 500;
-          var prevFrom = _this2.state.viewParameters.fromDate;
-          var prevTo = _this2.state.viewParameters.toDate;
-          var newFrom = nextProps.viewParameters.fromDate;
-          var newTo = nextProps.viewParameters.toDate;
-          var interpFrom = (0, _d3Interpolate.interpolateNumber)(prevFrom, newFrom);
-          var interpTo = (0, _d3Interpolate.interpolateNumber)(prevTo, newTo);
-          var onTick = function onTick(elapsed) {
-            var t = elapsed < transitionsDuration ? (0, _d3Ease.easeCubic)(elapsed / transitionsDuration) : 1;
-            var fromDate = interpFrom(t);
-            var toDate = interpTo(t);
-            _this2.setState({
-              viewParameters: _extends({}, _this2.state.viewParameters, {
-                fromDate: fromDate,
-                toDate: toDate
-              })
-            });
-            if (t >= 1 && transition) {
-              transition.stop();
-              transition = null;
-            }
-          };
-
-          transition = (0, _d3Timer.timer)(onTick);
-
-        })();
+        this.setState({
+          viewParameters: nextProps.viewParameters
+        });
       }
 
       if (this.props.data !== nextProps.data) {
@@ -127,13 +90,11 @@ var Timeline = function (_React$Component) {
     value: function pan(forward, delta) {
       var from = this.state.viewParameters.fromDate + (forward ? delta : -delta);
       var to = this.state.viewParameters.toDate + (forward ? delta : -delta);
-      if (from >= this.state.timeBoundaries.minimumDateDisplay && to <= this.state.timeBoundaries.maximumDateDisplay) {
-        this.setViewSpan(from, to, false);
-        this.onUserViewChange({
-          fromDate: from,
-          toDate: to
-        }, 'wheel');
-      }
+      this.setViewSpan(from, to, false);
+      this.onUserViewChange({
+        fromDate: from,
+        toDate: to
+      }, 'wheel');
     }
 
 
@@ -175,7 +136,6 @@ var Timeline = function (_React$Component) {
     key: 'setViewSpan',
     value: function setViewSpan(from, to) {
       var fromEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      var emitChange = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
       var fromTime = void 0;
       var toTime = void 0;
@@ -191,12 +151,6 @@ var Timeline = function (_React$Component) {
         fromDate: fromTime,
         toDate: toTime
       });
-      if (emitChange) {
-        this.onUserViewChange({
-          lastEventType: 'mini-view',
-          viewParameters: viewParameters
-        });
-      }
       this.setState({
         viewParameters: viewParameters
       });
@@ -206,6 +160,8 @@ var Timeline = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       var _props = this.props,
           _props$allowUserViewC = _props.allowUserViewChange,
           allowUserViewChange = _props$allowUserViewC === undefined ? true : _props$allowUserViewC,
@@ -214,26 +170,155 @@ var Timeline = function (_React$Component) {
       var _state = this.state,
           data = _state.data,
           miniScale = _state.miniScale,
+          miniTicks = _state.miniTicks,
           viewParameters = _state.viewParameters,
+          periodsClusters = _state.periodsClusters,
+          globalEventsClusters = _state.eventsClusters,
           timeBoundaries = _state.timeBoundaries;
+
+      var fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
+      var toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
+      var timeSpan = toDate - fromDate;
+      var displayedData = data.filter(function (point) {
+        var start = point.startDate.getTime();
+        var end = point.endDate && point.endDate.getTime();
+        return start >= fromDate && start <= toDate || end && end >= fromDate && end <= toDate;
+      });
+      var displayedEvents = displayedData.filter(function (obj) {
+        return obj.endDate === undefined;
+      });
+      var eventPadding = timeSpan / 20;
+      var eventsClusters = (0, _utils.clusterEvents)(displayedEvents, eventPadding);
+      var displayedPeriods = periodsClusters.timeObjects.filter(function (point) {
+        var start = point.startDate.getTime();
+        var end = point.endDate && point.endDate.getTime();
+        return start >= fromDate && start <= toDate || end && end >= fromDate && end <= toDate;
+      });
+      var timelineScale = (0, _d3Scale.scaleLinear)().range([0, 100]).domain([fromDate, toDate]);
+      var ticksParams = (0, _utils.setTicks)(toDate - fromDate);
+      var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
+      var mainTicks = (0, _utils.computeTicks)(fromDate, toDate);
+
+      var onMainWheel = function onMainWheel(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        if (!_this2.props.allowUserViewChange) {
+          return;
+        }
+        var delta = (toDate - fromDate) / 10;
+        var forward = e.deltaY > 0;
+        if (forward && toDate + delta <= _this2.state.timeBoundaries.maximumDateDisplay) {
+          _this2.pan(true, delta);
+        }
+        if (!forward && fromDate - delta >= _this2.state.timeBoundaries.minimumDateDisplay) {
+          _this2.pan(false, delta);
+        }
+      };
+      var onAsideWheel = function onAsideWheel(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        if (!_this2.props.allowUserViewChange) {
+          return;
+        }
+        var delta = (toDate - fromDate) / 2;
+        var forward = e.deltaY > 0;
+        if (forward && toDate + delta <= timeBoundaries.maximumDateDisplay) {
+          _this2.pan(true, delta);
+        }
+        if (!forward && fromDate - delta >= timeBoundaries.minimumDateDisplay) {
+          _this2.pan(false, delta);
+        }
+      };
+      var zoomIn = function zoomIn() {
+        return _this2.zoom(1.1);
+      };
+      var zoomOut = function zoomOut() {
+        return _this2.zoom(0.9);
+      };
+      var panBackward = function panBackward() {
+        return _this2.pan(false, (toDate - fromDate) / 10);
+      };
+      var panForward = function panForward() {
+        return _this2.pan(true, (toDate - fromDate) / 10);
+      };
+
+      var onBrushClick = function onBrushClick(fromInput, toInput) {
+        if (fromInput && toInput) {
+          _this2.setViewSpan(fromInput, toInput);
+        }
+      };
+
+      var onBrushManipulation = function onBrushManipulation(from, to) {
+        _this2.setViewSpan(from, to, false);
+      };
 
       return data ? _react2.default.createElement(
         'figure',
         { className: 'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape') },
-        _react2.default.createElement(_MiniTimeline2.default, {
-          viewParameters: viewParameters,
-          timeBoundaries: timeBoundaries,
-          scale: miniScale,
-          data: (0, _utils.normalizeData)(this.props.data),
-          onTimespanUpdate: this.setViewSpan,
-          allowUserEvents: allowUserViewChange }),
-        _react2.default.createElement(_MainTimeline2.default, {
-          viewParameters: viewParameters,
-          scale: miniScale,
-          data: (0, _utils.normalizeData)(this.props.data),
-          onZoom: this.zoom,
-          onPan: this.pan,
-          allowUserEvents: allowUserViewChange })
+        _react2.default.createElement(
+          'aside',
+          { onWheel: onAsideWheel, className: 'mini-timeline' },
+          _react2.default.createElement(_subComponents.TimeTicks, { ticks: miniTicks, scale: miniScale }),
+          _react2.default.createElement(_subComponents.Brush, {
+            onSimpleClick: this.jump,
+            scale: miniScale,
+            fromDate: viewParameters.fromDate,
+            toDate: viewParameters.toDate,
+            active: allowUserViewChange,
+            onSpanEventDefinition: onBrushClick,
+            onSpanAbsoluteDefinition: onBrushManipulation }),
+          _react2.default.createElement(
+            'div',
+            { className: 'time-objects-container' },
+            _react2.default.createElement(_subComponents.ClustersGroup, {
+              viewParameters: viewParameters,
+              scale: miniScale,
+              clusters: periodsClusters }),
+            _react2.default.createElement(_subComponents.ClustersGroup, {
+              viewParameters: viewParameters,
+              scale: miniScale,
+              clusters: globalEventsClusters })
+          )
+        ),
+        _react2.default.createElement(
+          'section',
+          { className: 'main-timeline', onWheel: onMainWheel },
+          _react2.default.createElement(_subComponents.TimeTicks, { ticks: mainTicks, scale: timelineScale }),
+          _react2.default.createElement(
+            'div',
+            { className: 'time-objects-container' },
+            displayedPeriods.length ? _react2.default.createElement(_subComponents.ClustersGroup, {
+              viewParameters: viewParameters,
+              scale: timelineScale,
+              clusters: {
+                columns: periodsClusters.columns,
+                timeObjects: displayedPeriods
+              } }) : '',
+            eventsClusters.timeObjects.length ? _react2.default.createElement(_subComponents.ClustersGroup, {
+              viewParameters: viewParameters,
+              scale: timelineScale,
+              clusters: eventsClusters }) : ''
+          ),
+          allowUserViewChange ? _react2.default.createElement(_subComponents.Controls, {
+            zoomIn: zoomIn,
+            zoomOut: zoomOut,
+            panForward: panForward,
+            panBackward: panBackward }) : '',
+          _react2.default.createElement(
+            'div',
+            { className: 'time-boundaries-container' },
+            _react2.default.createElement(
+              'div',
+              { id: 'from-date' },
+              formatDate(new Date(fromDate))
+            ),
+            _react2.default.createElement(
+              'div',
+              { id: 'to-date' },
+              formatDate(new Date(toDate))
+            )
+          )
+        )
       ) : 'Loading';
     }
   }]);
@@ -245,9 +330,7 @@ Timeline.propTypes = {
   data: _react.PropTypes.shape({
     main: _react.PropTypes.arrayOf(_react.PropTypes.shape({
       category: _react.PropTypes.string,
-      title: _react.PropTypes.string,
       name: _react.PropTypes.string,
-      description: _react.PropTypes.string,
       startDate: _react.PropTypes.instanceOf(Date),
       endDate: _react.PropTypes.instanceOf(Date)
     }))

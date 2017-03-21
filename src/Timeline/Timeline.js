@@ -4,24 +4,14 @@
  */
 
 import React, {PropTypes} from 'react';
-import {scaleLinear} from 'd3-scale';
-import {timeFormat} from 'd3-time-format';
+import {easeCubic} from 'd3-ease';
 import {debounce} from 'lodash';
 
 import {
   normalizeData,
-  setTicks,
-  computeTicks,
-  clusterEvents,
   computeDataRelatedState
 } from './utils';
 
-import {
-  Brush,
-  TimeTicks,
-  Controls,
-  ClustersGroup
-} from './subComponents.js';
 import './Timeline.scss';
 
 import MiniTimeline from './MiniTimeline';
@@ -59,8 +49,7 @@ class Timeline extends React.Component {
       const interpFrom = interpolateNumber(prevFrom, newFrom);
       const interpTo = interpolateNumber(prevTo, newTo);
       const onTick = elapsed => {
-        console.log(elapsed);
-        const t = elapsed < transitionsDuration ? elapsed / transitionsDuration : 1;
+        const t = elapsed < transitionsDuration ? easeCubic(elapsed / transitionsDuration) : 1;
         const fromDate = interpFrom(t);
         const toDate = interpTo(t);
         this.setState({
@@ -69,14 +58,14 @@ class Timeline extends React.Component {
             fromDate,
             toDate
           }
-        })
+        });
         if (t >= 1 && transition) {
           transition.stop();
           transition = null;
         }
       };
 
-      transition = timer(onTick, transitionsDuration);
+      transition = timer(onTick);
 
       // this.setState({
       //   viewParameters: nextProps.viewParameters
@@ -172,7 +161,7 @@ class Timeline extends React.Component {
    * @param {number|object} to - whether an absolute time or an event position object
    * @param {boolean} fromEvent - determines whether jump is called from a click-like event or not, thus whether first param is a number of an object
    */
-  setViewSpan (from, to, fromEvents = true) {
+  setViewSpan (from, to, fromEvents = true, emitChange = false) {
     let fromTime;
     let toTime;
     // giving events positions as params
@@ -190,6 +179,12 @@ class Timeline extends React.Component {
         fromDate: fromTime,
         toDate: toTime
       };
+    if (emitChange) {
+      this.onUserViewChange({
+        lastEventType: 'mini-view',
+        viewParameters
+      });
+    }
     this.setState({
       viewParameters
     });
@@ -207,71 +202,11 @@ class Timeline extends React.Component {
     const {
       data,
       miniScale,
-      miniTicks,
       // note: viewParameters is present both in component props and in component state to allow temporary displacements between
       // the view parameters being provided by parent through props and internal viewParameters
       viewParameters,
-      periodsClusters,
-      eventsClusters: globalEventsClusters,
       timeBoundaries
     } = this.state;
-    /*
-     * Step: filter the elements to display in the main timeline
-     */
-    const fromDate = viewParameters.fromDate instanceof Date ? viewParameters.fromDate.getTime() : viewParameters.fromDate;
-    const toDate = viewParameters.toDate instanceof Date ? viewParameters.toDate.getTime() : viewParameters.toDate;
-    const timeSpan = toDate - fromDate;
-    const displayedData = data.filter(point => {
-      const start = point.startDate.getTime();
-      const end = point.endDate && point.endDate.getTime();
-      return (start >= fromDate && start <= toDate) || (end && end >= fromDate && end <= toDate);
-    });
-    /*
-     * Step: organize events in a series of columns to avoid objects overlapping and allow a maximum number of labels to be rendered
-     */
-    const displayedEvents = displayedData.filter(obj => obj.endDate === undefined);
-    const eventPadding = timeSpan / 20;
-    const eventsClusters = clusterEvents(displayedEvents, eventPadding);
-    /*
-     * Step: organize periods in a series of columns to avoid objects overlapping and allow a maximum number of labels to be rendered
-     */
-    const displayedPeriods = periodsClusters.timeObjects.filter(point => {
-      const start = point.startDate.getTime();
-      const end = point.endDate && point.endDate.getTime();
-      return (start >= fromDate && start <= toDate) || (end && end >= fromDate && end <= toDate);
-    });
-    /*
-     * Step: compute timeline scale function, time graduations (ticks) and appropriate date formater (fn(timespan))
-     */
-    const timelineScale = scaleLinear().range([0, 100]).domain([fromDate, toDate]);
-    const ticksParams = setTicks(toDate - fromDate);
-    const formatDate = timeFormat(ticksParams.format);
-    const mainTicks = computeTicks(fromDate, toDate);
-
-    /*
-     * Step: specify callbacks for user inputs
-     */
-    const onMainWheel = (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      if (!this.props.allowUserViewChange) {
-        return;
-      }
-      const delta = (toDate - fromDate) / 10;
-      const forward = e.deltaY > 0;
-      if (forward && toDate + delta <= this.state.timeBoundaries.maximumDateDisplay) {
-        this.pan(true, delta);
-      }
-      if (!forward && fromDate - delta >= this.state.timeBoundaries.minimumDateDisplay) {
-        this.pan(false, delta);
-      }
-    };
-
-    const zoomIn = () => this.zoom(1.1);
-    const zoomOut = () => this.zoom(0.9);
-    const panBackward = () => this.pan(false, (toDate - fromDate) / 10);
-    const panForward = () => this.pan(true, (toDate - fromDate) / 10);
-
     /*
      * Step: render component
      */
@@ -281,16 +216,16 @@ class Timeline extends React.Component {
           viewParameters={viewParameters}
           timeBoundaries={timeBoundaries}
           scale={miniScale}
-          data={normalizeData(this.props.data)} 
+          data={normalizeData(this.props.data)}
           onTimespanUpdate={this.setViewSpan}
-        />
+          allowUserEvents={allowUserViewChange} />
         <MainTimeline
           viewParameters={viewParameters}
           scale={miniScale}
           data={normalizeData(this.props.data)}
-          onZoom={this.zoom} 
+          onZoom={this.zoom}
           onPan={this.pan}
-        />
+          allowUserEvents={allowUserViewChange} />
       </figure>
     ) : 'Loading';
   }

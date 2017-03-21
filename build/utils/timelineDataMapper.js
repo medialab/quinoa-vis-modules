@@ -28,7 +28,7 @@ var computeDate = exports.computeDate = function computeDate(thatYear, thatMonth
 
   var date = new Date();
   date.setFullYear(thatYear);
-  
+
   if (thatMonth) {
     date.setMonth(thatMonth - 1);
   } else {
@@ -79,37 +79,42 @@ function mapData() {
   var data = normalizedData.main;
   var dataMap = inputDataMap.main;
 
-  return data.map(function (datapoint) {
-    return Object.keys(dataMap).reduce(function (obj, dataKey) {
-      return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap[dataKey] === 'function' ? dataMap[dataKey](datapoint) 
-      : datapoint[dataMap[dataKey]]));
-    }, {});
-  })
-  .map(function (datapoint) {
-    var year = datapoint.year,
-        month = datapoint.month,
-        day = datapoint.day,
-        time = datapoint.time,
-        endYear = datapoint.endYear,
-        endMonth = datapoint.endMonth,
-        endDay = datapoint.endDay,
-        endTime = datapoint.endTime;
+  return {
+    main: data.map(function (datapoint) {
+      return Object.keys(dataMap).reduce(function (obj, dataKey) {
+        return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap[dataKey] === 'function' ? dataMap[dataKey](datapoint) 
+        : datapoint[dataMap[dataKey]]));
+      }, {});
+    })
+    .map(function (datapoint) {
+      var year = datapoint.year,
+          month = datapoint.month,
+          day = datapoint.day,
+          time = datapoint.time,
+          _datapoint$endYear = datapoint.endYear,
+          endYear = _datapoint$endYear === undefined ? datapoint['end year'] : _datapoint$endYear,
+          _datapoint$endMonth = datapoint.endMonth,
+          endMonth = _datapoint$endMonth === undefined ? datapoint['end month'] : _datapoint$endMonth,
+          _datapoint$endDay = datapoint.endDay,
+          endDay = _datapoint$endDay === undefined ? datapoint['end day'] : _datapoint$endDay,
+          _datapoint$endTime = datapoint.endTime,
+          endTime = _datapoint$endTime === undefined ? datapoint['end time'] : _datapoint$endTime;
 
 
-    var startDate = computeDate(year, month, day, time);
-    var endDate = computeDate(endYear, endMonth, endDay, endTime);
+      var startDate = computeDate(year, month, day, time);
+      var endDate = computeDate(endYear, endMonth, endDay, endTime);
 
-    return _extends({}, datapoint, {
-      startDate: startDate,
-      endDate: endDate
-    });
-  })
-  .sort(function (a, b) {
-    if (a.startDate.getTime() > b.startDate.getTime()) {
-      return 1;
-    }
-    return -1;
-  });
+      return _extends({}, datapoint, {
+        startDate: startDate,
+        endDate: endDate
+      });
+    })
+    .sort(function (a, b) {
+      if (a.startDate.getTime() > b.startDate.getTime()) {
+        return 1;
+      }
+      return -1;
+    }) };
 }
 
 var setTicks = exports.setTicks = function setTicks(time) {
@@ -169,41 +174,36 @@ var setTicks = exports.setTicks = function setTicks(time) {
   }
 
   if (time > MONTH) {
+    return day(15, '%m/%d/%Y');
+  }
 
-  return {
-    main: data.map(function (datapoint) {
-      return Object.keys(dataMap).reduce(function (obj, dataKey) {
-        return _extends({}, obj, _defineProperty({}, dataKey, typeof dataMap[dataKey] === 'function' ? dataMap[dataKey](datapoint) 
-        : datapoint[dataMap[dataKey]]));
-      }, {});
-    })
-    .map(function (datapoint) {
-      var year = datapoint.year,
-          month = datapoint.month,
-          day = datapoint.day,
-          time = datapoint.time,
-          _datapoint$endYear = datapoint.endYear,
-          endYear = _datapoint$endYear === undefined ? datapoint['end year'] : _datapoint$endYear,
-          _datapoint$endMonth = datapoint.endMonth,
-          endMonth = _datapoint$endMonth === undefined ? datapoint['end month'] : _datapoint$endMonth,
-          _datapoint$endDay = datapoint.endDay,
-          endDay = _datapoint$endDay === undefined ? datapoint['end day'] : _datapoint$endDay,
-          _datapoint$endTime = datapoint.endTime,
-          endTime = _datapoint$endTime === undefined ? datapoint['end time'] : _datapoint$endTime;
+  if (time > 15 * DAY) {
+    return day(3, '%m/%d/%Y');
+  }
 
+  if (time > DAY) {
+    return day(1, '%m/%d/%Y');
+  }
 
-      var startDate = computeDate(year, month, day, time);
-      var endDate = computeDate(endYear, endMonth, endDay, endTime);
+  if (time > 6 * HOUR) {
+    return hour(1, '%m/%d/%Y, %I %p');
+  }
 
-      return _extends({}, datapoint, {
-        startDate: startDate,
-        endDate: endDate
-      });
-    })
-    .sort(function (a, b) {
-      if (a.startDate.getTime() > b.startDate.getTime()) {
-        return 1;
-      }
-      return -1;
-    }) };
-}
+  if (time > HOUR) {
+    return minute(30, '%H:%M');
+  }
+
+  if (time > 30 * MINUTE) {
+    return minute(10, '%H:%M');
+  }
+
+  if (time > 10 * MINUTE) {
+    return minute(5, '%H:%M');
+  }
+
+  if (time > MINUTE) {
+    return minute(1, '%H:%M');
+  }
+
+  return second(30, '%H:%M:%S');
+};

@@ -24,6 +24,12 @@ export default class MainTimeline extends Component {
     };
   }
 
+  componentDidMount() {
+    const {updateDimensions} = this;
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.state.data) {
       this.setState({
@@ -32,20 +38,15 @@ export default class MainTimeline extends Component {
     }
   }
 
-  componentDidMount() {
-    const {updateDimensions} = this;
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-  }
-
   componentWillUnmount() {
     const {updateDimensions} = this;
     window.removeEventListener('resize', updateDimensions);
   }
 
   onMouseDown(evt) {
-    const bbox = evt.target.getBBox();
-    const height = bbox.height;
+    if (!this.props.allowUserEvents) {
+      return;
+    }
     const y = evt.clientY;
     this.setState({
       grabbing: true,
@@ -53,20 +54,27 @@ export default class MainTimeline extends Component {
     });
   }
   onMouseMove(evt) {
+    if (!this.props.allowUserEvents) {
+      return;
+    }
     if (this.state.grabbing) {
-      const bbox = evt.target.getBBox();
-      const height = bbox.height;
       const y = evt.clientY;
       const diff = (this.state.prevY - y) / 5;
-      const dateDiff =  (diff / this.state.height) * (this.props.viewParameters.toDate - this.props.viewParameters.fromDate)
+      const dateDiff = (diff / this.state.height) * (this.props.viewParameters.toDate - this.props.viewParameters.fromDate);
       this.props.onPan(dateDiff > 0, Math.abs(dateDiff));
+      this.setState({
+        prevY: y
+      });
     }
   }
-  onMouseUp(evt) {
+  onMouseUp() {
+    if (!this.props.allowUserEvents) {
+      return;
+    }
     this.setState({
       grabbing: false,
       prevY: undefined
-    })
+    });
   }
 
   updateDimensions () {
@@ -82,10 +90,7 @@ export default class MainTimeline extends Component {
   render() {
     const {
       viewParameters,
-      periodsClusters,
-      eventsClusters,
-      timeBoundaries,
-      onZoom
+      allowUserEvents
     } = this.props;
     const {
       onMouseDown,
@@ -99,7 +104,7 @@ export default class MainTimeline extends Component {
       grabbing
     } = this.state;
     const bindRef = svg => {
-      this.node = svg
+      this.node = svg;
     };
     const bindCaptorRef = rect => {
       this.captor = rect;
@@ -108,16 +113,18 @@ export default class MainTimeline extends Component {
     const onWheel = (e) => {
       e.stopPropagation();
       e.preventDefault();
-      const direction = e.deltaY > 0;
-      let displacement = e.deltaY / 200;
-      if (displacement > .9) {
-        displacement = .9;
+      if (!allowUserEvents) {
+        return;
       }
-      if (displacement < -.9) {
-        displacement = -.9;
+      let displacement = e.deltaY / 200;
+      if (displacement > 0.9) {
+        displacement = 0.9;
+      }
+      if (displacement < -0.9) {
+        displacement = -0.9;
       }
       this.props.onZoom(1 + displacement);
-    }
+    };
 
     return (
       <section className="main-timeline" onWheel={onWheel}>
@@ -129,28 +136,26 @@ export default class MainTimeline extends Component {
             height={height}
             transitionsDuration={500}
             minimumDate={viewParameters.fromDate}
-            maximumDate={viewParameters.toDate}
-          />
-          <rect 
+            maximumDate={viewParameters.toDate} />
+          <rect
             className="timeline-captor"
             width={width}
             height={height}
             style={{
-              cursor: grabbing ? 'grabbing': 'grab'
+              cursor: grabbing ? 'grabbing' : 'grab'
             }}
             x={0}
             y={0}
             ref={bindCaptorRef}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp}
-          />
+            onMouseUp={onMouseUp} />
           <ObjectsContainer
             viewParameters={viewParameters}
             data={data}
-            width={width * .9}
+            width={width * 0.9}
             height={height}
-            transform={'scale(.9)translate(' + width * .1 + ' 0)'}
+            transform={'scale(.9, 1)translate(' + width * 0.1 + ' 0)'}
             transitionsDuration={500}
             timeBoundaries={[viewParameters.fromDate, viewParameters.toDate]} />
           <g

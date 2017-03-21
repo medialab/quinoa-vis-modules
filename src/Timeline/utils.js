@@ -10,12 +10,11 @@ import {
     timeDay,
     timeHour,
     timeMinute,
-    timeSecond
+    // timeSecond, // not used so far
     // timeMillisecond // not used so far
 } from 'd3-time';
 
 import {min, max} from 'd3-array';
-import {scaleLinear} from 'd3-scale';
 
 /*
  * timerelated constants
@@ -99,101 +98,134 @@ export const computeDate = (thatYear, thatMonth, thatDay, time) => {
  * @return {object} utils - proper unit, proper ticks timespan, and proper date formatting pattern
  */
 export const setTicks = function(time) {
-    let unit, span, format;
+    let unit, unitMs, span, format;
+    let transformFn = (date) => date;
     if (time > YEAR * 1000) {// > 1000 years
         unit = timeYear;
+        unitMs = YEAR;
         span = 500;
         format = '%Y';
+        transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 500);
     }
 
     else if (time > YEAR * 500) {// > 500 years
         unit = timeYear;
+        unitMs = YEAR;
         span = 250;
         format = '%Y';
+        transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 250);
     }
     else if (time > YEAR * 250) {// > 250 years
         unit = timeYear;
+        unitMs = YEAR;
         span = 125;
         format = '%Y';
+        transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 125);
     }
     else if (time > YEAR * 100) {// > 50 years
         unit = timeYear;
+        unitMs = YEAR;
         span = 50;
         format = '%Y';
+        transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 50);
     }
  else if (time > YEAR * 10) {//10 - 50 years
         unit = timeYear;
+        unitMs = YEAR;
         span = 10;
         format = '%Y';
+        transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 10);
     }
 else if (time > YEAR * 3) {// 3-10 years
-        unit = timeYear;
-        span = 1;
-        format = '%Y';
+        unit = timeMonth;
+        unitMs = MONTH;
+        span = 6;
+        format = '%m/%Y';
+        transformFn = (date) => date.setMonth(date.getMonth() - date.getMonth() % 6);
     }
  else if (time > YEAR) {//1-3 years
         unit = timeMonth;
-        span = 6;
+        unitMs = MONTH;
+        span = 2;
         format = '%m/%Y';
+        transformFn = (date) => date.setMonth(date.getMonth() - date.getMonth() % 2);
     }
 else if (time > MONTH * 6) {//6-12 months
         unit = timeMonth;
+        unitMs = MONTH;
         span = 1;
         format = '%m/%Y';
     }
  else if (time > MONTH) {//1-6 months
         unit = timeDay;
+        unitMs = DAY;
         span = 15;
         format = '%m/%d/%Y';
+        transformFn = (date) => date.setDate(date.getDate() - date.getDate() % 15);
     }
 else if (time > 15 * DAY) {//15-30 days
         unit = timeDay;
+        unitMs = DAY;
         span = 3;
         format = '%m/%d/%Y';
-
+        transformFn = (date) => date.setDate(date.getDate() - date.getDate() % 3);
     }
 else if (time > DAY) {//1-15 days
         unit = timeDay;
+        unitMs = DAY;
         span = 1;
         format = '%m/%d/%Y';
-
     }
  else if (time > 6 * HOUR) {//6-24 hours
         unit = timeHour;
+        unitMs = HOUR;
         span = 1;
         format = '%m/%d/%Y, %I %p';
-
     }
 else if (time > HOUR) {//1-6 hours
         unit = timeMinute;
+        unitMs = MINUTE;
         span = 30;
         format = '%H:%M';
+        transformFn = (date) => date.setMinutes(date.getMinutes() - date.getMinutes() % 30);
     }
 else if (time > 30 * MINUTE) {//30-60 minutes
         unit = timeMinute;
+        unitMs = MINUTE;
         span = 10;
         format = '%H:%M';
+        transformFn = (date) => date.setMinutes(date.getMinutes() - date.getMinutes() % 10);
     }
 else if (time > 10 * MINUTE) {//10-30 minutes
         unit = timeMinute;
+        unitMs = MINUTE;
         span = 5;
         format = '%H:%M';
+        transformFn = (date) => date.setMinutes(date.getMinutes() - date.getMinutes() % 5);
     }
 else if (time > MINUTE) {//1-10 minutes
         unit = timeMinute;
+        unitMs = MINUTE;
         span = 1;
         format = '%H:%M';
     }
  else {
-        unit = timeSecond;
-        span = 30;
-        format = '%H:%M:%S';
+        // unit = timeSecond;
+        // span = 30;
+        // format = '%H:%M:%S';
+        unit = timeMinute;
+        unitMs = MINUTE;
+        span = 10;
+        format = '%H:%M';
+        transformFn = (date) => date.setMinutes(date.getMinutes() - date.getMinutes() % 10);
     }
 
     return {
         unit,
+        unitMs,
         span,
-        format
+        format,
+        transformFn
     };
 };
 
@@ -205,17 +237,13 @@ else if (time > MINUTE) {//1-10 minutes
  * @return {array} ticks - list of ticks with position in time and computed time indication (legend)
  */
 export const computeTicks = (minimumDateDisplay, maximumDateDisplay) => {
-    const ticksParams = setTicks(maximumDateDisplay - minimumDateDisplay);
+    const interval = maximumDateDisplay - minimumDateDisplay;
+    const ticksParams = setTicks(interval);
     const formatDate = timeFormat(ticksParams.format);
-    // todo : find a better method than that to compute clean ticks without computing a bunch of dates
-    const baseDate = new Date();
-    baseDate.setFullYear(-100001);
-    baseDate.setDate(1);
-    baseDate.setHours(0);
-    baseDate.setMinutes(0);
-    baseDate.setSeconds(0);
-    baseDate.setMilliseconds(0);
-    const ticks = ticksParams.unit.range(baseDate, maximumDateDisplay, ticksParams.span);
+    // const minimumDateRound = ticksParams.unit.round(minimumDateDisplay) - ticksParams.unit.round(minimumDateDisplay)%(ticksParams.unitMs * ticksParams.span); // ticksParams.unit.ceil(minimumDateDisplay);
+    const minimumDateRound = ticksParams.transformFn(ticksParams.unit.round(minimumDateDisplay));
+    const maximumDateRound = ticksParams.unit.round(maximumDateDisplay);
+    const ticks = ticksParams.unit.range(minimumDateRound, maximumDateRound, ticksParams.span);
     return ticks
         .filter(tick => tick.getTime() >= minimumDateDisplay)
         .map(tick => ({
@@ -350,9 +378,7 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
   const ambitus = timeBoundaries[1] - timeBoundaries[0];
   const padding = Math.pow(ambitus, 1) / Math.sqrt(data.length);
   let maxColumn = 1;
-  const activeColumn = 0;
   let previous;
-  let column;
   let previousEvents;
   let previousPeriods;
   // filter only periods within the display time boundaries
@@ -385,7 +411,7 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
     for (let i = 0; i <= previousColumn; i++) {
       const slotTaken = previousPeriods
         .filter(p => p.column === i)
-        .find(previous => period.endDate > previous.startDate && period.startDate < previous.endDate);
+        .find(previousPeriod => period.endDate > previousPeriod.startDate && period.startDate < previousPeriod.endDate);
       if (slotTaken === undefined) {
         period.column = i;
         break;
@@ -408,28 +434,6 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
     );
   const finalEvents = visibleEvents
   .reduce((events, event, index) => {
-    // if (events.length && index > 0) {
-    //   previous = events[index - 1];
-    // }
-    // else {
-    //   event.column = 1;
-    //   return [...events, event];
-    // }
-    // // console.log(index, event.startDate.getTime() - previous.startDate.getTime() < padding);
-    // if (previous && previous.column !== undefined && event.startDate.getTime() - previous.startDate.getTime() < padding) {
-    //   event.column = previous.column + 1;
-    //   if (event.column > maxColumn) {
-    //     maxColumn = event.column;
-    //   }
-    //   // maxColumn = event.column;
-    //   previous.overlapped = true;
-    //   event.overlapped = false;
-    // }
-    // else {
-    //   event.column = 1;
-    // }
-    // return [...events, event];
-
     if (events.length && index > 0) {
       previous = events[index - 1];
       previousEvents = events.slice(0, index - 1);
@@ -438,11 +442,10 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
       event.column = maxPeriodColumn + 1;
       return [...events, event];
     }
-    const previousColumn = previous.column;
     for (let i = maxPeriodColumn + 1; i <= maxColumn; i++) {
       const slotTaken = previousEvents
         .filter(p => p.column === i)
-        .find(previous => Math.abs(event.startDate.getTime() - previous.startDate.getTime()) < padding);
+        .find(previousEvent => Math.abs(event.startDate.getTime() - previousEvent.startDate.getTime()) < padding);
       if (slotTaken === undefined) {
         event.column = i;
         break;
@@ -482,8 +485,7 @@ export const computeDataRelatedState = (inputData, viewParameters) => {
       miniTicks,
       data,
       viewParameters,
-      miniScale: scaleLinear().range([0, 100]).domain([timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay]),
-      timeBoundaries,
+      // miniScale: scaleLinear().range([0, 100]).domain([timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay]),
       periodsClusters: clusterPeriods(data),
       eventsClusters: clusterEvents(data, displaceThreshold)
     };

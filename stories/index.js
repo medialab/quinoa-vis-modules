@@ -36,9 +36,9 @@ const timelineBaseViewParameters = {
       computation: '#813B7C',
       mathematics: '#59D044',
       statistics: '#F3A002',
-      default: 'brown'
+      default: 'lightgrey'
     },
-    default: 'brown'
+    default: 'lightgrey'
   }
 };
 
@@ -187,9 +187,9 @@ const mapBaseViewParameters = {
     main: {
       'accélérée': '#F24D98',
       'normale': '#813B7C',
-      default: 'brown'
+      default: 'lightgrey'
     },
-    default: 'brown'
+    default: 'lightgrey'
   },
   tilesUrl: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png'
 };
@@ -213,10 +213,10 @@ const mapGeoJSONBaseViewParameters = {
   colorsMap: {
     main: {
       osm_mapnik: 'orange',
-      noCategory: 'brown',
-      default: 'brown'
+      noCategory: 'lightgrey',
+      default: 'lightgrey'
     },
-    default: 'brown'
+    default: 'lightgrey'
   }
 };
 const geoJSONData = mapMapData(parseMapData(mapGeoJSONData, 'geojson'), {

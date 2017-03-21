@@ -13,17 +13,6 @@ export default class TimeTicks extends Component {
     };
   }
 
-  componentDidMount() {
-  }
-
-  componentWillReceiveProps(next) {
-  }
-
-  componentWillUnmount() {
-  }
-
-  
-
   render() {
     const {
       width,
@@ -32,7 +21,6 @@ export default class TimeTicks extends Component {
       maximumDate,
       transitionsDuration
     } = this.props;
-    const bindRef = g => this.node = g;
     const ticks = computeTicks(minimumDate, maximumDate);
     const scaleY = scaleLinear().domain([minimumDate, maximumDate]).range([0, height]);
     const textHeight = 0.1 * height / ticks.length;
@@ -48,8 +36,7 @@ export default class TimeTicks extends Component {
                 y={y}
                 textHeight={textHeight}
                 width={width}
-                transitionsDuration={transitionsDuration}
-              />
+                transitionsDuration={transitionsDuration} />
             );
           })
         }

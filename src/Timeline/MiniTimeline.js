@@ -19,18 +19,18 @@ export default class MiniTimeline extends Component {
     };
   }
 
+  componentDidMount() {
+    const {updateDimensions} = this;
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.state.data) {
       this.setState({
         data: clusterTimeObjects(nextProps.data, [nextProps.timeBoundaries.minimumDateDisplay, nextProps.timeBoundaries.maximumDateDisplay])
       });
     }
-  }
-
-  componentDidMount() {
-    const {updateDimensions} = this;
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
   }
 
   componentWillUnmount() {
@@ -54,14 +54,17 @@ export default class MiniTimeline extends Component {
       periodsClusters,
       eventsClusters,
       timeBoundaries,
-      onTimespanUpdate
+      onTimespanUpdate,
+      allowUserEvents
     } = this.props;
     const {
       width,
       height,
       data
     } = this.state;
-    const bindRef = svg => this.node = svg;
+    const bindRef = svg => {
+      this.node = svg;
+    };
     return (
       <aside className="mini-timeline">
         <svg
@@ -72,15 +75,14 @@ export default class MiniTimeline extends Component {
             height={height}
             transitionsDuration={500}
             minimumDate={timeBoundaries.minimumDateDisplay}
-            maximumDate={timeBoundaries.maximumDateDisplay}
-          />
+            maximumDate={timeBoundaries.maximumDateDisplay} />
           <ObjectsContainer
             viewParameters={viewParameters}
             data={data}
             periodsClusters={periodsClusters}
             eventsClusters={eventsClusters}
-            width={width * .9}
-            transform={'scale(.9)translate(' + width * .1 + ' 0)'}
+            width={width * 0.9}
+            transform={'scale(.9, 1)translate(' + width * 0.1 + ' 0)'}
             height={height}
             transitionsDuration={500}
             timeBoundaries={[timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay]} />
@@ -89,8 +91,9 @@ export default class MiniTimeline extends Component {
             from={viewParameters.fromDate}
             to={viewParameters.toDate}
             width={width}
-            height={height} 
-            onUpdate={onTimespanUpdate}
+            height={height}
+            onUpdate={onTimespanUpdate} 
+            active={allowUserEvents}
           />
         </svg>
       </aside>

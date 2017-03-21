@@ -3,14 +3,12 @@ import React, {Component} from 'react';
 import {interpolateNumber} from 'd3-interpolate';
 import {timer} from 'd3-timer';
 
-import {scaleLinear} from 'd3-scale';
-
 export default class TimeTick extends Component {
   constructor(props) {
     super(props);
     this.state = {
       y: props.y
-    }
+    };
     this.update = this.update.bind(this);
   }
 
@@ -23,7 +21,7 @@ export default class TimeTick extends Component {
       this.update(next.y, this.props.transitionsDuration);
       this.setState({
         y: next.y
-      })
+      });
     }
   }
 
@@ -57,7 +55,7 @@ export default class TimeTick extends Component {
       this.transition = timer(onTick, transitionsDuration);
     }
   }
-  
+
 
   render() {
     const {
@@ -65,27 +63,21 @@ export default class TimeTick extends Component {
       width,
       tick
     } = this.props;
-    const {
-      y
-    } = this.state;
     const bindRef = (node) => {
       this.node = node;
     };
     return (
-      <g 
+      <g
         className="tick"
-        ref={bindRef}
-      >
+        ref={bindRef}>
         <line
           x1={0}
           x2={width}
           y1={0}
-          y2={0}
-        />
+          y2={0} />
         <text
           y={textHeight}
-          fontSize={textHeight}
-        >
+          fontSize={textHeight}>
           {tick.legend}
         </text>
       </g>

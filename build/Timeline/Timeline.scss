@@ -12,6 +12,7 @@
     left: 0;
 
     display: flex;
+    flex-flow: row nowrap;
     overflow: hidden;
 
     width: 100%;
@@ -23,6 +24,112 @@
     /*
      * Mini sub components
      */
+     .time-object
+    {
+        position: absolute;
+        left: 0;
+
+        pointer-events: all;
+
+        &.hidden{
+            opacity: .1;
+        }
+        .name-container
+        {
+            position: absolute;
+
+            width: 30rem;
+            .name
+            {
+                position: absolute;
+                top: -$gutter-medium * .8;
+                left: $gutter-medium;
+
+                max-width: 20rem;
+                .name-underline
+                {
+                    position: absolute;
+                    top: $gutter-medium;
+                    left: -$gutter-medium/2;
+
+                    width: 100%;
+
+                    border-top: $gutter-small/4 solid black;
+                }
+            }
+        }
+        .tooltip
+        {
+            position: absolute;
+            z-index: 2;
+            top: -$gutter-medium;
+            left: $gutter-medium;
+
+            width: 20rem;
+            padding: $gutter-small;
+
+            pointer-events: none;
+
+            opacity: .0000001;
+            border: $gutter-small/4 solid black;
+            background: white;
+            user-select: auto;
+
+            @include transition(all $time-medium ease);
+            &:hover
+            {
+                opacity: 1;
+            }
+        }
+        .marker
+        {
+            position: absolute;
+
+            width: .5em;
+            height: .5em;
+
+            border-radius: .5em;
+            background: black;
+        }
+        &.period
+        {
+            width: 100%;
+            .name
+            {
+                left: -$gutter-small;
+            }
+            .marker
+            {
+                right: $gutter-medium;
+                
+                width: 100%;
+                height: 100%;
+
+                border-radius: 0;
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+            .tooltip
+            {
+                top: -$gutter-medium;
+                left: -$gutter-small;
+            }
+        }
+        &:hover
+        {
+            .name-container
+            {
+                opacity: .0000001;
+            }
+            .tooltip
+            {
+                pointer-events: all;
+
+                opacity: 1;
+            }
+        }
+    }
     .time-objects-container
     {
         position: absolute;
@@ -56,201 +163,22 @@
                 height: 100%;
 
                 flex: 1;
-                .time-object
-                {
-                    position: absolute;
-                    right: 0;
-
-                    pointer-events: all;
-
-                    &.hidden{
-                        opacity: .1;
-                    }
-                    .name-container
-                    {
-                        position: absolute;
-
-                        width: 30rem;
-                        .name
-                        {
-                            position: absolute;
-                            top: -$gutter-medium * .8;
-                            left: $gutter-medium;
-
-                            max-width: 20rem;
-                            .name-underline
-                            {
-                                position: absolute;
-                                top: $gutter-medium;
-                                left: -$gutter-medium/2;
-
-                                width: 100%;
-
-                                border-top: $gutter-small/4 solid black;
-                            }
-                        }
-                    }
-                    .tooltip
-                    {
-                        position: absolute;
-                        z-index: 2;
-                        top: -$gutter-medium;
-                        left: $gutter-medium;
-
-                        width: 20rem;
-                        padding: $gutter-small;
-
-                        pointer-events: none;
-
-                        opacity: .0000001;
-                        border: $gutter-small/4 solid black;
-                        background: white;
-                        user-select: auto;
-
-                        @include transition(all $time-medium ease);
-                        &:hover
-                        {
-                            opacity: 1;
-                        }
-                    }
-                    .marker
-                    {
-                        position: absolute;
-
-                        width: .5em;
-                        height: .5em;
-
-                        border-radius: .5em;
-                        background: black;
-                    }
-                    &.period
-                    {
-                        .name
-                        {
-                            left: -$gutter-small;
-                        }
-                        .marker
-                        {
-                            right: $gutter-medium;
-
-                            height: 100%;
-
-                            border-radius: 0;
-                            background: red;
-                        }
-                        .tooltip
-                        {
-                            top: -$gutter-medium;
-                            left: -$gutter-small;
-                        }
-                    }
-                    &:hover
-                    {
-                        .name-container
-                        {
-                            opacity: .0000001;
-                        }
-                        .tooltip
-                        {
-                            pointer-events: all;
-
-                            opacity: 1;
-                        }
-                    }
-                }
             }
         }
-    }
-    .time-graduations-container
-    {
-        pointer-events: none;
-
-        // @include transition(all $time-short ease);
-        opacity: .5;
-        .tick
-        {
-            position: absolute;
-            left: 0;
-
-            width: 100%;
-            margin: 0;
-            padding: 0;
-
-            border-top: 1px solid darkblue;
-            color: darkblue;
-
-            // @include transition(all $time-short ease);
-
-            .legend{
-              background: white;
-              position : relative;
-              top : -.5em;
-              padding-right: $gutter-small;
-            }
-        }
-    }
-    &.portrait
-    {
-        flex-direction: row;
-    }
-    &.landscape
-    {
-        flex-direction: column;
     }
     .mini-timeline
     {
         position: relative;
 
         flex: 1;
-        cursor: pointer;
-        .time-objects-container
+
+        .mini-timeline-container
         {
-            .columns-container
-            {
-                .objects-column
-                {
-                    .time-object
-                    {
-                        .name
-                        {
-                            display: none;
-                        }
-                        .marker
-                        {
-                            width: .2em;
-                            height: .2em;
-                        }
-                        &.period{
-                          height: unset;
-                        }
-                    }
-                }
-            }
-        }
-        .brush-placeholder{
-          width: 100%;
-          height: 100%;
-          left: 0;
-          top: 0;
-          position: absolute; 
-          .brush
-          {
-              position: absolute;
-              top: 0;
-              left: 0;
-
-              width: 100%;
-              height: 1%;
-
-              cursor: move;
-
-              opacity: .35;
-              background: lightgrey;
-              &:hover
-              {
-                  opacity: .7;
-              }
-          }
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
         }
     }
     .main-timeline
@@ -258,37 +186,84 @@
         position: relative;
 
         flex: 5;
+
+        .main-timeline-container
+        {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
         .controls-container
         {
             position: absolute;
             top: $gutter-medium;
             right: $gutter-medium;
         }
-        .time-boundaries-container
+
+        .timeline-captor
         {
-            #to-date,
-            #from-date
-            {
-                position: absolute;
-                left: $gutter-medium * 3;
-
-                padding: $gutter-small;
-
-                background: white;
-                border: 1px solid darkblue;
-            }
-            #from-date
-            {
-                top: -$gutter-small;
-            }
-            #to-date
-            {
-                bottom: -$gutter-small;
-            }
+            cursor: grab;
+            fill-opacity: 0;
         }
-        .time-objects-container
+    }
+    .time-boundaries-container
+    {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        #to-date,
+        #from-date
         {
-            width: 60%;
+            position: absolute;
+            left: $gutter-medium * 8;
+
+            padding: $gutter-small;
+
+            background: white;
+        }
+        #from-date
+        {
+            top: -$gutter-small;
+        }
+        #to-date
+        {
+            bottom: -$gutter-small;
+        }
+    }
+    .time-objects-container
+    {
+        width: 60%;
+    }
+
+    .brush-container
+    {
+        .brush-captor
+        {
+            pointer-events: all;
+            cursor: resize;
+            fill-opacity: 0;
+        }
+        .brush-rect
+        {
+            rect
+            {fill: rgba(0,0,0,.3);}
+            pointer-events: none;
+        }
+    }
+
+    .ticks-container
+    {
+        .tick
+        {
+            line{
+                stroke: rgba(0,0,0,0.3);
+            }
         }
     }
 }
