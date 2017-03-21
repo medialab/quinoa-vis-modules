@@ -38,9 +38,7 @@ export default class TimeObject extends Component {
             cx={objectWidth / 2}
             cy={0}
             r={objectWidth / 2}
-            fill={color}>
-            <title>{timeObject.startDate.getFullYear()}</title>
-          </circle>
+            fill={color} />
           :
           <rect
             x={0}

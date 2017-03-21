@@ -61,19 +61,11 @@ var TimeObject = function (_Component) {
           ref: bindRef,
           transform: 'translate(' + x + ' ' + y + ')',
           id: 'time-object-' + timeObject.id },
-        timeObject.type === 'event' ? _react2.default.createElement(
-          'circle',
-          {
-            cx: objectWidth / 2,
-            cy: 0,
-            r: objectWidth / 2,
-            fill: color },
-          _react2.default.createElement(
-            'title',
-            null,
-            timeObject.startDate.getFullYear()
-          )
-        ) : _react2.default.createElement('rect', {
+        timeObject.type === 'event' ? _react2.default.createElement('circle', {
+          cx: objectWidth / 2,
+          cy: 0,
+          r: objectWidth / 2,
+          fill: color }) : _react2.default.createElement('rect', {
           x: 0,
           y: 0,
           width: objectWidth,

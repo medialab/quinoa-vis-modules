@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
 
+import {timeFormat} from 'd3-time-format';
+
 import ObjectsContainer from './ObjectsContainer';
 
 import TimeTicks from './TimeTicks';
 
 import {
-  clusterTimeObjects
+  clusterTimeObjects,
+  setTicks
 } from './utils';
 
 export default class MainTimeline extends Component {
@@ -126,6 +129,8 @@ export default class MainTimeline extends Component {
       this.props.onZoom(1 + displacement);
     };
 
+    const ticksParams = setTicks(viewParameters.toDate - viewParameters.fromDate);
+    const formatDate = timeFormat(ticksParams.format);
     return (
       <section className="main-timeline" onWheel={onWheel}>
         <svg
@@ -161,6 +166,10 @@ export default class MainTimeline extends Component {
           <g
             className="labels-container" />
         </svg>
+        <div className="time-boundaries-container">
+          <div id="from-date">{formatDate(viewParameters.fromDate)}</div>
+          <div id="to-date">{formatDate(viewParameters.toDate)}</div>
+        </div>
       </section>
     );
   }

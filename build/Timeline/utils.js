@@ -3,9 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.computeDataRelatedState = exports.clusterTimeObjects = exports.normalizeData = exports.computeBoundaries = exports.clusterPeriods = exports.clusterEvents = exports.computeTicks = exports.setTicks = exports.computeDate = undefined;
+exports.computeDataRelatedState = exports.clusterTimeObjects = exports.normalizeData = exports.computeBoundaries = exports.computeTicks = exports.setTicks = exports.computeDate = undefined;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; 
 
 var _d3Time = require('d3-time');
 
@@ -13,7 +13,7 @@ var _d3Array = require('d3-array');
 
 var _d3TimeFormat = require('d3-time-format');
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var SECOND = 1000;
 var MINUTE = SECOND * 60;
@@ -104,7 +104,7 @@ var setTicks = exports.setTicks = function setTicks(time) {
     transformFn = function transformFn(date) {
       return date.setFullYear(date.getFullYear() - date.getFullYear() % 50);
     };
-  } else if (time > YEAR * 10) {
+  } else if (time > YEAR * 20) {
     unit = _d3Time.timeYear;
     unitMs = YEAR;
     span = 10;
@@ -112,21 +112,26 @@ var setTicks = exports.setTicks = function setTicks(time) {
     transformFn = function transformFn(date) {
       return date.setFullYear(date.getFullYear() - date.getFullYear() % 10);
     };
+  } else if (time > YEAR * 10) {
+    unit = _d3Time.timeYear;
+    unitMs = YEAR;
+    span = 2;
+    format = '%Y';
+    transformFn = function transformFn(date) {
+      return date.setFullYear(date.getFullYear() - date.getFullYear() % 2);
+    };
   } else if (time > YEAR * 3) {
+    unit = _d3Time.timeYear;
+    unitMs = YEAR;
+    span = 1;
+    format = '%Y';
+  } else if (time > YEAR) {
     unit = _d3Time.timeMonth;
     unitMs = MONTH;
     span = 6;
     format = '%m/%Y';
     transformFn = function transformFn(date) {
       return date.setMonth(date.getMonth() - date.getMonth() % 6);
-    };
-  } else if (time > YEAR) {
-    unit = _d3Time.timeMonth;
-    unitMs = MONTH;
-    span = 2;
-    format = '%m/%Y';
-    transformFn = function transformFn(date) {
-      return date.setMonth(date.getMonth() - date.getMonth() % 2);
     };
   } else if (time > MONTH * 6) {
     unit = _d3Time.timeMonth;
@@ -158,12 +163,12 @@ var setTicks = exports.setTicks = function setTicks(time) {
     unit = _d3Time.timeHour;
     unitMs = HOUR;
     span = 1;
-    format = '%m/%d/%Y, %I %p';
+    format = '%m/%d/%Y %Hh';
   } else if (time > HOUR) {
     unit = _d3Time.timeMinute;
     unitMs = MINUTE;
     span = 30;
-    format = '%H:%M';
+    format = '%m/%d/%Y %Hh %Mmin';
     transformFn = function transformFn(date) {
       return date.setMinutes(date.getMinutes() - date.getMinutes() % 30);
     };
@@ -171,7 +176,7 @@ var setTicks = exports.setTicks = function setTicks(time) {
     unit = _d3Time.timeMinute;
     unitMs = MINUTE;
     span = 10;
-    format = '%H:%M';
+    format = '%m/%d/%Y %Hh %Mmin';
     transformFn = function transformFn(date) {
       return date.setMinutes(date.getMinutes() - date.getMinutes() % 10);
     };
@@ -179,7 +184,7 @@ var setTicks = exports.setTicks = function setTicks(time) {
     unit = _d3Time.timeMinute;
     unitMs = MINUTE;
     span = 5;
-    format = '%H:%M';
+    format = '%m/%d/%Y %Hh%Mmin';
     transformFn = function transformFn(date) {
       return date.setMinutes(date.getMinutes() - date.getMinutes() % 5);
     };
@@ -187,14 +192,14 @@ var setTicks = exports.setTicks = function setTicks(time) {
     unit = _d3Time.timeMinute;
     unitMs = MINUTE;
     span = 1;
-    format = '%H:%M';
+    format = '%m/%d/%Y %Hh %Mmin';
   } else {
-    unit = _d3Time.timeMinute;
-    unitMs = MINUTE;
+    unit = _d3Time.timeSecond;
+    unitMs = SECOND;
     span = 10;
-    format = '%H:%M';
+    format = '%m/%d/%Y %Hh %Mmin %Ss';
     transformFn = function transformFn(date) {
-      return date.setMinutes(date.getMinutes() - date.getMinutes() % 10);
+      return date.setSeconds(date.getSeconds() - date.getSeconds() % 10);
     };
   }
 
@@ -222,78 +227,6 @@ var computeTicks = exports.computeTicks = function computeTicks(minimumDateDispl
       legend: formatDate(tick)
     };
   });
-};
-
-var clusterEvents = exports.clusterEvents = function clusterEvents(events, eventPadding) {
-  var container = events.reduce(function (periods, event) {
-    var previous = void 0;
-    if (periods.timeObjects.length) {
-      previous = periods.timeObjects[periods.timeObjects.length - 1];
-    }
-    if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
-      event.column = previous.column + 1;
-      previous.overlapped = true;
-      event.overlapped = false;
-      if (periods.columns[periods.columns.length - 1] < event.column) {
-        periods.columns.push(event.column);
-      }
-    } else {
-      event.column = 1;
-    }
-    periods.timeObjects.push(event);
-    return periods;
-  }, {
-    timeObjects: [],
-    columns: [1]
-  });
-  container.clusters = container.columns.map(function (column) {
-    return {
-      column: column,
-      timeObjects: container.timeObjects.filter(function (event) {
-        return event.column === column;
-      })
-    };
-  });
-  return container;
-};
-var clusterPeriods = exports.clusterPeriods = function clusterPeriods(data) {
-  var maxColumn = 1;
-  var periodsObjects = data.filter(function (point) {
-    return point.endDate !== undefined;
-  });
-  periodsObjects.forEach(function (period, index) {
-    var previous = void 0;
-    if (index > 0) {
-      previous = periodsObjects[index - 1];
-    }
-    if (previous && period.startDate < previous.endDate) {
-      period.column = previous.column + 1;
-      previous.overlapped = true;
-      period.overlapped = false;
-      if (previous.column + 1 > maxColumn) {
-        maxColumn = previous.column + 1;
-      }
-    } else {
-      period.column = 1;
-    }
-  });
-  var clustersColumns = [];
-  for (var count = 0; count < maxColumn; count++) {
-    clustersColumns.push(count + 1);
-  }
-  var periodsClusters = clustersColumns.reduce(function (clusters, column) {
-    return [].concat(_toConsumableArray(clusters), [{
-      column: column,
-      timeObjects: periodsObjects.filter(function (period) {
-        return period.column === column;
-      })
-    }]);
-  }, []);
-  return {
-    columns: clustersColumns,
-    timeObjects: periodsObjects,
-    clusters: periodsClusters
-  };
 };
 
 var computeBoundaries = exports.computeBoundaries = function computeBoundaries(data) {
@@ -428,14 +361,9 @@ var computeDataRelatedState = exports.computeDataRelatedState = function compute
     });
   });
   var timeBoundaries = computeBoundaries(data);
-  var miniTicks = computeTicks(timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay);
-  var displaceThreshold = (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay) / 10;
   return {
     timeBoundaries: timeBoundaries,
-    miniTicks: miniTicks,
     data: data,
-    viewParameters: viewParameters,
-    periodsClusters: clusterPeriods(data),
-    eventsClusters: clusterEvents(data, displaceThreshold)
+    viewParameters: viewParameters
   };
 };

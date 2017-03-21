@@ -11,6 +11,8 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _d3TimeFormat = require('d3-time-format');
+
 var _ObjectsContainer = require('./ObjectsContainer');
 
 var _ObjectsContainer2 = _interopRequireDefault(_ObjectsContainer);
@@ -165,6 +167,8 @@ var MainTimeline = function (_Component) {
         _this2.props.onZoom(1 + displacement);
       };
 
+      var ticksParams = (0, _utils.setTicks)(viewParameters.toDate - viewParameters.fromDate);
+      var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
       return _react2.default.createElement(
         'section',
         { className: 'main-timeline', onWheel: onWheel },
@@ -202,6 +206,20 @@ var MainTimeline = function (_Component) {
             timeBoundaries: [viewParameters.fromDate, viewParameters.toDate] }),
           _react2.default.createElement('g', {
             className: 'labels-container' })
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'time-boundaries-container' },
+          _react2.default.createElement(
+            'div',
+            { id: 'from-date' },
+            formatDate(viewParameters.fromDate)
+          ),
+          _react2.default.createElement(
+            'div',
+            { id: 'to-date' },
+            formatDate(viewParameters.toDate)
+          )
         )
       );
     }

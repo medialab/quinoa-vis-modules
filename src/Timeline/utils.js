@@ -10,7 +10,7 @@ import {
     timeDay,
     timeHour,
     timeMinute,
-    // timeSecond, // not used so far
+    timeSecond, // not used so far
     // timeMillisecond // not used so far
 } from 'd3-time';
 
@@ -129,26 +129,32 @@ export const setTicks = function(time) {
         format = '%Y';
         transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 50);
     }
- else if (time > YEAR * 10) {//10 - 50 years
+ else if (time > YEAR * 20) {//20 - 50 years
         unit = timeYear;
         unitMs = YEAR;
         span = 10;
         format = '%Y';
         transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 10);
     }
-else if (time > YEAR * 3) {// 3-10 years
+  else if (time > YEAR * 10) {//10 - 20 years
+        unit = timeYear;
+        unitMs = YEAR;
+        span = 2;
+        format = '%Y';
+        transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 2);
+    }
+ else if (time > YEAR * 3) {//3-10 years
+        unit = timeYear;
+        unitMs = YEAR;
+        span = 1;
+        format = '%Y';
+    }
+ else if (time > YEAR) {//1-3 years
         unit = timeMonth;
         unitMs = MONTH;
         span = 6;
         format = '%m/%Y';
         transformFn = (date) => date.setMonth(date.getMonth() - date.getMonth() % 6);
-    }
- else if (time > YEAR) {//1-3 years
-        unit = timeMonth;
-        unitMs = MONTH;
-        span = 2;
-        format = '%m/%Y';
-        transformFn = (date) => date.setMonth(date.getMonth() - date.getMonth() % 2);
     }
 else if (time > MONTH * 6) {//6-12 months
         unit = timeMonth;
@@ -180,44 +186,44 @@ else if (time > DAY) {//1-15 days
         unit = timeHour;
         unitMs = HOUR;
         span = 1;
-        format = '%m/%d/%Y, %I %p';
+        format = '%m/%d/%Y %Hh';
     }
 else if (time > HOUR) {//1-6 hours
         unit = timeMinute;
         unitMs = MINUTE;
         span = 30;
-        format = '%H:%M';
+        format = '%m/%d/%Y %Hh %Mmin';
         transformFn = (date) => date.setMinutes(date.getMinutes() - date.getMinutes() % 30);
     }
 else if (time > 30 * MINUTE) {//30-60 minutes
         unit = timeMinute;
         unitMs = MINUTE;
         span = 10;
-        format = '%H:%M';
+        format = '%m/%d/%Y %Hh %Mmin';
         transformFn = (date) => date.setMinutes(date.getMinutes() - date.getMinutes() % 10);
     }
 else if (time > 10 * MINUTE) {//10-30 minutes
         unit = timeMinute;
         unitMs = MINUTE;
         span = 5;
-        format = '%H:%M';
+        format = '%m/%d/%Y %Hh%Mmin';
         transformFn = (date) => date.setMinutes(date.getMinutes() - date.getMinutes() % 5);
     }
 else if (time > MINUTE) {//1-10 minutes
         unit = timeMinute;
         unitMs = MINUTE;
         span = 1;
-        format = '%H:%M';
+        format = '%m/%d/%Y %Hh %Mmin';
     }
  else {
         // unit = timeSecond;
         // span = 30;
         // format = '%H:%M:%S';
-        unit = timeMinute;
-        unitMs = MINUTE;
+        unit = timeSecond;
+        unitMs = SECOND;
         span = 10;
-        format = '%H:%M';
-        transformFn = (date) => date.setMinutes(date.getMinutes() - date.getMinutes() % 10);
+        format = '%m/%d/%Y %Hh %Mmin %Ss';
+        transformFn = (date) => date.setSeconds(date.getSeconds() - date.getSeconds() % 10);
     }
 
     return {
@@ -250,87 +256,6 @@ export const computeTicks = (minimumDateDisplay, maximumDateDisplay) => {
           time: tick.getTime(),
           legend: formatDate(tick)
         }));
-};
-
-/**
- * Organizes a list of event objects into separate columns that optimize their spreading in space
- * @param {number} events - array of events
- * @param {number} eventPadding - time (in millisec) to use to decide whether two events are overlapping
- * @return {object} periods - object containing a of list events enriched with a column indication, and the list of columns
- */
-export const clusterEvents = (events, eventPadding) => {
-  const container = events
-    .reduce((periods, event) => {
-      let previous;
-      if (periods.timeObjects.length) {
-        previous = periods.timeObjects[periods.timeObjects.length - 1];
-      }
-      if (previous && event.startDate.getTime() - previous.startDate.getTime() < eventPadding) {
-        event.column = previous.column + 1;
-        previous.overlapped = true;
-        event.overlapped = false;
-        if (periods.columns[periods.columns.length - 1] < event.column) {
-          periods.columns.push(event.column);
-        }
-      }
-      else {
-        event.column = 1;
-      }
-      periods.timeObjects.push(event);
-      return periods;
-    }, {
-      timeObjects: [],
-      columns: [1]
-    });
-  container.clusters = container.columns.map(column => ({
-    column,
-    timeObjects: container.timeObjects.filter(event => event.column === column)
-  }));
-  return container;
-};
-/**
- * Organizes a list of periods objects into separate columns that optimize their spreading in space
- * @param {number} data - array of periods
- * @return {object} periods - object containing a of list periods enriched with a column indication, and the list of columns
- */
-export const clusterPeriods = (data) => {
-    let maxColumn = 1;
-    const periodsObjects = data.filter(point => point.endDate !== undefined);
-    periodsObjects.forEach((period, index) => {
-      let previous;
-      if (index > 0) {
-        previous = periodsObjects[index - 1];
-      }
-      if (previous && period.startDate < previous.endDate) {
-        period.column = previous.column + 1;
-        previous.overlapped = true;
-        period.overlapped = false;
-        if (previous.column + 1 > maxColumn) {
-          maxColumn = previous.column + 1;
-        }
-      }
-      else {
-        period.column = 1;
-      }
-    });
-    const clustersColumns = [];
-    for (let count = 0; count < maxColumn; count ++) {
-      clustersColumns.push(count + 1);
-    }
-    const periodsClusters = clustersColumns.reduce((clusters, column) => {
-      return [
-        ...clusters,
-        {
-          column,
-          timeObjects: periodsObjects.filter(period => period.column === column)
-        }
-      ];
-    }, []);
-    return {
-      columns: clustersColumns,
-      timeObjects: periodsObjects,
-      clusters: periodsClusters
-    };
 };
 
 /**
@@ -477,16 +402,9 @@ export const computeDataRelatedState = (inputData, viewParameters) => {
       id
     }));
     const timeBoundaries = computeBoundaries(data);
-    const miniTicks = computeTicks(timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay);
-    const displaceThreshold = (timeBoundaries.maximumDateDisplay - timeBoundaries.minimumDateDisplay) / 10;
-    // data time boundaries in order to display the mini-timeline
     return {
       timeBoundaries,
-      miniTicks,
       data,
-      viewParameters,
-      // miniScale: scaleLinear().range([0, 100]).domain([timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay]),
-      periodsClusters: clusterPeriods(data),
-      eventsClusters: clusterEvents(data, displaceThreshold)
+      viewParameters
     };
 };

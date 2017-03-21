@@ -92,9 +92,8 @@ export default class MiniTimeline extends Component {
             to={viewParameters.toDate}
             width={width}
             height={height}
-            onUpdate={onTimespanUpdate} 
-            active={allowUserEvents}
-          />
+            onUpdate={onTimespanUpdate}
+            active={allowUserEvents} />
         </svg>
       </aside>
     );
