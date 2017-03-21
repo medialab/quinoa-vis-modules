@@ -225,7 +225,8 @@ class Timeline extends React.Component {
           data={normalizeData(this.props.data)}
           onZoom={this.zoom}
           onPan={this.pan}
-          allowUserEvents={allowUserViewChange} />
+          allowUserEvents={allowUserViewChange}
+          setViewSpan={this.setViewSpan} />
       </figure>
     ) : 'Loading';
   }

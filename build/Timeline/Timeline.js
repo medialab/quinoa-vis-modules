@@ -233,7 +233,8 @@ var Timeline = function (_React$Component) {
           data: (0, _utils.normalizeData)(this.props.data),
           onZoom: this.zoom,
           onPan: this.pan,
-          allowUserEvents: allowUserViewChange })
+          allowUserEvents: allowUserViewChange,
+          setViewSpan: this.setViewSpan })
       ) : 'Loading';
     }
   }]);

@@ -43,6 +43,7 @@ var MainTimeline = function (_Component) {
     _this.onMouseDown = _this.onMouseDown.bind(_this);
     _this.onMouseUp = _this.onMouseUp.bind(_this);
     _this.onMouseMove = _this.onMouseMove.bind(_this);
+    _this.onDoubleClick = _this.onDoubleClick.bind(_this);
 
     _this.state = {
       width: undefined,
@@ -106,6 +107,27 @@ var MainTimeline = function (_Component) {
       }
     }
   }, {
+    key: 'onDoubleClick',
+    value: function onDoubleClick(evt) {
+      if (!this.props.allowUserEvents) {
+        return;
+      }
+
+      var y = evt.clientY;
+      var h = this.captor.getBBox().height;
+      var portion = y / h;
+      var _props$viewParameters = this.props.viewParameters,
+          fromDate = _props$viewParameters.fromDate,
+          toDate = _props$viewParameters.toDate;
+
+      var ambitus = toDate - fromDate;
+      var target = fromDate + ambitus * portion;
+      var newAmbitus = ambitus / 4;
+      var newFrom = target - newAmbitus;
+      var newTo = target + newAmbitus;
+      this.props.setViewSpan(newFrom, newTo, false);
+    }
+  }, {
     key: 'onMouseUp',
     value: function onMouseUp() {
       if (!this.props.allowUserEvents) {
@@ -135,7 +157,8 @@ var MainTimeline = function (_Component) {
       var _props = this.props,
           viewParameters = _props.viewParameters,
           allowUserEvents = _props.allowUserEvents;
-      var onMouseDown = this.onMouseDown,
+      var onDoubleClick = this.onDoubleClick,
+          onMouseDown = this.onMouseDown,
           onMouseMove = this.onMouseMove,
           onMouseUp = this.onMouseUp;
       var _state = this.state,
@@ -195,7 +218,8 @@ var MainTimeline = function (_Component) {
             ref: bindCaptorRef,
             onMouseDown: onMouseDown,
             onMouseMove: onMouseMove,
-            onMouseUp: onMouseUp }),
+            onMouseUp: onMouseUp,
+            onDoubleClick: onDoubleClick }),
           _react2.default.createElement(_ObjectsContainer2.default, {
             viewParameters: viewParameters,
             data: data,

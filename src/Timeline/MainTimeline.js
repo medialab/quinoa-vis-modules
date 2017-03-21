@@ -18,6 +18,7 @@ export default class MainTimeline extends Component {
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
+    this.onDoubleClick = this.onDoubleClick.bind(this);
 
     this.state = {
       width: undefined,
@@ -70,6 +71,26 @@ export default class MainTimeline extends Component {
       });
     }
   }
+
+  onDoubleClick(evt) {
+    if (!this.props.allowUserEvents) {
+      return;
+    }
+
+    const y = evt.clientY;
+    const h = this.captor.getBBox().height;
+    const portion = y / h;
+    const {
+      fromDate,
+      toDate
+    } = this.props.viewParameters;
+    const ambitus = toDate - fromDate;
+    const target = fromDate + ambitus * portion;
+    const newAmbitus = ambitus / 4;
+    const newFrom = target - newAmbitus;
+    const newTo = target + newAmbitus;
+    this.props.setViewSpan(newFrom, newTo, false);
+  }
   onMouseUp() {
     if (!this.props.allowUserEvents) {
       return;
@@ -96,6 +117,7 @@ export default class MainTimeline extends Component {
       allowUserEvents
     } = this.props;
     const {
+      onDoubleClick,
       onMouseDown,
       onMouseMove,
       onMouseUp
@@ -154,7 +176,8 @@ export default class MainTimeline extends Component {
             ref={bindCaptorRef}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp} />
+            onMouseUp={onMouseUp}
+            onDoubleClick={onDoubleClick} />
           <ObjectsContainer
             viewParameters={viewParameters}
             data={data}
