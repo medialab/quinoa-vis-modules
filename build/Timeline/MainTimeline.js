@@ -13,9 +13,13 @@ var _react2 = _interopRequireDefault(_react);
 
 var _d3TimeFormat = require('d3-time-format');
 
-var _ObjectsContainer = require('./ObjectsContainer');
+var _TimeObjectsContainer = require('./TimeObjectsContainer');
 
-var _ObjectsContainer2 = _interopRequireDefault(_ObjectsContainer);
+var _TimeObjectsContainer2 = _interopRequireDefault(_TimeObjectsContainer);
+
+var _LabelsContainer = require('./LabelsContainer');
+
+var _LabelsContainer2 = _interopRequireDefault(_LabelsContainer);
 
 var _TimeTicks = require('./TimeTicks');
 
@@ -192,6 +196,7 @@ var MainTimeline = function (_Component) {
 
       var ticksParams = (0, _utils.setTicks)(viewParameters.toDate - viewParameters.fromDate);
       var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
+
       return _react2.default.createElement(
         'section',
         { className: 'main-timeline', onWheel: onWheel },
@@ -220,7 +225,7 @@ var MainTimeline = function (_Component) {
             onMouseMove: onMouseMove,
             onMouseUp: onMouseUp,
             onDoubleClick: onDoubleClick }),
-          _react2.default.createElement(_ObjectsContainer2.default, {
+          _react2.default.createElement(_TimeObjectsContainer2.default, {
             viewParameters: viewParameters,
             data: data,
             width: width * 0.9,
@@ -228,8 +233,14 @@ var MainTimeline = function (_Component) {
             transform: 'scale(.9, 1)translate(' + width * 0.1 + ' 0)',
             transitionsDuration: 500,
             timeBoundaries: [viewParameters.fromDate, viewParameters.toDate] }),
-          _react2.default.createElement('g', {
-            className: 'labels-container' })
+          _react2.default.createElement(_LabelsContainer2.default, {
+            viewParameters: viewParameters,
+            data: data,
+            width: width * 0.9,
+            height: height,
+            transform: 'scale(.9, 1)translate(' + width * 0.1 + ' 0)',
+            transitionsDuration: 500,
+            timeBoundaries: [viewParameters.fromDate, viewParameters.toDate] })
         ),
         _react2.default.createElement(
           'div',

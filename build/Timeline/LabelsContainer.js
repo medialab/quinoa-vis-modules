@@ -15,9 +15,9 @@ var _d3Scale = require('d3-scale');
 
 var _d3Array = require('d3-array');
 
-var _TimeObject = require('./TimeObject');
+var _Label = require('./Label');
 
-var _TimeObject2 = _interopRequireDefault(_TimeObject);
+var _Label2 = _interopRequireDefault(_Label);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -27,13 +27,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var ObjectsContainer = function (_Component) {
-  _inherits(ObjectsContainer, _Component);
+var LabelsContainer = function (_Component) {
+  _inherits(LabelsContainer, _Component);
 
-  function ObjectsContainer(props) {
-    _classCallCheck(this, ObjectsContainer);
+  function LabelsContainer(props) {
+    _classCallCheck(this, LabelsContainer);
 
-    var _this = _possibleConstructorReturn(this, (ObjectsContainer.__proto__ || Object.getPrototypeOf(ObjectsContainer)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (LabelsContainer.__proto__ || Object.getPrototypeOf(LabelsContainer)).call(this, props));
 
     _this.update = _this.update.bind(_this);
     _this.state = {
@@ -43,7 +43,7 @@ var ObjectsContainer = function (_Component) {
     return _this;
   }
 
-  _createClass(ObjectsContainer, [{
+  _createClass(LabelsContainer, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
       var props = this.props,
@@ -77,7 +77,7 @@ var ObjectsContainer = function (_Component) {
       var columnWidth = width / columnsCount;
 
       this.setState({
-        scaleX: (0, _d3Scale.scaleLinear)().domain([1, columnsCount + 1]).range([0, width]),
+        scaleX: (0, _d3Scale.scaleLinear)().domain([0, columnsCount + 1]).range([0, width]),
         scaleY: (0, _d3Scale.scaleLinear)().domain([timeBoundaries[0], timeBoundaries[1]]).range([0, height]),
         columnWidth: columnWidth,
         timeObjects: timeObjects
@@ -102,10 +102,10 @@ var ObjectsContainer = function (_Component) {
       return scaleX && scaleY && width && height ? _react2.default.createElement(
         'g',
         {
-          className: 'objects-container',
+          className: 'labels-container',
           transform: transform || '' },
         timeObjects.map(function (timeObject, index) {
-          return _react2.default.createElement(_TimeObject2.default, {
+          return _react2.default.createElement(_Label2.default, {
             timeObject: timeObject,
             key: index,
             scaleX: scaleX,
@@ -118,7 +118,7 @@ var ObjectsContainer = function (_Component) {
     }
   }]);
 
-  return ObjectsContainer;
+  return LabelsContainer;
 }(_react.Component);
 
-exports.default = ObjectsContainer;
+exports.default = LabelsContainer;

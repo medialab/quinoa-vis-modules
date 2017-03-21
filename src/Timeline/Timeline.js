@@ -240,8 +240,8 @@ Timeline.propTypes = {
     main: PropTypes.arrayOf(PropTypes.shape({
       category: PropTypes.string,
       title: PropTypes.string,
-      name: PropTypes.string,
       description: PropTypes.string,
+      source: PropTypes.string,
       startDate: PropTypes.instanceOf(Date),
       endDate: PropTypes.instanceOf(Date)
     }))

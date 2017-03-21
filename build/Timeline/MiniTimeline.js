@@ -11,9 +11,9 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _ObjectsContainer = require('./ObjectsContainer');
+var _TimeObjectsContainer = require('./TimeObjectsContainer');
 
-var _ObjectsContainer2 = _interopRequireDefault(_ObjectsContainer);
+var _TimeObjectsContainer2 = _interopRequireDefault(_TimeObjectsContainer);
 
 var _Brush = require('./Brush');
 
@@ -119,7 +119,7 @@ var MiniTimeline = function (_Component) {
             transitionsDuration: 500,
             minimumDate: timeBoundaries.minimumDateDisplay,
             maximumDate: timeBoundaries.maximumDateDisplay }),
-          _react2.default.createElement(_ObjectsContainer2.default, {
+          _react2.default.createElement(_TimeObjectsContainer2.default, {
             viewParameters: viewParameters,
             data: data,
             periodsClusters: periodsClusters,

@@ -236,6 +236,11 @@
             bottom: -$gutter-small;
         }
     }
+
+    .labels-container
+    {
+        // pointer-events: none;
+    }
     .time-objects-container
     {
         width: 60%;

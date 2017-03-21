@@ -19,16 +19,17 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var TimeObject = function (_Component) {
-  _inherits(TimeObject, _Component);
 
-  function TimeObject(props) {
-    _classCallCheck(this, TimeObject);
+var Label = function (_Component) {
+  _inherits(Label, _Component);
 
-    return _possibleConstructorReturn(this, (TimeObject.__proto__ || Object.getPrototypeOf(TimeObject)).call(this, props));
+  function Label(props) {
+    _classCallCheck(this, Label);
+
+    return _possibleConstructorReturn(this, (Label.__proto__ || Object.getPrototypeOf(Label)).call(this, props));
   }
 
-  _createClass(TimeObject, [{
+  _createClass(Label, [{
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate() {
       return true;
@@ -50,9 +51,17 @@ var TimeObject = function (_Component) {
       return _react2.default.createElement(
         'g',
         {
-          className: 'time-object-group',
+          className: 'label-group',
           transform: 'translate(' + x + ' ' + y + ')',
-          id: 'time-object-' + timeObject.id },
+          id: 'time-object-' + timeObject.id,
+          clipPath: 'url(#clip' + timeObject.id + ')' },
+        _react2.default.createElement('rect', {
+          fill: '#FFFFFF',
+          fillOpacity: 0.8,
+          x: objectWidth,
+          y: -columnWidth / 10,
+          width: columnWidth + columnWidth / 10,
+          height: objectWidth }),
         timeObject.type === 'event' ? _react2.default.createElement('circle', {
           cx: objectWidth / 2,
           cy: 0,
@@ -62,12 +71,29 @@ var TimeObject = function (_Component) {
           y: 0,
           width: objectWidth,
           height: height,
-          fill: color })
+          fill: color }),
+        _react2.default.createElement(
+          'text',
+          {
+            x: objectWidth * 2,
+            y: objectWidth / 2,
+            maxWidth: columnWidth },
+          timeObject.title
+        ),
+        _react2.default.createElement(
+          'clipPath',
+          { id: 'clip' + timeObject.id },
+          _react2.default.createElement('rect', {
+            x: objectWidth,
+            y: -columnWidth / 10,
+            width: columnWidth,
+            height: objectWidth * 5 })
+        )
       );
     }
   }]);
 
-  return TimeObject;
+  return Label;
 }(_react.Component);
 
-exports.default = TimeObject;
+exports.default = Label;

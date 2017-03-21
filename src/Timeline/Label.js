@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 
-export default class TimeObject extends Component {
+// import ReactMarkdown from 'react-markdown';
+
+export default class Label extends Component {
   constructor(props) {
     super(props);
   }
@@ -23,9 +25,17 @@ export default class TimeObject extends Component {
     const height = timeObject.type === 'period' && scaleY(timeObject.endDate.getTime()) - y;
     return (
       <g
-        className="time-object-group"
+        className="label-group"
         transform={'translate(' + x + ' ' + y + ')'}
-        id={'time-object-' + timeObject.id}>
+        id={'time-object-' + timeObject.id}
+        clipPath={'url(#clip' + timeObject.id + ')'}>
+        <rect
+          fill="#FFFFFF"
+          fillOpacity={0.8}
+          x={objectWidth}
+          y={-columnWidth / 10}
+          width={columnWidth + columnWidth / 10}
+          height={objectWidth} />
         {
         timeObject.type === 'event' ?
           <circle
@@ -41,6 +51,19 @@ export default class TimeObject extends Component {
             height={height}
             fill={color} />
         }
+        <text
+          x={objectWidth * 2}
+          y={objectWidth / 2}
+          maxWidth={columnWidth}>
+          {timeObject.title}
+        </text>
+        <clipPath id={'clip' + timeObject.id}>
+          <rect
+            x={objectWidth}
+            y={-columnWidth / 10}
+            width={columnWidth}
+            height={objectWidth * 5} />
+        </clipPath>
       </g>
     );
   }

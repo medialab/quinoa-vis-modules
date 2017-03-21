@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 
 import {timeFormat} from 'd3-time-format';
 
-import ObjectsContainer from './ObjectsContainer';
+import ObjectsContainer from './TimeObjectsContainer';
+import LabelsContainer from './LabelsContainer';
 
 import TimeTicks from './TimeTicks';
 
@@ -153,6 +154,7 @@ export default class MainTimeline extends Component {
 
     const ticksParams = setTicks(viewParameters.toDate - viewParameters.fromDate);
     const formatDate = timeFormat(ticksParams.format);
+
     return (
       <section className="main-timeline" onWheel={onWheel}>
         <svg
@@ -186,8 +188,14 @@ export default class MainTimeline extends Component {
             transform={'scale(.9, 1)translate(' + width * 0.1 + ' 0)'}
             transitionsDuration={500}
             timeBoundaries={[viewParameters.fromDate, viewParameters.toDate]} />
-          <g
-            className="labels-container" />
+          <LabelsContainer
+            viewParameters={viewParameters}
+            data={data}
+            width={width * 0.9}
+            height={height}
+            transform={'scale(.9, 1)translate(' + width * 0.1 + ' 0)'}
+            transitionsDuration={500}
+            timeBoundaries={[viewParameters.fromDate, viewParameters.toDate]} />
         </svg>
         <div className="time-boundaries-container">
           <div id="from-date">{formatDate(viewParameters.fromDate)}</div>

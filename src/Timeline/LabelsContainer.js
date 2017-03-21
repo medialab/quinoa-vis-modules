@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 
+
 import {scaleLinear} from 'd3-scale';
 import {max} from 'd3-array';
 
-import TimeObject from './TimeObject';
+import Label from './Label';
 
-export default class ObjectsContainer extends Component {
+export default class LabelsContainer extends Component {
   constructor(props) {
     super(props);
     this.update = this.update.bind(this);
@@ -35,7 +36,7 @@ export default class ObjectsContainer extends Component {
     const columnWidth = width / columnsCount;
 
     this.setState({
-      scaleX: scaleLinear().domain([1, columnsCount + 1]).range([0, width]),
+      scaleX: scaleLinear().domain([0, columnsCount + 1]).range([0, width]),
       scaleY: scaleLinear().domain([timeBoundaries[0], timeBoundaries[1]]).range([0, height]),
       columnWidth,
       timeObjects
@@ -59,12 +60,12 @@ export default class ObjectsContainer extends Component {
 
     return scaleX && scaleY && width && height ? (
       <g
-        className="objects-container"
+        className="labels-container"
         transform={transform || ''}>
         {
           timeObjects.map((timeObject, index) => {
             return (
-              <TimeObject
+              <Label
                 timeObject={timeObject}
                 key={index}
                 scaleX={scaleX}

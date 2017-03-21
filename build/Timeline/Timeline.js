@@ -247,8 +247,8 @@ Timeline.propTypes = {
     main: _react.PropTypes.arrayOf(_react.PropTypes.shape({
       category: _react.PropTypes.string,
       title: _react.PropTypes.string,
-      name: _react.PropTypes.string,
       description: _react.PropTypes.string,
+      source: _react.PropTypes.string,
       startDate: _react.PropTypes.instanceOf(Date),
       endDate: _react.PropTypes.instanceOf(Date)
     }))

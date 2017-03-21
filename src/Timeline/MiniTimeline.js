@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import ObjectsContainer from './ObjectsContainer';
+import ObjectsContainer from './TimeObjectsContainer';
 import Brush from './Brush';
 import TimeTicks from './TimeTicks';
 
