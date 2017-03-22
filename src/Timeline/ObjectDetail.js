@@ -20,7 +20,6 @@ const ObjectDetail = ({
             <h2>{timeObject.title}</h2>
           </div>
           <div className="content">
-            {console.log(timeObject)}
             {timeObject.description ?
               <ReactMarkdown source={timeObject.description} />
               : null}
