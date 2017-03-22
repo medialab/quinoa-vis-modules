@@ -75,7 +75,7 @@ var Label = function (_Component) {
       var bindTextRef = function bindTextRef(text) {
         _this2.text = text;
       };
-      var availableWidth = screenWidth - x;
+      var availableWidth = screenWidth - x + objectWidth;
       var bgWidth = this.text ? this.text.getBBox().width : 0;
       if (bgWidth > availableWidth) {
         bgWidth = availableWidth;
