@@ -42,7 +42,6 @@ var ObjectDetail = function ObjectDetail(_ref) {
       _react2.default.createElement(
         'div',
         { className: 'content' },
-        console.log(timeObject),
         timeObject.description ? _react2.default.createElement(_reactMarkdown2.default, { source: timeObject.description }) : null,
         timeObject.source ? _react2.default.createElement(
           'div',

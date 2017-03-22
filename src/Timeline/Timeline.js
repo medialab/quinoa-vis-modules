@@ -85,7 +85,7 @@ class Timeline extends React.Component {
     ) {
       this.setState({
         viewParameters: nextProps.viewParameters
-      })
+      });
     }
 
     if (this.props.data !== nextProps.data) {
