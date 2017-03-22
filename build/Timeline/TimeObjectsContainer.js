@@ -116,6 +116,9 @@ var ObjectsContainer = function (_Component) {
             timeObject: timeObject,
             key: index,
             onSelection: onClick,
+            shown: viewParameters.shownCategories ? timeObject.category && viewParameters.shownCategories.main.find(function (cat) {
+              return timeObject.category + '' === cat + '';
+            }) !== undefined : true,
             scaleX: scaleX,
             scaleY: scaleY,
             columnWidth: columnWidth,

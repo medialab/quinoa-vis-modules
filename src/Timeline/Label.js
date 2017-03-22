@@ -33,7 +33,8 @@ export default class Label extends Component {
       screenWidth,
       color,
       onObjectSelection,
-      selected
+      selected,
+      shown
     } = this.props;
     const {
       availableColumns
@@ -66,7 +67,12 @@ export default class Label extends Component {
     const handleClick = () => onObjectSelection(timeObject.id);
     return (
       <g
-        className={'label-group ' + (availableColumns === 0 ? 'hidden' : '') + (selected ? 'selected' : '')}
+        className={
+          'label-group ' +
+          (availableColumns === 0 ? 'hidden' : '') +
+          (selected ? 'selected' : '') +
+          (shown ? '' : 'filtered-out')
+        }
         transform={'translate(' + x + ' ' + labelY + ')'}
         id={'time-object-' + timeObject.id}
         onMouseEnter={onMouseEnter}

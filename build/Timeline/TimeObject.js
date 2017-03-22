@@ -37,13 +37,14 @@ var TimeObject = function (_Component) {
     key: 'render',
     value: function render() {
       var _props = this.props,
-          timeObject = _props.timeObject,
+          color = _props.color,
+          columnWidth = _props.columnWidth,
+          onSelection = _props.onSelection,
           scaleX = _props.scaleX,
           scaleY = _props.scaleY,
-          columnWidth = _props.columnWidth,
-          color = _props.color,
           selected = _props.selected,
-          onSelection = _props.onSelection;
+          shown = _props.shown,
+          timeObject = _props.timeObject;
 
       var x = scaleX(timeObject.column);
       var y = scaleY(timeObject.startDate.getTime());
@@ -52,7 +53,7 @@ var TimeObject = function (_Component) {
       return _react2.default.createElement(
         'g',
         {
-          className: 'time-object-group ' + (selected ? 'selected' : ''),
+          className: 'time-object-group ' + (selected ? 'selected' : '') + (shown ? '' : 'hidden'),
           transform: 'translate(' + x + ' ' + y + ')',
           id: 'time-object-' + timeObject.id },
         timeObject.type === 'event' ? _react2.default.createElement('circle', {

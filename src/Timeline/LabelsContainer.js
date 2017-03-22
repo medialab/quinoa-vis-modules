@@ -89,7 +89,6 @@ export default class LabelsContainer extends Component {
       timeObjects,
       columnWidth
     } = this.state;
-
     return scaleX && scaleY && width && height ? (
       <g
         className="labels-container"
@@ -106,6 +105,7 @@ export default class LabelsContainer extends Component {
                 columnWidth={columnWidth}
                 screenHeight={height}
                 screenWidth={width}
+                shown={viewParameters.shownCategories ? timeObject.category && viewParameters.shownCategories.main.find(cat => timeObject.category + '' === cat + '') !== undefined : true}
                 color={(viewParameters.colorsMap.main && viewParameters.colorsMap.main[timeObject.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default)}
                 transitionsDuration={transitionsDuration}
                 toggleLabelHover={this.toggleLabelHover}

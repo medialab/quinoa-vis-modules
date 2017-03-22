@@ -130,7 +130,6 @@ var LabelsContainer = function (_Component) {
           timeObjects = _state.timeObjects,
           columnWidth = _state.columnWidth;
 
-
       return scaleX && scaleY && width && height ? _react2.default.createElement(
         'g',
         {
@@ -146,6 +145,9 @@ var LabelsContainer = function (_Component) {
             columnWidth: columnWidth,
             screenHeight: height,
             screenWidth: width,
+            shown: viewParameters.shownCategories ? timeObject.category && viewParameters.shownCategories.main.find(function (cat) {
+              return timeObject.category + '' === cat + '';
+            }) !== undefined : true,
             color: viewParameters.colorsMap.main && viewParameters.colorsMap.main[timeObject.category] || viewParameters.colorsMap.main.default || viewParameters.colorsMap.default,
             transitionsDuration: transitionsDuration,
             toggleLabelHover: _this2.toggleLabelHover,

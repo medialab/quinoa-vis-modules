@@ -63,7 +63,8 @@ var Label = function (_Component) {
           screenWidth = _props.screenWidth,
           color = _props.color,
           onObjectSelection = _props.onObjectSelection,
-          selected = _props.selected;
+          selected = _props.selected,
+          shown = _props.shown;
       var availableColumns = timeObject.availableColumns;
       var hovered = this.state.hovered;
 
@@ -98,7 +99,7 @@ var Label = function (_Component) {
       return _react2.default.createElement(
         'g',
         {
-          className: 'label-group ' + (availableColumns === 0 ? 'hidden' : '') + (selected ? 'selected' : ''),
+          className: 'label-group ' + (availableColumns === 0 ? 'hidden' : '') + (selected ? 'selected' : '') + (shown ? '' : 'filtered-out'),
           transform: 'translate(' + x + ' ' + labelY + ')',
           id: 'time-object-' + timeObject.id,
           onMouseEnter: onMouseEnter,

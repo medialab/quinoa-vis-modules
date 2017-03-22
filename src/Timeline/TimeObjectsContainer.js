@@ -75,6 +75,7 @@ export default class ObjectsContainer extends Component {
                 timeObject={timeObject}
                 key={index}
                 onSelection={onClick}
+                shown={viewParameters.shownCategories ? timeObject.category && viewParameters.shownCategories.main.find(cat => timeObject.category + '' === cat + '') !== undefined : true}
                 scaleX={scaleX}
                 scaleY={scaleY}
                 columnWidth={columnWidth}

@@ -11,13 +11,14 @@ export default class TimeObject extends Component {
 
   render() {
     const {
-      timeObject,
+      color,
+      columnWidth,
+      onSelection,
       scaleX,
       scaleY,
-      columnWidth,
-      color,
       selected,
-      onSelection
+      shown,
+      timeObject,
     } = this.props;
     const x = scaleX(timeObject.column);
     const y = scaleY(timeObject.startDate.getTime());
@@ -25,7 +26,11 @@ export default class TimeObject extends Component {
     const height = timeObject.type === 'period' && scaleY(timeObject.endDate.getTime()) - y;
     return (
       <g
-        className={'time-object-group ' + (selected ? 'selected' : '')}
+        className={
+          'time-object-group ' +
+          (selected ? 'selected' : '') +
+          (shown ? '' : 'hidden')
+        }
         transform={'translate(' + x + ' ' + y + ')'}
         id={'time-object-' + timeObject.id}>
         {

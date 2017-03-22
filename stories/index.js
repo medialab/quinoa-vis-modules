@@ -68,7 +68,7 @@ storiesOf('Timeline', module)
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {{
         ...timelineBaseViewParameters,
-        showCategories: {
+        shownCategories: {
           main: ['computation']
         }
       }}
