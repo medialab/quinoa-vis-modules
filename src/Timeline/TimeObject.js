@@ -37,6 +37,7 @@ export default class TimeObject extends Component {
           <rect
             x={0}
             y={0}
+            stroke="#FFFFFF"
             width={objectWidth}
             height={height}
             fill={color} />

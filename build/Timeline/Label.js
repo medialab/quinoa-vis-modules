@@ -26,7 +26,13 @@ var Label = function (_Component) {
   function Label(props) {
     _classCallCheck(this, Label);
 
-    return _possibleConstructorReturn(this, (Label.__proto__ || Object.getPrototypeOf(Label)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (Label.__proto__ || Object.getPrototypeOf(Label)).call(this, props));
+
+    _this.state = {
+      hovered: false
+    };
+    _this.toggleHover = _this.toggleHover.bind(_this);
+    return _this;
   }
 
   _createClass(Label, [{
@@ -35,59 +41,94 @@ var Label = function (_Component) {
       return true;
     }
   }, {
+    key: 'toggleHover',
+    value: function toggleHover(target) {
+      var hovered = target === undefined ? !this.state.hovered : target;
+      this.setState({
+        hovered: hovered
+      });
+      this.props.toggleLabelHover(this.props.timeObject.id, hovered);
+    }
+  }, {
     key: 'render',
     value: function render() {
+      var _this2 = this;
+
       var _props = this.props,
           timeObject = _props.timeObject,
           scaleX = _props.scaleX,
           scaleY = _props.scaleY,
           columnWidth = _props.columnWidth,
+          screenHeight = _props.screenHeight,
+          screenWidth = _props.screenWidth,
           color = _props.color;
+      var availableColumns = timeObject.availableColumns;
+      var hovered = this.state.hovered;
 
       var x = scaleX(timeObject.column);
       var y = scaleY(timeObject.startDate.getTime());
       var objectWidth = columnWidth > 10 ? 10 : columnWidth;
-      var height = timeObject.type === 'period' && scaleY(timeObject.endDate.getTime()) - y;
+      var textHeight = screenHeight / 40;
+      var labelWidth = columnWidth * availableColumns - columnWidth * 0.3;
+      labelWidth = labelWidth < 0 ? 0 : labelWidth;
+
+      var bindTextRef = function bindTextRef(text) {
+        _this2.text = text;
+      };
+      var availableWidth = screenWidth - x;
+      var bgWidth = this.text ? this.text.getBBox().width : 0;
+      if (bgWidth > availableWidth) {
+        bgWidth = availableWidth;
+      }
+
+      var labelY = timeObject.type === 'event' ? y : y + textHeight / 2;
+      labelY = labelY > 0 ? labelY : textHeight;
+
+      var onMouseEnter = function onMouseEnter() {
+        return _this2.toggleHover(true);
+      };
+      var onMouseLeave = function onMouseLeave() {
+        return _this2.toggleHover(false);
+      };
       return _react2.default.createElement(
         'g',
         {
-          className: 'label-group',
-          transform: 'translate(' + x + ' ' + y + ')',
+          className: 'label-group ' + (availableColumns === 0 ? 'hidden' : ''),
+          transform: 'translate(' + x + ' ' + labelY + ')',
           id: 'time-object-' + timeObject.id,
-          clipPath: 'url(#clip' + timeObject.id + ')' },
+          onMouseEnter: onMouseEnter,
+          onMouseLeave: onMouseLeave },
         _react2.default.createElement('rect', {
           fill: '#FFFFFF',
-          fillOpacity: 0.8,
-          x: objectWidth,
-          y: -columnWidth / 10,
-          width: columnWidth + columnWidth / 10,
-          height: objectWidth }),
+          x: timeObject.type === 'event' ? -objectWidth / 2 : objectWidth,
+          y: -textHeight,
+          width: hovered ? bgWidth + objectWidth : labelWidth,
+          height: textHeight * 2,
+          className: 'background-rect' }),
         timeObject.type === 'event' ? _react2.default.createElement('circle', {
           cx: objectWidth / 2,
           cy: 0,
           r: objectWidth / 2,
-          fill: color }) : _react2.default.createElement('rect', {
-          x: 0,
-          y: 0,
-          width: objectWidth,
-          height: height,
-          fill: color }),
+          fill: color }) : null,
         _react2.default.createElement(
           'text',
           {
-            x: objectWidth * 2,
-            y: objectWidth / 2,
-            maxWidth: columnWidth },
+            x: objectWidth * 1.2,
+            y: textHeight / 3,
+            fontSize: textHeight,
+            clipPath: 'url(#clip' + timeObject.id + ')',
+            ref: bindTextRef },
           timeObject.title
         ),
         _react2.default.createElement(
           'clipPath',
           { id: 'clip' + timeObject.id },
           _react2.default.createElement('rect', {
-            x: objectWidth,
-            y: -columnWidth / 10,
-            width: columnWidth,
-            height: objectWidth * 5 })
+            x: -objectWidth / 2,
+            y: -textHeight,
+            width: hovered ? bgWidth : labelWidth,
+            height: textHeight * 2,
+            className: 'rect-clip-path' })
         )
       );
     }

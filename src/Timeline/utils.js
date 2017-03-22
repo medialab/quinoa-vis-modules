@@ -118,21 +118,21 @@ export const setTicks = function(time) {
     else if (time > YEAR * 250) {// > 250 years
         unit = timeYear;
         unitMs = YEAR;
-        span = 125;
+        span = 50;
         format = '%Y';
         transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 125);
     }
     else if (time > YEAR * 100) {// > 50 years
         unit = timeYear;
         unitMs = YEAR;
-        span = 50;
+        span = 10;
         format = '%Y';
         transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 50);
     }
  else if (time > YEAR * 20) {//20 - 50 years
         unit = timeYear;
         unitMs = YEAR;
-        span = 10;
+        span = 5;
         format = '%Y';
         transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 10);
     }
@@ -384,7 +384,41 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
     return [...events, event];
   }, []);
 
-  return finalPeriods.concat(finalEvents);
+  const spatializedData = finalPeriods.concat(finalEvents);
+  let following;
+  let overflow;
+  // console.log('max column', maxColumn);
+  const labeledData = spatializedData.map((timeObject, index) => {
+    let availableColumns = 1;
+    following = spatializedData.slice(index + 1);
+    overflow = following.find(timeObject2 =>
+      timeObject.column === timeObject2.column &&
+      Math.abs(timeObject2.startDate.getTime() - timeObject.startDate.getTime()) < padding
+    );
+    if (overflow) {
+      // availableColumns = 0;
+    }
+ else {
+      for (let i = timeObject.column + 1; i <= maxColumn; i++) {
+        overflow = following.find(other =>
+          other.column === i &&
+          (other.endDate === undefined && other.startDate.getTime() - timeObject.startDate.getTime() < padding) ||
+          (other.endDate !== undefined && other.startDate.getTime() <= timeObject.startDate.getTime() && other.endDate.getTime() > timeObject.startDate.getTime())
+        );
+        if (overflow) {
+          break;
+        }
+ else {
+          availableColumns ++;
+        }
+      }
+    }
+    return {
+      ...timeObject,
+      availableColumns
+    };
+  });
+  return labeledData;
 };
 
 /**

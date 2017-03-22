@@ -48,6 +48,7 @@ var MainTimeline = function (_Component) {
     _this.onMouseUp = _this.onMouseUp.bind(_this);
     _this.onMouseMove = _this.onMouseMove.bind(_this);
     _this.onDoubleClick = _this.onDoubleClick.bind(_this);
+    _this.onLabelsHovered = _this.onLabelsHovered.bind(_this);
 
     _this.state = {
       width: undefined,
@@ -102,7 +103,7 @@ var MainTimeline = function (_Component) {
       }
       if (this.state.grabbing) {
         var y = evt.clientY;
-        var diff = (this.state.prevY - y) / 5;
+        var diff = (this.state.prevY - y) / 3;
         var dateDiff = diff / this.state.height * (this.props.viewParameters.toDate - this.props.viewParameters.fromDate);
         this.props.onPan(dateDiff > 0, Math.abs(dateDiff));
         this.setState({
@@ -143,6 +144,11 @@ var MainTimeline = function (_Component) {
       });
     }
   }, {
+    key: 'onLabelsHovered',
+    value: function onLabelsHovered() {
+      this.onMouseUp();
+    }
+  }, {
     key: 'updateDimensions',
     value: function updateDimensions() {
       if (this.node) {
@@ -164,7 +170,8 @@ var MainTimeline = function (_Component) {
       var onDoubleClick = this.onDoubleClick,
           onMouseDown = this.onMouseDown,
           onMouseMove = this.onMouseMove,
-          onMouseUp = this.onMouseUp;
+          onMouseUp = this.onMouseUp,
+          onLabelsHovered = this.onLabelsHovered;
       var _state = this.state,
           width = _state.width,
           height = _state.height,
@@ -196,6 +203,8 @@ var MainTimeline = function (_Component) {
 
       var ticksParams = (0, _utils.setTicks)(viewParameters.toDate - viewParameters.fromDate);
       var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
+
+      var objectsDisplacement = 'scale(.9, 1)translate(' + width * 0.1 + ' 0)';
 
       return _react2.default.createElement(
         'section',
@@ -230,7 +239,7 @@ var MainTimeline = function (_Component) {
             data: data,
             width: width * 0.9,
             height: height,
-            transform: 'scale(.9, 1)translate(' + width * 0.1 + ' 0)',
+            transform: objectsDisplacement,
             transitionsDuration: 500,
             timeBoundaries: [viewParameters.fromDate, viewParameters.toDate] }),
           _react2.default.createElement(_LabelsContainer2.default, {
@@ -238,9 +247,10 @@ var MainTimeline = function (_Component) {
             data: data,
             width: width * 0.9,
             height: height,
-            transform: 'scale(.9, 1)translate(' + width * 0.1 + ' 0)',
+            transform: objectsDisplacement,
             transitionsDuration: 500,
-            timeBoundaries: [viewParameters.fromDate, viewParameters.toDate] })
+            timeBoundaries: [viewParameters.fromDate, viewParameters.toDate],
+            onLabelsHovered: onLabelsHovered })
         ),
         _react2.default.createElement(
           'div',

@@ -240,6 +240,31 @@
     .labels-container
     {
         // pointer-events: none;
+        .label-group
+        {
+            cursor: pointer;
+
+            .background-rect
+            {
+                fill-opacity: .8;
+                transition: fill-opacity .2s ease;
+            }
+            &.hidden
+            {
+                .background-rect
+                {
+                    fill-opacity: 0;
+                }
+            }
+            &:hover
+            {
+                .background-rect
+                {
+                    stroke : #000000;
+                    fill-opacity: 1;
+                }
+            }
+        }
     }
     .time-objects-container
     {

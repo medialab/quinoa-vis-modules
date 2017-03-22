@@ -91,7 +91,7 @@ var setTicks = exports.setTicks = function setTicks(time) {
   } else if (time > YEAR * 250) {
     unit = _d3Time.timeYear;
     unitMs = YEAR;
-    span = 125;
+    span = 50;
     format = '%Y';
     transformFn = function transformFn(date) {
       return date.setFullYear(date.getFullYear() - date.getFullYear() % 125);
@@ -99,7 +99,7 @@ var setTicks = exports.setTicks = function setTicks(time) {
   } else if (time > YEAR * 100) {
     unit = _d3Time.timeYear;
     unitMs = YEAR;
-    span = 50;
+    span = 10;
     format = '%Y';
     transformFn = function transformFn(date) {
       return date.setFullYear(date.getFullYear() - date.getFullYear() % 50);
@@ -107,7 +107,7 @@ var setTicks = exports.setTicks = function setTicks(time) {
   } else if (time > YEAR * 20) {
     unit = _d3Time.timeYear;
     unitMs = YEAR;
-    span = 10;
+    span = 5;
     format = '%Y';
     transformFn = function transformFn(date) {
       return date.setFullYear(date.getFullYear() - date.getFullYear() % 10);
@@ -348,7 +348,39 @@ var clusterTimeObjects = exports.clusterTimeObjects = function clusterTimeObject
     return [].concat(_toConsumableArray(events), [event]);
   }, []);
 
-  return finalPeriods.concat(finalEvents);
+  var spatializedData = finalPeriods.concat(finalEvents);
+  var following = void 0;
+  var overflow = void 0;
+  var labeledData = spatializedData.map(function (timeObject, index) {
+    var availableColumns = 1;
+    following = spatializedData.slice(index + 1);
+    overflow = following.find(function (timeObject2) {
+      return timeObject.column === timeObject2.column && Math.abs(timeObject2.startDate.getTime() - timeObject.startDate.getTime()) < padding;
+    });
+    if (overflow) {
+    } else {
+      var _loop3 = function _loop3(i) {
+        overflow = following.find(function (other) {
+          return other.column === i && other.endDate === undefined && other.startDate.getTime() - timeObject.startDate.getTime() < padding || other.endDate !== undefined && other.startDate.getTime() <= timeObject.startDate.getTime() && other.endDate.getTime() > timeObject.startDate.getTime();
+        });
+        if (overflow) {
+          return 'break';
+        } else {
+          availableColumns++;
+        }
+      };
+
+      for (var i = timeObject.column + 1; i <= maxColumn; i++) {
+        var _ret3 = _loop3(i);
+
+        if (_ret3 === 'break') break;
+      }
+    }
+    return _extends({}, timeObject, {
+      availableColumns: availableColumns
+    });
+  });
+  return labeledData;
 };
 
 var computeDataRelatedState = exports.computeDataRelatedState = function computeDataRelatedState(inputData, viewParameters) {

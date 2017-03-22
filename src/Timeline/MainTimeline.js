@@ -20,6 +20,7 @@ export default class MainTimeline extends Component {
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
     this.onDoubleClick = this.onDoubleClick.bind(this);
+    this.onLabelsHovered = this.onLabelsHovered.bind(this);
 
     this.state = {
       width: undefined,
@@ -64,7 +65,7 @@ export default class MainTimeline extends Component {
     }
     if (this.state.grabbing) {
       const y = evt.clientY;
-      const diff = (this.state.prevY - y) / 5;
+      const diff = (this.state.prevY - y) / 3;
       const dateDiff = (diff / this.state.height) * (this.props.viewParameters.toDate - this.props.viewParameters.fromDate);
       this.props.onPan(dateDiff > 0, Math.abs(dateDiff));
       this.setState({
@@ -102,6 +103,10 @@ export default class MainTimeline extends Component {
     });
   }
 
+  onLabelsHovered() {
+    this.onMouseUp();
+  }
+
   updateDimensions () {
     if (this.node) {
       const bRect = this.node.getBoundingClientRect();
@@ -121,7 +126,8 @@ export default class MainTimeline extends Component {
       onDoubleClick,
       onMouseDown,
       onMouseMove,
-      onMouseUp
+      onMouseUp,
+      onLabelsHovered
     } = this;
     const {
       width,
@@ -155,6 +161,8 @@ export default class MainTimeline extends Component {
     const ticksParams = setTicks(viewParameters.toDate - viewParameters.fromDate);
     const formatDate = timeFormat(ticksParams.format);
 
+    const objectsDisplacement = 'scale(.9, 1)translate(' + (width * 0.1) + ' 0)';
+
     return (
       <section className="main-timeline" onWheel={onWheel}>
         <svg
@@ -185,7 +193,7 @@ export default class MainTimeline extends Component {
             data={data}
             width={width * 0.9}
             height={height}
-            transform={'scale(.9, 1)translate(' + width * 0.1 + ' 0)'}
+            transform={objectsDisplacement}
             transitionsDuration={500}
             timeBoundaries={[viewParameters.fromDate, viewParameters.toDate]} />
           <LabelsContainer
@@ -193,9 +201,10 @@ export default class MainTimeline extends Component {
             data={data}
             width={width * 0.9}
             height={height}
-            transform={'scale(.9, 1)translate(' + width * 0.1 + ' 0)'}
+            transform={objectsDisplacement}
             transitionsDuration={500}
-            timeBoundaries={[viewParameters.fromDate, viewParameters.toDate]} />
+            timeBoundaries={[viewParameters.fromDate, viewParameters.toDate]}
+            onLabelsHovered={onLabelsHovered} />
         </svg>
         <div className="time-boundaries-container">
           <div id="from-date">{formatDate(viewParameters.fromDate)}</div>

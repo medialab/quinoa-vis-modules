@@ -60,6 +60,7 @@ var TimeObject = function (_Component) {
           fill: color }) : _react2.default.createElement('rect', {
           x: 0,
           y: 0,
+          stroke: '#FFFFFF',
           width: objectWidth,
           height: height,
           fill: color })

@@ -12,8 +12,10 @@ export default class LabelsContainer extends Component {
     this.update = this.update.bind(this);
     this.state = {
       scaleX: undefined,
-      timeObjects: []
+      timeObjects: [],
+      hoveredLabelId: undefined
     };
+    this.toggleLabelHover = this.toggleLabelHover.bind(this);
   }
 
   componentDidMount() {
@@ -25,6 +27,34 @@ export default class LabelsContainer extends Component {
     const {props, update} = this;
     if (props !== next) {
       update(next);
+    }
+  }
+
+  toggleLabelHover (objectId, value) {
+    if (!value) {
+      this.setState({
+        hoveredLabelId: undefined
+      });
+    }
+ else {
+      let hoveredIndex;
+      let hovered;
+      this.state.timeObjects.some((timeObject, index) => {
+        if (timeObject.id === objectId) {
+          hoveredIndex = index;
+          hovered = timeObject;
+          return true;
+        }
+      });
+      const timeObjects = [
+        ...this.state.timeObjects.slice(0, hoveredIndex),
+        ...this.state.timeObjects.slice(hoveredIndex + 1),
+        hovered
+      ];
+      this.setState({
+        hoveredLabelId: objectId,
+        timeObjects
+      });
     }
   }
 
@@ -49,7 +79,8 @@ export default class LabelsContainer extends Component {
       width,
       height,
       transitionsDuration,
-      transform
+      transform,
+      onLabelsHovered
     } = this.props;
     const {
       scaleX,
@@ -61,7 +92,8 @@ export default class LabelsContainer extends Component {
     return scaleX && scaleY && width && height ? (
       <g
         className="labels-container"
-        transform={transform || ''}>
+        transform={transform || ''}
+        onMouseEnter={onLabelsHovered}>
         {
           timeObjects.map((timeObject, index) => {
             return (
@@ -71,8 +103,11 @@ export default class LabelsContainer extends Component {
                 scaleX={scaleX}
                 scaleY={scaleY}
                 columnWidth={columnWidth}
+                screenHeight={height}
+                screenWidth={width}
                 color={(viewParameters.colorsMap.main && viewParameters.colorsMap.main[timeObject.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default)}
-                transitionsDuration={transitionsDuration} />
+                transitionsDuration={transitionsDuration}
+                toggleLabelHover={this.toggleLabelHover} />
             );
           })
         }
