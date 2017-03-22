@@ -22,6 +22,8 @@ import timelineDataRaw from 'raw-loader!./mock_data/milestones-datavis.csv';
 const timelineDataMap = {
   year: 'year',
   title: (d) => d.content,
+  description: 'content',
+  source: 'content',
   category: 'category',
   endYear: 'end year'
 };

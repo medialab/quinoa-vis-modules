@@ -45,7 +45,10 @@ class Timeline extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.viewParameters !== nextProps.viewParameters) {
+    if (
+      this.props.viewParameters.fromDate !== nextProps.viewParameters.fromDate ||
+      this.props.viewParameters.toDate !== nextProps.viewParameters.toDate
+    ) {
       const transitionsDuration = 500;
       const prevFrom = this.state.viewParameters.fromDate;
       const prevTo = this.state.viewParameters.toDate;
@@ -76,6 +79,13 @@ class Timeline extends React.Component {
       // this.setState({
       //   viewParameters: nextProps.viewParameters
       // });
+    }
+    else if (
+      JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)
+    ) {
+      this.setState({
+        viewParameters: nextProps.viewParameters
+      })
     }
 
     if (this.props.data !== nextProps.data) {

@@ -73,7 +73,7 @@ var Timeline = function (_React$Component) {
     value: function componentWillReceiveProps(nextProps) {
       var _this2 = this;
 
-      if (this.props.viewParameters !== nextProps.viewParameters) {
+      if (this.props.viewParameters.fromDate !== nextProps.viewParameters.fromDate || this.props.viewParameters.toDate !== nextProps.viewParameters.toDate) {
         var transitionsDuration = 500;
         var prevFrom = this.state.viewParameters.fromDate;
         var prevTo = this.state.viewParameters.toDate;
@@ -100,6 +100,10 @@ var Timeline = function (_React$Component) {
 
         transition = (0, _d3Timer.timer)(onTick);
 
+      } else if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+        this.setState({
+          viewParameters: nextProps.viewParameters
+        });
       }
 
       if (this.props.data !== nextProps.data) {

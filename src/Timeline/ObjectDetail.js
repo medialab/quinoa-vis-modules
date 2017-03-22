@@ -20,13 +20,14 @@ const ObjectDetail = ({
             <h2>{timeObject.title}</h2>
           </div>
           <div className="content">
+            {console.log(timeObject)}
             {timeObject.description ?
-              <ReactMarkdown input={timeObject.description} />
+              <ReactMarkdown source={timeObject.description} />
               : null}
             {timeObject.source ?
               <div className="source">
                 <h4>Sources</h4>
-                <ReactMarkdown input={timeObject.source} />
+                <ReactMarkdown source={timeObject.source} />
               </div>
               : null}
           </div>
