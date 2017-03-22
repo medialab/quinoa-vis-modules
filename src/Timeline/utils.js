@@ -122,7 +122,14 @@ export const setTicks = function(time) {
         format = '%Y';
         transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 125);
     }
-    else if (time > YEAR * 100) {// > 50 years
+    else if (time > YEAR * 100) {// > 100 years
+        unit = timeYear;
+        unitMs = YEAR;
+        span = 25;
+        format = '%Y';
+        transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 50);
+    }
+    else if (time > YEAR * 50) {// > 50 years
         unit = timeYear;
         unitMs = YEAR;
         span = 10;
@@ -333,10 +340,11 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
       return [...periods, period];
     }
     const previousColumn = previous.column;
+    const findPeriod = previousPeriod => period.endDate > previousPeriod.startDate && period.startDate < previousPeriod.endDate;
     for (let i = 0; i <= previousColumn; i++) {
       const slotTaken = previousPeriods
         .filter(p => p.column === i)
-        .find(previousPeriod => period.endDate > previousPeriod.startDate && period.startDate < previousPeriod.endDate);
+        .find(findPeriod);
       if (slotTaken === undefined) {
         period.column = i;
         break;
@@ -367,11 +375,12 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
       event.column = maxPeriodColumn + 1;
       return [...events, event];
     }
+    const findEvent = previousEvent => Math.abs(event.startDate.getTime() - previousEvent.startDate.getTime()) < padding;
     for (let i = maxPeriodColumn + 1; i <= maxColumn; i++) {
-      const slotTaken = previousEvents
+      const slotTaken2 = previousEvents
         .filter(p => p.column === i)
-        .find(previousEvent => Math.abs(event.startDate.getTime() - previousEvent.startDate.getTime()) < padding);
-      if (slotTaken === undefined) {
+        .find(findEvent);
+      if (slotTaken2 === undefined) {
         event.column = i;
         break;
       }
