@@ -14,7 +14,6 @@ storiesOf('Welcome', module)
 
 import Timeline from '../src/Timeline/Timeline';
 
-
 import TimelineStoryContainer from './TimelineStoryContainer';
 import parseTimelineData from '../src/utils/timelineDataParser';
 import mapTimelineData from '../src/utils/timelineDataMapper';
@@ -22,7 +21,7 @@ import timelineDataRaw from 'raw-loader!./mock_data/milestones-datavis.csv';
 
 const timelineDataMap = {
   year: 'year',
-  name: (d) => d.content,
+  title: (d) => d.content,
   category: 'category',
   endYear: 'end year'
 };
@@ -35,9 +34,9 @@ const timelineBaseViewParameters = {
       computation: '#813B7C',
       mathematics: '#59D044',
       statistics: '#F3A002',
-      default: 'brown'
+      default: 'lightgrey'
     },
-    default: 'brown'
+    default: 'lightgrey'
   }
 };
 
@@ -59,7 +58,7 @@ storiesOf('Timeline', module)
       onUserViewChange={(e) => console.log('on view change', e)}
       viewParameters = {{
         ...timelineBaseViewParameters,
-        showCategories: {
+        shownCategories: {
           main: ['computation']
         }
       }}
@@ -178,9 +177,9 @@ const mapBaseViewParameters = {
     main: {
       'accélérée': '#F24D98',
       'normale': '#813B7C',
-      default: 'brown'
+      default: 'lightgrey'
     },
-    default: 'brown'
+    default: 'lightgrey'
   },
   tilesUrl: 'http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png'
 };
@@ -204,10 +203,10 @@ const mapGeoJSONBaseViewParameters = {
   colorsMap: {
     main: {
       osm_mapnik: 'orange',
-      noCategory: 'brown',
-      default: 'brown'
+      noCategory: 'lightgrey',
+      default: 'lightgrey'
     },
-    default: 'brown'
+    default: 'lightgrey'
   }
 };
 const geoJSONData = mapMapData(parseMapData(mapGeoJSONData, 'geojson'), {

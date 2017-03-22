@@ -39,11 +39,14 @@
   "homepage": "https://github.com/medialab/quinoa-vis-modules#readme",
   "dependencies": {
     "chroma-js": "^1.2.2",
-    "d3-array": "^1.0.2",
+    "d3-array": "^1.1.1",
     "d3-dsv": "^1.0.3",
+    "d3-ease": "^1.0.3",
+    "d3-interpolate": "^1.1.4",
     "d3-scale": "^1.0.4",
     "d3-time": "^1.0.4",
     "d3-time-format": "^2.0.3",
+    "d3-timer": "^1.0.5",
     "es6-promise": "^4.0.5",
     "gexf": "^0.2.5",
     "isomorphic-fetch": "^2.2.1",
@@ -52,6 +55,7 @@
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-leaflet": "^0.12.3",
+    "react-markdown": "^2.4.6",
     "react-sigma": "^1.2.17",
     "xml-js": "^1.0.0"
   },

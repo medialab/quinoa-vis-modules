@@ -90,6 +90,7 @@ Method props :
 The ``viewParameters`` *must* contain all the parameters necessary to render successfully a view of the visualization. The particular structures of the ``viewParameters`` of each component is detailed below, but all ``viewParameters``props share some subprop :
 
 - ``colorsMap`` : object that specifies how to color objects. First-level keys correspond to data's collections names. Second-level keys are values to look for in a categorical set of values present in objects' data, value are css color descriptions (therefore accepted methods : names, rgb, rgba, hex)
+- ``dataMap`` : object that specifies how to interpret's data points' properties in order to populate the visualization. First-level keys correspond to data's collections names. Second-level keys correspond to a visualization's parameter, the value pointing to datapoints' properties names to use for populating the visualization.
 - ``showCategories`` : object that specifies how to visually filter objects. First-level keys correspond to data's collections names. Each of them contains an array of strings corresponding the categories to show.
 
 # visualization-specific ``viewParameters`` property models
@@ -104,11 +105,6 @@ Start date to use fo displayingr the main view of the timeline.
 
 End date to use for displaying the main view of the timeline.
 
-
-### ``colorMap`` : object
-
-Object that specifies how to color objects. Keys are values to look for in a categorical set of values present in objects' data, value are css color descriptions (therefore accepted methods : names, rgb, rgba, hex)
-
 ## Map
 
 ### ``cameraX`` : number
@@ -122,10 +118,6 @@ Latitude coordinate of the camera center
 ### ``cameraZoom`` : number
 
 Zoom degree of the camera (1 corresponds to the farthest position of camera)
-
-### ``colorMap`` : object
-
-Object that specifies how to color objects. Keys are values to look for in a categorical set of values present in objects' data, value are css color descriptions (therefore accepted methods : names, rgb, rgba, hex)
 
 ## Network
 
@@ -144,10 +136,6 @@ Zoom degree of the camera.
 ### ``cameraAngle`` : number
 
 Rotation angle of the camera.
-
-### ``colorMap`` : object
-
-Object that specifies how to color objects. Keys are values to look for in a categorical set of values present in objects' data, value are css color descriptions (therefore accepted methods : names, rgb, rgba, hex)
 
 ### ``labelThreshold`` : number
 

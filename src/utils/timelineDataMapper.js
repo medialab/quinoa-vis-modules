@@ -47,13 +47,15 @@ export const computeDate = (thatYear, thatMonth, thatDay, time) => {
 
   if (thatMonth) {
     date.setMonth(thatMonth - 1);
-  } else {
+  }
+ else {
     date.setMonth(0);
   }
 
   if (thatDay) {
     date.setDate(thatDay);
-  } else {
+  }
+ else {
     date.setDate(1);
   }
 

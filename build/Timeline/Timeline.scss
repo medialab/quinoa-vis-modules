@@ -2,8 +2,6 @@
 
 .quinoa-timeline
 {
-    user-select: none;
-
     /*
      * Layout and layout-specific subcomponents styling
      */
@@ -19,238 +17,26 @@
     margin: 0;
     padding: 0;
 
+    user-select: none;
+
+    flex-flow: row nowrap;
     flex-wrap: nowrap;
     /*
      * Mini sub components
      */
-    .time-objects-container
-    {
-        position: absolute;
-        top: 0;
-        left: 0;
-
-        display: flex;
-
-        width: 100%;
-        height: 100%;
-
-        pointer-events: none;
-
-        flex-flow: row nowrap;
-        .columns-container
-        {
-            /*position: absolute;
-            top: 0;
-            left: 0;*/
-            display: flex;
-
-            width: 20%;
-            height: 100%;
-
-            flex: 1;
-            flex-flow: row nowrap;
-            .objects-column
-            {
-                position: relative;
-
-                height: 100%;
-
-                flex: 1;
-                .time-object
-                {
-                    position: absolute;
-                    right: 0;
-
-                    pointer-events: all;
-
-                    &.hidden{
-                        opacity: .1;
-                    }
-                    .name-container
-                    {
-                        position: absolute;
-
-                        width: 30rem;
-                        .name
-                        {
-                            position: absolute;
-                            top: -$gutter-medium * .8;
-                            left: $gutter-medium;
-
-                            max-width: 20rem;
-                            .name-underline
-                            {
-                                position: absolute;
-                                top: $gutter-medium;
-                                left: -$gutter-medium/2;
-
-                                width: 100%;
-
-                                border-top: $gutter-small/4 solid black;
-                            }
-                        }
-                    }
-                    .tooltip
-                    {
-                        position: absolute;
-                        z-index: 2;
-                        top: -$gutter-medium;
-                        left: $gutter-medium;
-
-                        width: 20rem;
-                        padding: $gutter-small;
-
-                        pointer-events: none;
-
-                        opacity: .0000001;
-                        border: $gutter-small/4 solid black;
-                        background: white;
-                        user-select: auto;
-
-                        @include transition(all $time-medium ease);
-                        &:hover
-                        {
-                            opacity: 1;
-                        }
-                    }
-                    .marker
-                    {
-                        position: absolute;
-
-                        width: .5em;
-                        height: .5em;
-
-                        border-radius: .5em;
-                        background: black;
-                    }
-                    &.period
-                    {
-                        .name
-                        {
-                            left: -$gutter-small;
-                        }
-                        .marker
-                        {
-                            right: $gutter-medium;
-
-                            height: 100%;
-
-                            border-radius: 0;
-                            background: red;
-                        }
-                        .tooltip
-                        {
-                            top: -$gutter-medium;
-                            left: -$gutter-small;
-                        }
-                    }
-                    &:hover
-                    {
-                        .name-container
-                        {
-                            opacity: .0000001;
-                        }
-                        .tooltip
-                        {
-                            pointer-events: all;
-
-                            opacity: 1;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    .time-graduations-container
-    {
-        pointer-events: none;
-
-        // @include transition(all $time-short ease);
-        opacity: .5;
-        .tick
-        {
-            position: absolute;
-            left: 0;
-
-            width: 100%;
-            margin: 0;
-            padding: 0;
-
-            border-top: 1px solid darkblue;
-            color: darkblue;
-
-            // @include transition(all $time-short ease);
-
-            .legend{
-              background: white;
-              position : relative;
-              top : -.5em;
-              padding-right: $gutter-small;
-            }
-        }
-    }
-    &.portrait
-    {
-        flex-direction: row;
-    }
-    &.landscape
-    {
-        flex-direction: column;
-    }
     .mini-timeline
     {
         position: relative;
 
         flex: 1;
-        cursor: pointer;
-        .time-objects-container
+        .mini-timeline-container
         {
-            .columns-container
-            {
-                .objects-column
-                {
-                    .time-object
-                    {
-                        .name
-                        {
-                            display: none;
-                        }
-                        .marker
-                        {
-                            width: .2em;
-                            height: .2em;
-                        }
-                        &.period{
-                          height: unset;
-                        }
-                    }
-                }
-            }
-        }
-        .brush-placeholder{
-          width: 100%;
-          height: 100%;
-          left: 0;
-          top: 0;
-          position: absolute; 
-          .brush
-          {
-              position: absolute;
-              top: 0;
-              left: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
 
-              width: 100%;
-              height: 1%;
-
-              cursor: move;
-
-              opacity: .35;
-              background: lightgrey;
-              &:hover
-              {
-                  opacity: .7;
-              }
-          }
+            width: 100%;
+            height: 100%;
         }
     }
     .main-timeline
@@ -258,37 +44,176 @@
         position: relative;
 
         flex: 5;
-        .controls-container
+        .main-timeline-container
         {
             position: absolute;
-            top: $gutter-medium;
-            right: $gutter-medium;
-        }
-        .time-boundaries-container
-        {
-            #to-date,
-            #from-date
-            {
-                position: absolute;
-                left: $gutter-medium * 3;
+            top: 0;
+            left: 0;
 
-                padding: $gutter-small;
+            width: 100%;
+            height: 100%;
+        }
+        .timeline-captor
+        {
+            cursor: grab;
 
-                background: white;
-                border: 1px solid darkblue;
-            }
-            #from-date
+            fill-opacity: 0;
+        }
+    }
+    .time-boundaries-container
+    {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 100%;
+        height: 100%;
+
+        pointer-events: none;
+        #to-date,
+        #from-date
+        {
+            position: absolute;
+            left: $gutter-medium * 8;
+
+            padding: $gutter-small;
+
+            background: white;
+        }
+        #from-date
+        {
+            top: -$gutter-small;
+        }
+        #to-date
+        {
+            bottom: -$gutter-small;
+        }
+    }
+    .labels-container
+    {
+        // pointer-events: none;
+        .label-group
+        {
+            cursor: pointer;
+            .background-rect
             {
-                top: -$gutter-small;
+                transition: fill-opacity .2s ease;
+
+                fill-opacity: .8;
             }
-            #to-date
+            &.hidden
             {
-                bottom: -$gutter-small;
+                .background-rect
+                {
+                    fill-opacity: 0;
+                }
+            }
+            &.filtered-out
+            {
+                opacity: .1;
+            }
+            &:hover,
+            &.selected
+            {
+                rect,
+                circle
+                {
+                    stroke: #000;
+                }
+                .background-rect
+                {
+                    stroke: #000;
+                    fill-opacity: 1;
+                }
             }
         }
-        .time-objects-container
+    }
+    .time-object-group
+    {
+        rect,
+        circle
         {
-            width: 60%;
+            pointer-events: all;
+
+            stroke: #fff;
+        }
+        &.selected
+        {
+            rect,
+            circle
+            {
+                stroke: #000;
+            }
+        }
+        &.hidden:not(.selected)
+        {
+            opacity: .1;
+        }
+    }
+    .brush-container
+    {
+        .brush-captor
+        {
+            cursor: resize;
+            pointer-events: all;
+
+            fill-opacity: 0;
+        }
+        .brush-rect
+        {
+            pointer-events: none;
+            rect
+            {
+                fill: rgba(0,0,0,.3);
+            }
+        }
+    }
+    .ticks-container
+    {
+        .tick
+        {
+            line
+            {
+                stroke: rgba(0,0,0,.3);
+            }
+        }
+    }
+    .object-detail-container
+    {
+        overflow-y: auto;
+
+        max-width: 0;
+
+        transition: all .5s ease;
+
+        flex: 1;
+        &.active
+        {
+            max-width: 60em;
+            padding: $gutter-medium;
+
+            border-left: 1px solid #333;
+        }
+        .header
+        {
+            h2
+            {
+                font-size: 1em;
+            }
+        }
+        .content
+        {
+            .source
+            {
+                font-size: .9em;
+            }
+        }
+    }
+    .grabbing
+    {
+        g
+        {
+            pointer-events: none;
         }
     }
 }
