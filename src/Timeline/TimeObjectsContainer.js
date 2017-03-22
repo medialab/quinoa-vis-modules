@@ -48,7 +48,9 @@ export default class ObjectsContainer extends Component {
       width,
       height,
       transitionsDuration,
-      transform
+      transform,
+      selectedObjectId,
+      onObjectSelection
     } = this.props;
     const {
       scaleX,
@@ -63,13 +65,20 @@ export default class ObjectsContainer extends Component {
         transform={transform || ''}>
         {
           timeObjects.map((timeObject, index) => {
+            const onClick = () => {
+              if (typeof onObjectSelection === 'function') {
+                onObjectSelection(timeObject.id);
+              }
+            };
             return (
               <TimeObject
                 timeObject={timeObject}
                 key={index}
+                onSelection={onClick}
                 scaleX={scaleX}
                 scaleY={scaleY}
                 columnWidth={columnWidth}
+                selected={selectedObjectId === timeObject.id}
                 color={(viewParameters.colorsMap.main && viewParameters.colorsMap.main[timeObject.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default)}
                 transitionsDuration={transitionsDuration} />
             );

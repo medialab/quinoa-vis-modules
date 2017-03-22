@@ -15,7 +15,9 @@ export default class TimeObject extends Component {
       scaleX,
       scaleY,
       columnWidth,
-      color
+      color,
+      selected,
+      onSelection
     } = this.props;
     const x = scaleX(timeObject.column);
     const y = scaleY(timeObject.startDate.getTime());
@@ -23,7 +25,7 @@ export default class TimeObject extends Component {
     const height = timeObject.type === 'period' && scaleY(timeObject.endDate.getTime()) - y;
     return (
       <g
-        className="time-object-group"
+        className={'time-object-group ' + (selected ? 'selected' : '')}
         transform={'translate(' + x + ' ' + y + ')'}
         id={'time-object-' + timeObject.id}>
         {
@@ -32,15 +34,16 @@ export default class TimeObject extends Component {
             cx={objectWidth / 2}
             cy={0}
             r={objectWidth / 2}
-            fill={color} />
+            fill={color}
+            onClick={onSelection} />
           :
           <rect
             x={0}
             y={0}
-            stroke="#FFFFFF"
             width={objectWidth}
             height={height}
-            fill={color} />
+            fill={color}
+            onClick={onSelection} />
         }
       </g>
     );

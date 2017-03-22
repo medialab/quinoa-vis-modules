@@ -91,7 +91,9 @@ var ObjectsContainer = function (_Component) {
           width = _props.width,
           height = _props.height,
           transitionsDuration = _props.transitionsDuration,
-          transform = _props.transform;
+          transform = _props.transform,
+          selectedObjectId = _props.selectedObjectId,
+          onObjectSelection = _props.onObjectSelection;
       var _state = this.state,
           scaleX = _state.scaleX,
           scaleY = _state.scaleY,
@@ -105,12 +107,19 @@ var ObjectsContainer = function (_Component) {
           className: 'objects-container',
           transform: transform || '' },
         timeObjects.map(function (timeObject, index) {
+          var onClick = function onClick() {
+            if (typeof onObjectSelection === 'function') {
+              onObjectSelection(timeObject.id);
+            }
+          };
           return _react2.default.createElement(_TimeObject2.default, {
             timeObject: timeObject,
             key: index,
+            onSelection: onClick,
             scaleX: scaleX,
             scaleY: scaleY,
             columnWidth: columnWidth,
+            selected: selectedObjectId === timeObject.id,
             color: viewParameters.colorsMap.main && viewParameters.colorsMap.main[timeObject.category] || viewParameters.colorsMap.main.default || viewParameters.colorsMap.default,
             transitionsDuration: transitionsDuration });
         })

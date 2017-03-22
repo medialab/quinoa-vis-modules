@@ -61,7 +61,9 @@ var Label = function (_Component) {
           columnWidth = _props.columnWidth,
           screenHeight = _props.screenHeight,
           screenWidth = _props.screenWidth,
-          color = _props.color;
+          color = _props.color,
+          onObjectSelection = _props.onObjectSelection,
+          selected = _props.selected;
       var availableColumns = timeObject.availableColumns;
       var hovered = this.state.hovered;
 
@@ -90,19 +92,23 @@ var Label = function (_Component) {
       var onMouseLeave = function onMouseLeave() {
         return _this2.toggleHover(false);
       };
+      var handleClick = function handleClick() {
+        return onObjectSelection(timeObject.id);
+      };
       return _react2.default.createElement(
         'g',
         {
-          className: 'label-group ' + (availableColumns === 0 ? 'hidden' : ''),
+          className: 'label-group ' + (availableColumns === 0 ? 'hidden' : '') + (selected ? 'selected' : ''),
           transform: 'translate(' + x + ' ' + labelY + ')',
           id: 'time-object-' + timeObject.id,
           onMouseEnter: onMouseEnter,
-          onMouseLeave: onMouseLeave },
+          onMouseLeave: onMouseLeave,
+          onClick: handleClick },
         _react2.default.createElement('rect', {
           fill: '#FFFFFF',
-          x: timeObject.type === 'event' ? -objectWidth / 2 : objectWidth,
+          x: timeObject.type === 'event' ? -objectWidth / 2 : objectWidth + objectWidth * 0.2,
           y: -textHeight,
-          width: hovered ? bgWidth + objectWidth : labelWidth,
+          width: hovered || selected ? bgWidth + objectWidth * 2 : labelWidth,
           height: textHeight * 2,
           className: 'background-rect' }),
         timeObject.type === 'event' ? _react2.default.createElement('circle', {
@@ -113,7 +119,7 @@ var Label = function (_Component) {
         _react2.default.createElement(
           'text',
           {
-            x: objectWidth * 1.2,
+            x: objectWidth * 1.5,
             y: textHeight / 3,
             fontSize: textHeight,
             clipPath: 'url(#clip' + timeObject.id + ')',
@@ -126,7 +132,7 @@ var Label = function (_Component) {
           _react2.default.createElement('rect', {
             x: -objectWidth / 2,
             y: -textHeight,
-            width: hovered ? bgWidth : labelWidth,
+            width: hovered || selected ? objectWidth * 3 + bgWidth : labelWidth,
             height: textHeight * 2,
             className: 'rect-clip-path' })
         )

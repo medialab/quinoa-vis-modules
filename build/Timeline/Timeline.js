@@ -16,6 +16,8 @@ var _d3Ease = require('d3-ease');
 
 var _lodash = require('lodash');
 
+var _d3TimeFormat = require('d3-time-format');
+
 var _utils = require('./utils');
 
 require('./Timeline.scss');
@@ -27,6 +29,10 @@ var _MiniTimeline2 = _interopRequireDefault(_MiniTimeline);
 var _MainTimeline = require('./MainTimeline');
 
 var _MainTimeline2 = _interopRequireDefault(_MainTimeline);
+
+var _ObjectDetail = require('./ObjectDetail');
+
+var _ObjectDetail2 = _interopRequireDefault(_ObjectDetail);
 
 var _d3Interpolate = require('d3-interpolate');
 
@@ -55,6 +61,8 @@ var Timeline = function (_React$Component) {
     _this.zoom = _this.zoom.bind(_this);
     _this.jump = _this.jump.bind(_this);
     _this.setViewSpan = _this.setViewSpan.bind(_this);
+    _this.selectObject = _this.selectObject.bind(_this);
+    _this.resetSelection = _this.resetSelection.bind(_this);
     _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
     _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters || {});
     return _this;
@@ -81,7 +89,8 @@ var Timeline = function (_React$Component) {
             _this2.setState({
               viewParameters: _extends({}, _this2.state.viewParameters, {
                 fromDate: fromDate,
-                toDate: toDate
+                toDate: toDate,
+                selectedObjectId: nextProps.viewParameters.selectObjectId
               })
             });
             if (t >= 1 && transition) {
@@ -201,6 +210,28 @@ var Timeline = function (_React$Component) {
         viewParameters: viewParameters
       });
     }
+  }, {
+    key: 'selectObject',
+    value: function selectObject(id) {
+      var viewParameters = _extends({}, this.state.viewParameters, {
+        selectedObjectId: this.state.viewParameters.selectedObjectId === id ? undefined : id
+      });
+      this.onUserViewChange(viewParameters, 'object-selection');
+      this.setState({
+        viewParameters: viewParameters
+      });
+    }
+  }, {
+    key: 'resetSelection',
+    value: function resetSelection() {
+      var viewParameters = _extends({}, this.state.viewParameters, {
+        selectedObjectId: undefined
+      });
+      this.onUserViewChange(viewParameters, 'object-selection');
+      this.setState({
+        viewParameters: viewParameters
+      });
+    }
 
 
   }, {
@@ -216,6 +247,15 @@ var Timeline = function (_React$Component) {
           miniScale = _state.miniScale,
           viewParameters = _state.viewParameters,
           timeBoundaries = _state.timeBoundaries;
+
+
+      var visData = (0, _utils.normalizeData)(this.props.data);
+      var selectedObject = viewParameters.selectedObjectId ? visData.find(function (obj) {
+        return obj.id === viewParameters.selectedObjectId;
+      }) : undefined;
+
+      var ticksParams = (0, _utils.setTicks)(viewParameters.toDate - viewParameters.fromDate);
+      var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
 
       return data ? _react2.default.createElement(
         'figure',
@@ -233,8 +273,15 @@ var Timeline = function (_React$Component) {
           data: (0, _utils.normalizeData)(this.props.data),
           onZoom: this.zoom,
           onPan: this.pan,
+          onObjectSelection: this.selectObject,
           allowUserEvents: allowUserViewChange,
-          setViewSpan: this.setViewSpan })
+          onBgClick: this.resetSelection,
+          setViewSpan: this.setViewSpan,
+          formatDate: formatDate }),
+        _react2.default.createElement(_ObjectDetail2.default, {
+          active: viewParameters.selectedObjectId !== undefined,
+          timeObject: selectedObject,
+          formatDate: formatDate })
       ) : 'Loading';
     }
   }]);
@@ -250,7 +297,8 @@ Timeline.propTypes = {
       description: _react.PropTypes.string,
       source: _react.PropTypes.string,
       startDate: _react.PropTypes.instanceOf(Date),
-      endDate: _react.PropTypes.instanceOf(Date)
+      endDate: _react.PropTypes.instanceOf(Date),
+      selectedObjectId: _react.PropTypes.string
     }))
   }),
   viewParameters: _react.PropTypes.shape({

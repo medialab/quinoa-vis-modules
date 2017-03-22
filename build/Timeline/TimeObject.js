@@ -41,7 +41,9 @@ var TimeObject = function (_Component) {
           scaleX = _props.scaleX,
           scaleY = _props.scaleY,
           columnWidth = _props.columnWidth,
-          color = _props.color;
+          color = _props.color,
+          selected = _props.selected,
+          onSelection = _props.onSelection;
 
       var x = scaleX(timeObject.column);
       var y = scaleY(timeObject.startDate.getTime());
@@ -50,20 +52,21 @@ var TimeObject = function (_Component) {
       return _react2.default.createElement(
         'g',
         {
-          className: 'time-object-group',
+          className: 'time-object-group ' + (selected ? 'selected' : ''),
           transform: 'translate(' + x + ' ' + y + ')',
           id: 'time-object-' + timeObject.id },
         timeObject.type === 'event' ? _react2.default.createElement('circle', {
           cx: objectWidth / 2,
           cy: 0,
           r: objectWidth / 2,
-          fill: color }) : _react2.default.createElement('rect', {
+          fill: color,
+          onClick: onSelection }) : _react2.default.createElement('rect', {
           x: 0,
           y: 0,
-          stroke: '#FFFFFF',
           width: objectWidth,
           height: height,
-          fill: color })
+          fill: color,
+          onClick: onSelection })
       );
     }
   }]);

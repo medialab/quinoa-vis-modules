@@ -31,7 +31,9 @@ export default class Label extends Component {
       columnWidth,
       screenHeight,
       screenWidth,
-      color
+      color,
+      onObjectSelection,
+      selected
     } = this.props;
     const {
       availableColumns
@@ -49,7 +51,7 @@ export default class Label extends Component {
     const bindTextRef = (text) => {
       this.text = text;
     };
-    const availableWidth = screenWidth - x;
+    const availableWidth = screenWidth - x + objectWidth;
     let bgWidth = this.text ? this.text.getBBox().width : 0;
     if (bgWidth > availableWidth) {
       bgWidth = availableWidth;
@@ -61,18 +63,20 @@ export default class Label extends Component {
 
     const onMouseEnter = () => this.toggleHover(true);
     const onMouseLeave = () => this.toggleHover(false);
+    const handleClick = () => onObjectSelection(timeObject.id);
     return (
       <g
-        className={'label-group ' + (availableColumns === 0 ? 'hidden' : '')}
+        className={'label-group ' + (availableColumns === 0 ? 'hidden' : '') + (selected ? 'selected' : '')}
         transform={'translate(' + x + ' ' + labelY + ')'}
         id={'time-object-' + timeObject.id}
         onMouseEnter={onMouseEnter}
-        onMouseLeave={onMouseLeave}>
+        onMouseLeave={onMouseLeave}
+        onClick={handleClick}>
         <rect
           fill="#FFFFFF"
-          x={timeObject.type === 'event' ? -objectWidth / 2 : objectWidth}
+          x={timeObject.type === 'event' ? -objectWidth / 2 : objectWidth + objectWidth * 0.2}
           y={-textHeight}
-          width={hovered ? bgWidth + objectWidth : labelWidth}
+          width={hovered || selected ? bgWidth + objectWidth * 2 : labelWidth}
           height={textHeight * 2}
           className="background-rect" />
         {
@@ -86,7 +90,7 @@ export default class Label extends Component {
           null
         }
         <text
-          x={objectWidth * 1.2}
+          x={objectWidth * 1.5}
           y={textHeight / 3}
           fontSize={textHeight}
           clipPath={'url(#clip' + timeObject.id + ')'}
@@ -97,7 +101,7 @@ export default class Label extends Component {
           <rect
             x={-objectWidth / 2}
             y={-textHeight}
-            width={hovered ? bgWidth : labelWidth}
+            width={hovered || selected ? objectWidth * 3 + bgWidth : labelWidth}
             height={textHeight * 2}
             className="rect-clip-path" />
         </clipPath>

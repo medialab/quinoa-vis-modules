@@ -99,6 +99,14 @@ var setTicks = exports.setTicks = function setTicks(time) {
   } else if (time > YEAR * 100) {
     unit = _d3Time.timeYear;
     unitMs = YEAR;
+    span = 25;
+    format = '%Y';
+    transformFn = function transformFn(date) {
+      return date.setFullYear(date.getFullYear() - date.getFullYear() % 50);
+    };
+  } else if (time > YEAR * 50) {
+    unit = _d3Time.timeYear;
+    unitMs = YEAR;
     span = 10;
     format = '%Y';
     transformFn = function transformFn(date) {
@@ -284,13 +292,14 @@ var clusterTimeObjects = exports.clusterTimeObjects = function clusterTimeObject
       return [].concat(_toConsumableArray(periods), [period]);
     }
     var previousColumn = previous.column;
+    var findPeriod = function findPeriod(previousPeriod) {
+      return period.endDate > previousPeriod.startDate && period.startDate < previousPeriod.endDate;
+    };
 
     var _loop = function _loop(i) {
       var slotTaken = previousPeriods.filter(function (p) {
         return p.column === i;
-      }).find(function (previousPeriod) {
-        return period.endDate > previousPeriod.startDate && period.startDate < previousPeriod.endDate;
-      });
+      }).find(findPeriod);
       if (slotTaken === undefined) {
         period.column = i;
         return 'break';
@@ -322,14 +331,15 @@ var clusterTimeObjects = exports.clusterTimeObjects = function clusterTimeObject
       event.column = maxPeriodColumn + 1;
       return [].concat(_toConsumableArray(events), [event]);
     }
+    var findEvent = function findEvent(previousEvent) {
+      return Math.abs(event.startDate.getTime() - previousEvent.startDate.getTime()) < padding;
+    };
 
     var _loop2 = function _loop2(i) {
-      var slotTaken = previousEvents.filter(function (p) {
+      var slotTaken2 = previousEvents.filter(function (p) {
         return p.column === i;
-      }).find(function (previousEvent) {
-        return Math.abs(event.startDate.getTime() - previousEvent.startDate.getTime()) < padding;
-      });
-      if (slotTaken === undefined) {
+      }).find(findEvent);
+      if (slotTaken2 === undefined) {
         event.column = i;
         return 'break';
       }

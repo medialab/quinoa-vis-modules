@@ -122,7 +122,8 @@ var LabelsContainer = function (_Component) {
           height = _props.height,
           transitionsDuration = _props.transitionsDuration,
           transform = _props.transform,
-          onLabelsHovered = _props.onLabelsHovered;
+          onLabelsHovered = _props.onLabelsHovered,
+          onObjectSelection = _props.onObjectSelection;
       var _state = this.state,
           scaleX = _state.scaleX,
           scaleY = _state.scaleY,
@@ -147,7 +148,9 @@ var LabelsContainer = function (_Component) {
             screenWidth: width,
             color: viewParameters.colorsMap.main && viewParameters.colorsMap.main[timeObject.category] || viewParameters.colorsMap.main.default || viewParameters.colorsMap.default,
             transitionsDuration: transitionsDuration,
-            toggleLabelHover: _this2.toggleLabelHover });
+            toggleLabelHover: _this2.toggleLabelHover,
+            onObjectSelection: onObjectSelection,
+            selected: viewParameters.selectedObjectId === timeObject.id });
         })
       ) : null;
     }

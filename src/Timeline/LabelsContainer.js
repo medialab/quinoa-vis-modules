@@ -80,7 +80,8 @@ export default class LabelsContainer extends Component {
       height,
       transitionsDuration,
       transform,
-      onLabelsHovered
+      onLabelsHovered,
+      onObjectSelection
     } = this.props;
     const {
       scaleX,
@@ -107,7 +108,9 @@ export default class LabelsContainer extends Component {
                 screenWidth={width}
                 color={(viewParameters.colorsMap.main && viewParameters.colorsMap.main[timeObject.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default)}
                 transitionsDuration={transitionsDuration}
-                toggleLabelHover={this.toggleLabelHover} />
+                toggleLabelHover={this.toggleLabelHover}
+                onObjectSelection={onObjectSelection}
+                selected={viewParameters.selectedObjectId === timeObject.id} />
             );
           })
         }

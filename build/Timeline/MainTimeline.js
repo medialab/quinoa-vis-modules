@@ -11,8 +11,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _d3TimeFormat = require('d3-time-format');
-
 var _TimeObjectsContainer = require('./TimeObjectsContainer');
 
 var _TimeObjectsContainer2 = _interopRequireDefault(_TimeObjectsContainer);
@@ -103,7 +101,7 @@ var MainTimeline = function (_Component) {
       }
       if (this.state.grabbing) {
         var y = evt.clientY;
-        var diff = (this.state.prevY - y) / 3;
+        var diff = this.state.prevY - y;
         var dateDiff = diff / this.state.height * (this.props.viewParameters.toDate - this.props.viewParameters.fromDate);
         this.props.onPan(dateDiff > 0, Math.abs(dateDiff));
         this.setState({
@@ -166,7 +164,10 @@ var MainTimeline = function (_Component) {
 
       var _props = this.props,
           viewParameters = _props.viewParameters,
-          allowUserEvents = _props.allowUserEvents;
+          allowUserEvents = _props.allowUserEvents,
+          onObjectSelection = _props.onObjectSelection,
+          onBgClick = _props.onBgClick,
+          formatDate = _props.formatDate;
       var onDoubleClick = this.onDoubleClick,
           onMouseDown = this.onMouseDown,
           onMouseMove = this.onMouseMove,
@@ -201,9 +202,6 @@ var MainTimeline = function (_Component) {
         _this2.props.onZoom(1 + displacement);
       };
 
-      var ticksParams = (0, _utils.setTicks)(viewParameters.toDate - viewParameters.fromDate);
-      var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
-
       var objectsDisplacement = 'scale(.9, 1)translate(' + width * 0.1 + ' 0)';
 
       return _react2.default.createElement(
@@ -233,15 +231,18 @@ var MainTimeline = function (_Component) {
             onMouseDown: onMouseDown,
             onMouseMove: onMouseMove,
             onMouseUp: onMouseUp,
-            onDoubleClick: onDoubleClick }),
+            onDoubleClick: onDoubleClick,
+            onClick: onBgClick }),
           _react2.default.createElement(_TimeObjectsContainer2.default, {
             viewParameters: viewParameters,
             data: data,
             width: width * 0.9,
             height: height,
+            onObjectSelection: onObjectSelection,
             transform: objectsDisplacement,
             transitionsDuration: 500,
-            timeBoundaries: [viewParameters.fromDate, viewParameters.toDate] }),
+            timeBoundaries: [viewParameters.fromDate, viewParameters.toDate],
+            selectedObjectId: viewParameters.selectedObjectId }),
           _react2.default.createElement(_LabelsContainer2.default, {
             viewParameters: viewParameters,
             data: data,
@@ -249,8 +250,10 @@ var MainTimeline = function (_Component) {
             height: height,
             transform: objectsDisplacement,
             transitionsDuration: 500,
+            onObjectSelection: onObjectSelection,
             timeBoundaries: [viewParameters.fromDate, viewParameters.toDate],
-            onLabelsHovered: onLabelsHovered })
+            onLabelsHovered: onLabelsHovered,
+            selectedObjectId: viewParameters.selectedObjectId })
         ),
         _react2.default.createElement(
           'div',

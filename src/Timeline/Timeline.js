@@ -6,16 +6,19 @@
 import React, {PropTypes} from 'react';
 import {easeCubic} from 'd3-ease';
 import {debounce} from 'lodash';
+import {timeFormat} from 'd3-time-format';
 
 import {
   normalizeData,
-  computeDataRelatedState
+  computeDataRelatedState,
+  setTicks
 } from './utils';
 
 import './Timeline.scss';
 
 import MiniTimeline from './MiniTimeline';
 import MainTimeline from './MainTimeline';
+import ObjectDetail from './ObjectDetail';
 
 import {interpolateNumber} from 'd3-interpolate';
 import {timer} from 'd3-timer';
@@ -35,6 +38,8 @@ class Timeline extends React.Component {
     this.zoom = this.zoom.bind(this);
     this.jump = this.jump.bind(this);
     this.setViewSpan = this.setViewSpan.bind(this);
+    this.selectObject = this.selectObject.bind(this);
+    this.resetSelection = this.resetSelection.bind(this);
     this.onUserViewChange = debounce(this.onUserViewChange, 100);
     this.state = computeDataRelatedState(props.data, props.viewParameters || {});
   }
@@ -56,7 +61,8 @@ class Timeline extends React.Component {
           viewParameters: {
             ...this.state.viewParameters,
             fromDate,
-            toDate
+            toDate,
+            selectedObjectId: nextProps.viewParameters.selectObjectId
           }
         });
         if (t >= 1 && transition) {
@@ -190,6 +196,28 @@ class Timeline extends React.Component {
     });
   }
 
+  selectObject (id) {
+    const viewParameters = {
+      ...this.state.viewParameters,
+      selectedObjectId: this.state.viewParameters.selectedObjectId === id ? undefined : id
+    };
+    this.onUserViewChange(viewParameters, 'object-selection');
+    this.setState({
+      viewParameters
+    });
+  }
+
+  resetSelection () {
+    const viewParameters = {
+      ...this.state.viewParameters,
+      selectedObjectId: undefined
+    };
+    this.onUserViewChange(viewParameters, 'object-selection');
+    this.setState({
+      viewParameters
+    });
+  }
+
   /**
    * Renders the component
    */
@@ -207,9 +235,18 @@ class Timeline extends React.Component {
       viewParameters,
       timeBoundaries
     } = this.state;
+
+    const visData = normalizeData(this.props.data);
+    const selectedObject = viewParameters.selectedObjectId ?
+      visData.find(obj => obj.id === viewParameters.selectedObjectId)
+      : undefined;
     /*
      * Step: render component
      */
+
+    const ticksParams = setTicks(viewParameters.toDate - viewParameters.fromDate);
+    const formatDate = timeFormat(ticksParams.format);
+
     return data ? (
       <figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
         <MiniTimeline
@@ -225,8 +262,15 @@ class Timeline extends React.Component {
           data={normalizeData(this.props.data)}
           onZoom={this.zoom}
           onPan={this.pan}
+          onObjectSelection={this.selectObject}
           allowUserEvents={allowUserViewChange}
-          setViewSpan={this.setViewSpan} />
+          onBgClick={this.resetSelection}
+          setViewSpan={this.setViewSpan}
+          formatDate={formatDate} />
+        <ObjectDetail
+          active={viewParameters.selectedObjectId !== undefined}
+          timeObject={selectedObject}
+          formatDate={formatDate} />
       </figure>
     ) : 'Loading';
   }
@@ -243,7 +287,8 @@ Timeline.propTypes = {
       description: PropTypes.string,
       source: PropTypes.string,
       startDate: PropTypes.instanceOf(Date),
-      endDate: PropTypes.instanceOf(Date)
+      endDate: PropTypes.instanceOf(Date),
+      selectedObjectId: PropTypes.string
     }))
   }),
   /*
