@@ -85,36 +85,34 @@ function parseData() {
     nodes: []
   };
   if (dataFormat === 'gexf') {
-    (function () {
-      var domised = new DOMParser().parseFromString(str, 'application/xml');
-      var parsed = _parser2.default.parse(domised);
-      if (parsed.model.node) {
-        normalizedData.nodes = parsed.nodes.map(function (node) {
-          var newNode = _extends({}, node, parsed.model.node.reduce(function (result, mapper) {
-            var attribute = node.attributes[mapper.id];
-            return _extends({}, result, _defineProperty({}, mapper.title, attribute));
-          }, {}), node.viz);
-          if (node.viz && node.viz.position) {
-            newNode = _extends({}, newNode, node.viz.position);
-          }
-          delete newNode.attributes;
-          delete newNode.viz;
-          return newNode;
-        });
-      } else {
-        normalizedData.nodes = parsed.nodes.slice();
-      }
-      if (parsed.model.edge) {
-        normalizedData.edges = parsed.edges.map(function (edge) {
-          return _extends({}, edge, parsed.model.edge.reduce(function (result, mapper) {
-            var attribute = edge.attributes[mapper.id];
-            return _extends({}, result, _defineProperty({}, mapper.title, attribute));
-          }, {}));
-        });
-      } else {
-        normalizedData.edges = parsed.edges.slice();
-      }
-    })();
+    var domised = new DOMParser().parseFromString(str, 'application/xml');
+    var parsed = _parser2.default.parse(domised);
+    if (parsed.model.node) {
+      normalizedData.nodes = parsed.nodes.map(function (node) {
+        var newNode = _extends({}, node, parsed.model.node.reduce(function (result, mapper) {
+          var attribute = node.attributes[mapper.id];
+          return _extends({}, result, _defineProperty({}, mapper.title, attribute));
+        }, {}), node.viz);
+        if (node.viz && node.viz.position) {
+          newNode = _extends({}, newNode, node.viz.position);
+        }
+        delete newNode.attributes;
+        delete newNode.viz;
+        return newNode;
+      });
+    } else {
+      normalizedData.nodes = parsed.nodes.slice();
+    }
+    if (parsed.model.edge) {
+      normalizedData.edges = parsed.edges.map(function (edge) {
+        return _extends({}, edge, parsed.model.edge.reduce(function (result, mapper) {
+          var attribute = edge.attributes[mapper.id];
+          return _extends({}, result, _defineProperty({}, mapper.title, attribute));
+        }, {}));
+      });
+    } else {
+      normalizedData.edges = parsed.edges.slice();
+    }
   } else if (dataFormat === 'json') {
     try {
       var data = JSON.parse(str);

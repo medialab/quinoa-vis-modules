@@ -74,34 +74,32 @@ var Timeline = function (_React$Component) {
       var _this2 = this;
 
       if (this.props.viewParameters !== nextProps.viewParameters) {
-        (function () {
-          var transitionsDuration = 500;
-          var prevFrom = _this2.state.viewParameters.fromDate;
-          var prevTo = _this2.state.viewParameters.toDate;
-          var newFrom = nextProps.viewParameters.fromDate;
-          var newTo = nextProps.viewParameters.toDate;
-          var interpFrom = (0, _d3Interpolate.interpolateNumber)(prevFrom, newFrom);
-          var interpTo = (0, _d3Interpolate.interpolateNumber)(prevTo, newTo);
-          var onTick = function onTick(elapsed) {
-            var t = elapsed < transitionsDuration ? (0, _d3Ease.easeCubic)(elapsed / transitionsDuration) : 1;
-            var fromDate = interpFrom(t);
-            var toDate = interpTo(t);
-            _this2.setState({
-              viewParameters: _extends({}, _this2.state.viewParameters, {
-                fromDate: fromDate,
-                toDate: toDate,
-                selectedObjectId: nextProps.viewParameters.selectObjectId
-              })
-            });
-            if (t >= 1 && transition) {
-              transition.stop();
-              transition = null;
-            }
-          };
+        var transitionsDuration = 500;
+        var prevFrom = this.state.viewParameters.fromDate;
+        var prevTo = this.state.viewParameters.toDate;
+        var newFrom = nextProps.viewParameters.fromDate;
+        var newTo = nextProps.viewParameters.toDate;
+        var interpFrom = (0, _d3Interpolate.interpolateNumber)(prevFrom, newFrom);
+        var interpTo = (0, _d3Interpolate.interpolateNumber)(prevTo, newTo);
+        var onTick = function onTick(elapsed) {
+          var t = elapsed < transitionsDuration ? (0, _d3Ease.easeCubic)(elapsed / transitionsDuration) : 1;
+          var fromDate = interpFrom(t);
+          var toDate = interpTo(t);
+          _this2.setState({
+            viewParameters: _extends({}, _this2.state.viewParameters, {
+              fromDate: fromDate,
+              toDate: toDate,
+              selectedObjectId: nextProps.viewParameters.selectObjectId
+            })
+          });
+          if (t >= 1 && transition) {
+            transition.stop();
+            transition = null;
+          }
+        };
 
-          transition = (0, _d3Timer.timer)(onTick);
+        transition = (0, _d3Timer.timer)(onTick);
 
-        })();
       }
 
       if (this.props.data !== nextProps.data) {

@@ -1,6 +1,6 @@
 {
   "name": "quinoa-vis-modules",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "independent visualization modules for the quinoa suite",
   "main": "build/quinoa-vis-modules.js",
   "scripts": {
