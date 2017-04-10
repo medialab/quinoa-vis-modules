@@ -81,20 +81,20 @@ export default class TimeObject extends Component {
     let state;
     if (onElement) {
       const positionOnElement = (portion - this.state.beginPortion) / (this.state.endPortion - this.state.beginPortion);
-      if (positionOnElement <= 0.33333) {
+      if (positionOnElement <= 0.2) {
         state = 'resizing-top';
         this.updateBrush({beginPortion: portion}, state, portion);
       }
- else if (positionOnElement >= 0.66666666) {
+      else if (positionOnElement >= 0.8) {
         state = 'resizing-bottom';
         this.updateBrush({endPortion: portion}, state, portion);
       }
- else {
+      else {
         state = 'moving';
         this.updateBrush({}, state, portion);
       }
     }
- else {
+    else {
       state = 'drawing';
       this.updateBrush({beginPortion: portion, endPortion: portion}, state, portion);
     }
@@ -111,13 +111,13 @@ export default class TimeObject extends Component {
     if (this.state.state === 'drawing') {
       this.updateBrush({endPortion: portion}, this.state.state, portion);
     }
- else if (this.state.state === 'resizing-top') {
+    else if (this.state.state === 'resizing-top') {
       this.updateBrush({beginPortion: portion}, this.state.state, portion);
     }
- else if (this.state.state === 'resizing-bottom') {
+    else if (this.state.state === 'resizing-bottom') {
       this.updateBrush({endPortion: portion}, this.state.state, portion);
     }
- else if (this.state.state === 'moving') {
+    else if (this.state.state === 'moving') {
       if (this.state.previousPortion) {
         const diff = this.state.previousPortion - portion;
         const newBegin = this.state.beginPortion - diff;

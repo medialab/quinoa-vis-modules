@@ -396,7 +396,9 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
   const spatializedData = finalPeriods.concat(finalEvents);
   let following;
   let overflow;
-  // console.log('max column', maxColumn);
+  /*
+   * Calculating the available columns for displaying labels without overflows
+   */
   const labeledData = spatializedData.map((timeObject, index) => {
     let availableColumns = 1;
     following = spatializedData.slice(index + 1);
@@ -407,7 +409,7 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
     if (overflow) {
       // availableColumns = 0;
     }
- else {
+    else {
       for (let i = timeObject.column + 1; i <= maxColumn; i++) {
         overflow = following.find(other =>
           other.column === i &&
@@ -417,7 +419,7 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
         if (overflow) {
           break;
         }
- else {
+        else {
           availableColumns ++;
         }
       }

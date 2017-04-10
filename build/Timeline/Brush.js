@@ -111,10 +111,10 @@ var TimeObject = function (_Component) {
       var state = void 0;
       if (onElement) {
         var positionOnElement = (portion - this.state.beginPortion) / (this.state.endPortion - this.state.beginPortion);
-        if (positionOnElement <= 0.33333) {
+        if (positionOnElement <= 0.2) {
           state = 'resizing-top';
           this.updateBrush({ beginPortion: portion }, state, portion);
-        } else if (positionOnElement >= 0.66666666) {
+        } else if (positionOnElement >= 0.8) {
           state = 'resizing-bottom';
           this.updateBrush({ endPortion: portion }, state, portion);
         } else {

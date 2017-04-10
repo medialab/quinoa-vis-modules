@@ -8,6 +8,8 @@ import {easeCubic} from 'd3-ease';
 import {debounce} from 'lodash';
 import {timeFormat} from 'd3-time-format';
 
+import Measure from 'react-measure';
+
 import {
   normalizeData,
   computeDataRelatedState,
@@ -84,7 +86,7 @@ class Timeline extends React.Component {
       JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)
     ) {
       this.setState({
-        viewParameters: nextProps.viewParameters
+        viewParameters: {...nextProps.viewParameters}
       });
     }
 
@@ -258,30 +260,36 @@ class Timeline extends React.Component {
     const formatDate = timeFormat(ticksParams.format);
 
     return data ? (
-      <figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
-        <MiniTimeline
-          viewParameters={viewParameters}
-          timeBoundaries={timeBoundaries}
-          scale={miniScale}
-          data={normalizeData(this.props.data)}
-          onTimespanUpdate={this.setViewSpan}
-          allowUserEvents={allowUserViewChange} />
-        <MainTimeline
-          viewParameters={viewParameters}
-          scale={miniScale}
-          data={normalizeData(this.props.data)}
-          onZoom={this.zoom}
-          onPan={this.pan}
-          onObjectSelection={this.selectObject}
-          allowUserEvents={allowUserViewChange}
-          onBgClick={this.resetSelection}
-          setViewSpan={this.setViewSpan}
-          formatDate={formatDate} />
-        <ObjectDetail
-          active={viewParameters.selectedObjectId !== undefined}
-          timeObject={selectedObject}
-          formatDate={formatDate} />
-      </figure>
+      <Measure>
+        {dimensions =>
+          <figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
+            <MiniTimeline
+              viewParameters={viewParameters}
+              timeBoundaries={timeBoundaries}
+              parentDimensions={dimensions}
+              scale={miniScale}
+              data={normalizeData(this.props.data)}
+              onTimespanUpdate={this.setViewSpan}
+              allowUserEvents={allowUserViewChange} />
+            <MainTimeline
+              viewParameters={viewParameters}
+              scale={miniScale}
+              data={normalizeData(this.props.data)}
+              onZoom={this.zoom}
+              parentDimensions={dimensions}
+              onPan={this.pan}
+              onObjectSelection={this.selectObject}
+              allowUserEvents={allowUserViewChange}
+              onBgClick={this.resetSelection}
+              setViewSpan={this.setViewSpan}
+              formatDate={formatDate} />
+            <ObjectDetail
+              active={viewParameters.selectedObjectId !== undefined}
+              timeObject={selectedObject}
+              formatDate={formatDate} />
+          </figure>
+      }
+      </Measure>
     ) : 'Loading';
   }
 }

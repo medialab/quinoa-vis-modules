@@ -18,6 +18,10 @@ var _lodash = require('lodash');
 
 var _d3TimeFormat = require('d3-time-format');
 
+var _reactMeasure = require('react-measure');
+
+var _reactMeasure2 = _interopRequireDefault(_reactMeasure);
+
 var _utils = require('./utils');
 
 require('./Timeline.scss');
@@ -102,7 +106,7 @@ var Timeline = function (_React$Component) {
 
       } else if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
         this.setState({
-          viewParameters: nextProps.viewParameters
+          viewParameters: _extends({}, nextProps.viewParameters)
         });
       }
 
@@ -239,6 +243,8 @@ var Timeline = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
+      var _this3 = this;
+
       var _props = this.props,
           _props$allowUserViewC = _props.allowUserViewChange,
           allowUserViewChange = _props$allowUserViewC === undefined ? true : _props$allowUserViewC,
@@ -260,30 +266,38 @@ var Timeline = function (_React$Component) {
       var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
 
       return data ? _react2.default.createElement(
-        'figure',
-        { className: 'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape') },
-        _react2.default.createElement(_MiniTimeline2.default, {
-          viewParameters: viewParameters,
-          timeBoundaries: timeBoundaries,
-          scale: miniScale,
-          data: (0, _utils.normalizeData)(this.props.data),
-          onTimespanUpdate: this.setViewSpan,
-          allowUserEvents: allowUserViewChange }),
-        _react2.default.createElement(_MainTimeline2.default, {
-          viewParameters: viewParameters,
-          scale: miniScale,
-          data: (0, _utils.normalizeData)(this.props.data),
-          onZoom: this.zoom,
-          onPan: this.pan,
-          onObjectSelection: this.selectObject,
-          allowUserEvents: allowUserViewChange,
-          onBgClick: this.resetSelection,
-          setViewSpan: this.setViewSpan,
-          formatDate: formatDate }),
-        _react2.default.createElement(_ObjectDetail2.default, {
-          active: viewParameters.selectedObjectId !== undefined,
-          timeObject: selectedObject,
-          formatDate: formatDate })
+        _reactMeasure2.default,
+        null,
+        function (dimensions) {
+          return _react2.default.createElement(
+            'figure',
+            { className: 'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape') },
+            _react2.default.createElement(_MiniTimeline2.default, {
+              viewParameters: viewParameters,
+              timeBoundaries: timeBoundaries,
+              parentDimensions: dimensions,
+              scale: miniScale,
+              data: (0, _utils.normalizeData)(_this3.props.data),
+              onTimespanUpdate: _this3.setViewSpan,
+              allowUserEvents: allowUserViewChange }),
+            _react2.default.createElement(_MainTimeline2.default, {
+              viewParameters: viewParameters,
+              scale: miniScale,
+              data: (0, _utils.normalizeData)(_this3.props.data),
+              onZoom: _this3.zoom,
+              parentDimensions: dimensions,
+              onPan: _this3.pan,
+              onObjectSelection: _this3.selectObject,
+              allowUserEvents: allowUserViewChange,
+              onBgClick: _this3.resetSelection,
+              setViewSpan: _this3.setViewSpan,
+              formatDate: formatDate }),
+            _react2.default.createElement(_ObjectDetail2.default, {
+              active: viewParameters.selectedObjectId !== undefined,
+              timeObject: selectedObject,
+              formatDate: formatDate })
+          );
+        }
       ) : 'Loading';
     }
   }]);

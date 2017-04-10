@@ -22,7 +22,6 @@ export default class MiniTimeline extends Component {
   componentDidMount() {
     const {updateDimensions} = this;
     updateDimensions();
-    window.addEventListener('resize', updateDimensions);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -33,9 +32,13 @@ export default class MiniTimeline extends Component {
     }
   }
 
-  componentWillUnmount() {
-    const {updateDimensions} = this;
-    window.removeEventListener('resize', updateDimensions);
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.parentDimensions.width !== this.props.parentDimensions.width
+      || prevProps.parentDimensions.height !== this.props.parentDimensions.height
+    ) {
+      this.updateDimensions();
+    }
   }
 
   updateDimensions () {
@@ -70,12 +73,6 @@ export default class MiniTimeline extends Component {
         <svg
           className="mini-timeline-container"
           ref={bindRef}>
-          <TimeTicks
-            width={width}
-            height={height}
-            transitionsDuration={500}
-            minimumDate={timeBoundaries.minimumDateDisplay}
-            maximumDate={timeBoundaries.maximumDateDisplay} />
           <ObjectsContainer
             viewParameters={viewParameters}
             data={data}
@@ -86,6 +83,12 @@ export default class MiniTimeline extends Component {
             height={height}
             transitionsDuration={500}
             timeBoundaries={[timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay]} />
+          <TimeTicks
+            width={width}
+            height={height}
+            transitionsDuration={500}
+            minimumDate={timeBoundaries.minimumDateDisplay}
+            maximumDate={timeBoundaries.maximumDateDisplay} />
           <Brush
             timeBoundaries={[timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay]}
             from={viewParameters.fromDate}

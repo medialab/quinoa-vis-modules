@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 
-
 import ObjectsContainer from './TimeObjectsContainer';
 import LabelsContainer from './LabelsContainer';
 
@@ -31,7 +30,6 @@ export default class MainTimeline extends Component {
   componentDidMount() {
     const {updateDimensions} = this;
     updateDimensions();
-    window.addEventListener('resize', updateDimensions);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -42,9 +40,13 @@ export default class MainTimeline extends Component {
     }
   }
 
-  componentWillUnmount() {
-    const {updateDimensions} = this;
-    window.removeEventListener('resize', updateDimensions);
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.parentDimensions.width !== this.props.parentDimensions.width
+      || prevProps.parentDimensions.height !== this.props.parentDimensions.height
+    ) {
+      this.updateDimensions();
+    }
   }
 
   onMouseDown(evt) {
@@ -177,8 +179,8 @@ export default class MainTimeline extends Component {
             width={width}
             height={height}
             style={{
-              cursor: grabbing ? 'grabbing' : 'grab'
-            }}
+                cursor: grabbing ? 'grabbing' : 'grab'
+              }}
             x={0}
             y={0}
             ref={bindCaptorRef}

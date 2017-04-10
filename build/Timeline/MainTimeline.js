@@ -63,7 +63,6 @@ var MainTimeline = function (_Component) {
       var updateDimensions = this.updateDimensions;
 
       updateDimensions();
-      window.addEventListener('resize', updateDimensions);
     }
   }, {
     key: 'componentWillReceiveProps',
@@ -75,11 +74,11 @@ var MainTimeline = function (_Component) {
       }
     }
   }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      var updateDimensions = this.updateDimensions;
-
-      window.removeEventListener('resize', updateDimensions);
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.parentDimensions.width !== this.props.parentDimensions.width || prevProps.parentDimensions.height !== this.props.parentDimensions.height) {
+        this.updateDimensions();
+      }
     }
   }, {
     key: 'onMouseDown',

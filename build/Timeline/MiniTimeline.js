@@ -56,7 +56,6 @@ var MiniTimeline = function (_Component) {
       var updateDimensions = this.updateDimensions;
 
       updateDimensions();
-      window.addEventListener('resize', updateDimensions);
     }
   }, {
     key: 'componentWillReceiveProps',
@@ -68,11 +67,11 @@ var MiniTimeline = function (_Component) {
       }
     }
   }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {
-      var updateDimensions = this.updateDimensions;
-
-      window.removeEventListener('resize', updateDimensions);
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate(prevProps) {
+      if (prevProps.parentDimensions.width !== this.props.parentDimensions.width || prevProps.parentDimensions.height !== this.props.parentDimensions.height) {
+        this.updateDimensions();
+      }
     }
   }, {
     key: 'updateDimensions',
@@ -113,12 +112,6 @@ var MiniTimeline = function (_Component) {
           {
             className: 'mini-timeline-container',
             ref: bindRef },
-          _react2.default.createElement(_TimeTicks2.default, {
-            width: width,
-            height: height,
-            transitionsDuration: 500,
-            minimumDate: timeBoundaries.minimumDateDisplay,
-            maximumDate: timeBoundaries.maximumDateDisplay }),
           _react2.default.createElement(_TimeObjectsContainer2.default, {
             viewParameters: viewParameters,
             data: data,
@@ -129,6 +122,12 @@ var MiniTimeline = function (_Component) {
             height: height,
             transitionsDuration: 500,
             timeBoundaries: [timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay] }),
+          _react2.default.createElement(_TimeTicks2.default, {
+            width: width,
+            height: height,
+            transitionsDuration: 500,
+            minimumDate: timeBoundaries.minimumDateDisplay,
+            maximumDate: timeBoundaries.maximumDateDisplay }),
           _react2.default.createElement(_Brush2.default, {
             timeBoundaries: [timeBoundaries.minimumDateDisplay, timeBoundaries.maximumDateDisplay],
             from: viewParameters.fromDate,
