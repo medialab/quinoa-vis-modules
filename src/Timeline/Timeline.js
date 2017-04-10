@@ -25,8 +25,6 @@ import ObjectDetail from './ObjectDetail';
 import {interpolateNumber} from 'd3-interpolate';
 import {timer} from 'd3-timer';
 
-let transition;
-
 /**
  * Timeline main component
  */
@@ -44,6 +42,7 @@ class Timeline extends React.Component {
     this.resetSelection = this.resetSelection.bind(this);
     this.onUserViewChange = debounce(this.onUserViewChange, 100);
     this.state = computeDataRelatedState(props.data, props.viewParameters || {});
+    this.transition = null;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -70,13 +69,24 @@ class Timeline extends React.Component {
             selectedObjectId: nextProps.viewParameters.selectObjectId
           }
         });
-        if (t >= 1 && transition) {
-          transition.stop();
-          transition = null;
+        if (t >= 1 && this.transition) {
+          this.transition.stop();
+          this.transition = null;
         }
       };
-
-      transition = timer(onTick);
+      if (this.transition === null) {
+        this.transition = timer(onTick);
+      }
+ else {
+        this.setState({
+          viewParameters: {
+            ...this.state.viewParameters,
+            fromDate: newFrom,
+            toDate: newTo,
+            selectedObjectId: nextProps.viewParameters.selectObjectId
+          }
+        });
+      }
 
       // this.setState({
       //   viewParameters: nextProps.viewParameters
@@ -258,6 +268,7 @@ class Timeline extends React.Component {
 
     const ticksParams = setTicks(viewParameters.toDate - viewParameters.fromDate);
     const formatDate = timeFormat(ticksParams.format);
+
 
     return data ? (
       <Measure>

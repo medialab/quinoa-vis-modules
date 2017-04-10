@@ -50,9 +50,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
 
-var transition = void 0;
-
-
 var Timeline = function (_React$Component) {
   _inherits(Timeline, _React$Component);
 
@@ -69,6 +66,7 @@ var Timeline = function (_React$Component) {
     _this.resetSelection = _this.resetSelection.bind(_this);
     _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
     _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters || {});
+    _this.transition = null;
     return _this;
   }
 
@@ -96,13 +94,22 @@ var Timeline = function (_React$Component) {
               selectedObjectId: nextProps.viewParameters.selectObjectId
             })
           });
-          if (t >= 1 && transition) {
-            transition.stop();
-            transition = null;
+          if (t >= 1 && _this2.transition) {
+            _this2.transition.stop();
+            _this2.transition = null;
           }
         };
-
-        transition = (0, _d3Timer.timer)(onTick);
+        if (this.transition === null) {
+          this.transition = (0, _d3Timer.timer)(onTick);
+        } else {
+          this.setState({
+            viewParameters: _extends({}, this.state.viewParameters, {
+              fromDate: newFrom,
+              toDate: newTo,
+              selectedObjectId: nextProps.viewParameters.selectObjectId
+            })
+          });
+        }
 
       } else if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
         this.setState({
