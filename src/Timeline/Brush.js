@@ -197,7 +197,7 @@ export default class TimeObject extends Component {
     const fromY = scaleY(from);
     const toY = scaleY(to);
 
-    const brushHeight = toY - fromY;
+    const brushHeight = toY && fromY && toY - fromY;
     const rectStyle = {
       transform: 'translateX(' + 0 + 'px) ' +
         'translateY(' + fromY + 'px)'

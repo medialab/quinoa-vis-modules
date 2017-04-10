@@ -219,7 +219,7 @@ var TimeObject = function (_Component) {
       var fromY = scaleY(from);
       var toY = scaleY(to);
 
-      var brushHeight = toY - fromY;
+      var brushHeight = toY && fromY && toY - fromY;
       var rectStyle = {
         transform: 'translateX(' + 0 + 'px) ' + 'translateY(' + fromY + 'px)'
       };
