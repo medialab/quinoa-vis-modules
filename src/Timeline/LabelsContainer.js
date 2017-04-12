@@ -62,7 +62,7 @@ export default class LabelsContainer extends Component {
     const {width, height, timeBoundaries} = next;
 
     const timeObjects = next.data || [];
-    const columnsCount = max(timeObjects, d => d.column);
+    const columnsCount = max(timeObjects, d => d.column) + 1;
     const columnWidth = width / columnsCount;
 
     this.setState({

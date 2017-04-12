@@ -276,7 +276,7 @@ var clusterTimeObjects = exports.clusterTimeObjects = function clusterTimeObject
   });
   var ambitus = timeBoundaries[1] - timeBoundaries[0];
   var padding = Math.pow(ambitus, 1) / Math.sqrt(data.length);
-  var maxColumn = 1;
+  var maxColumn = 0;
   var previous = void 0;
   var previousEvents = void 0;
   var previousPeriods = void 0;
@@ -288,7 +288,7 @@ var clusterTimeObjects = exports.clusterTimeObjects = function clusterTimeObject
       previous = periods[index - 1];
       previousPeriods = periods.slice(0, index - 1);
     } else {
-      period.column = 1;
+      period.column = 0;
       return [].concat(_toConsumableArray(periods), [period]);
     }
     var previousColumn = previous.column;
@@ -328,7 +328,7 @@ var clusterTimeObjects = exports.clusterTimeObjects = function clusterTimeObject
       previous = events[index - 1];
       previousEvents = events.slice(0, index - 1);
     } else {
-      event.column = maxPeriodColumn + 1;
+      event.column = maxPeriodColumn;
       return [].concat(_toConsumableArray(events), [event]);
     }
     var findEvent = function findEvent(previousEvent) {

@@ -136,93 +136,93 @@ export const setTicks = function(time) {
         format = '%Y';
         transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 50);
     }
- else if (time > YEAR * 20) {//20 - 50 years
+    else if (time > YEAR * 20) {//20 - 50 years
         unit = timeYear;
         unitMs = YEAR;
         span = 5;
         format = '%Y';
         transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 10);
     }
-  else if (time > YEAR * 10) {//10 - 20 years
+      else if (time > YEAR * 10) {//10 - 20 years
         unit = timeYear;
         unitMs = YEAR;
         span = 2;
         format = '%Y';
         transformFn = (date) => date.setFullYear(date.getFullYear() - date.getFullYear() % 2);
     }
- else if (time > YEAR * 3) {//3-10 years
+    else if (time > YEAR * 3) {//3-10 years
         unit = timeYear;
         unitMs = YEAR;
         span = 1;
         format = '%Y';
     }
- else if (time > YEAR) {//1-3 years
+    else if (time > YEAR) {//1-3 years
         unit = timeMonth;
         unitMs = MONTH;
         span = 6;
         format = '%m/%Y';
         transformFn = (date) => date.setMonth(date.getMonth() - date.getMonth() % 6);
     }
-else if (time > MONTH * 6) {//6-12 months
+    else if (time > MONTH * 6) {//6-12 months
         unit = timeMonth;
         unitMs = MONTH;
         span = 1;
         format = '%m/%Y';
     }
- else if (time > MONTH) {//1-6 months
+    else if (time > MONTH) {//1-6 months
         unit = timeDay;
         unitMs = DAY;
         span = 15;
         format = '%m/%d/%Y';
         transformFn = (date) => date.setDate(date.getDate() - date.getDate() % 15);
     }
-else if (time > 15 * DAY) {//15-30 days
+    else if (time > 15 * DAY) {//15-30 days
         unit = timeDay;
         unitMs = DAY;
         span = 3;
         format = '%m/%d/%Y';
         transformFn = (date) => date.setDate(date.getDate() - date.getDate() % 3);
     }
-else if (time > DAY) {//1-15 days
+    else if (time > DAY) {//1-15 days
         unit = timeDay;
         unitMs = DAY;
         span = 1;
         format = '%m/%d/%Y';
     }
- else if (time > 6 * HOUR) {//6-24 hours
+    else if (time > 6 * HOUR) {//6-24 hours
         unit = timeHour;
         unitMs = HOUR;
         span = 1;
         format = '%m/%d/%Y %Hh';
     }
-else if (time > HOUR) {//1-6 hours
+    else if (time > HOUR) {//1-6 hours
         unit = timeMinute;
         unitMs = MINUTE;
         span = 30;
         format = '%m/%d/%Y %Hh %Mmin';
         transformFn = (date) => date.setMinutes(date.getMinutes() - date.getMinutes() % 30);
     }
-else if (time > 30 * MINUTE) {//30-60 minutes
+    else if (time > 30 * MINUTE) {//30-60 minutes
         unit = timeMinute;
         unitMs = MINUTE;
         span = 10;
         format = '%m/%d/%Y %Hh %Mmin';
         transformFn = (date) => date.setMinutes(date.getMinutes() - date.getMinutes() % 10);
     }
-else if (time > 10 * MINUTE) {//10-30 minutes
+    else if (time > 10 * MINUTE) {//10-30 minutes
         unit = timeMinute;
         unitMs = MINUTE;
         span = 5;
         format = '%m/%d/%Y %Hh%Mmin';
         transformFn = (date) => date.setMinutes(date.getMinutes() - date.getMinutes() % 5);
     }
-else if (time > MINUTE) {//1-10 minutes
+    else if (time > MINUTE) {//1-10 minutes
         unit = timeMinute;
         unitMs = MINUTE;
         span = 1;
         format = '%m/%d/%Y %Hh %Mmin';
     }
- else {
+    else {
         // unit = timeSecond;
         // span = 30;
         // format = '%H:%M:%S';
@@ -304,12 +304,18 @@ export const normalizeData = (inputData) =>
     id
   }));
 
+/**
+ * Sorts time objects as clusters aiming at avoiding overlaps by dispatching them in columns
+ * @param {array} data - array of time objects (can ve periods or events)
+ * @param {array} timeBoundaries - absolute time of the timecode-in and timecode-out of the timespan to use for spatialization
+ * @return {object} labeledData - returns the data annotated data with information about their position and label coverage
+ */
 export const clusterTimeObjects = (data, timeBoundaries) => {
   const inputPeriods = data.filter(d => d.type === 'period');
   const inputEvents = data.filter(d => d.type === 'event');
   const ambitus = timeBoundaries[1] - timeBoundaries[0];
   const padding = Math.pow(ambitus, 1) / Math.sqrt(data.length);
-  let maxColumn = 1;
+  let maxColumn = 0;
   let previous;
   let previousEvents;
   let previousPeriods;
@@ -336,7 +342,7 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
       previousPeriods = periods.slice(0, index - 1);
     }
     else {
-      period.column = 1;
+      period.column = 0;
       return [...periods, period];
     }
     const previousColumn = previous.column;
@@ -372,7 +378,7 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
       previousEvents = events.slice(0, index - 1);
     }
     else {
-      event.column = maxPeriodColumn + 1;
+      event.column = maxPeriodColumn;
       return [...events, event];
     }
     const findEvent = previousEvent => Math.abs(event.startDate.getTime() - previousEvent.startDate.getTime()) < padding;

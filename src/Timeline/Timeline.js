@@ -8,6 +8,7 @@ import {easeCubic} from 'd3-ease';
 import {debounce} from 'lodash';
 import {timeFormat} from 'd3-time-format';
 
+
 import Measure from 'react-measure';
 
 import {
@@ -40,7 +41,7 @@ class Timeline extends React.Component {
     this.setViewSpan = this.setViewSpan.bind(this);
     this.selectObject = this.selectObject.bind(this);
     this.resetSelection = this.resetSelection.bind(this);
-    this.onUserViewChange = debounce(this.onUserViewChange, 100);
+    this.onUserViewChange = debounce(this.onUserViewChange, 300);
     this.state = computeDataRelatedState(props.data, props.viewParameters || {});
     this.transition = null;
   }

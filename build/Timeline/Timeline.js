@@ -64,7 +64,7 @@ var Timeline = function (_React$Component) {
     _this.setViewSpan = _this.setViewSpan.bind(_this);
     _this.selectObject = _this.selectObject.bind(_this);
     _this.resetSelection = _this.resetSelection.bind(_this);
-    _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
+    _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 300);
     _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters || {});
     _this.transition = null;
     return _this;

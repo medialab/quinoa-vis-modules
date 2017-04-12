@@ -73,7 +73,7 @@ var ObjectsContainer = function (_Component) {
       var timeObjects = next.data || [];
       var columnsCount = (0, _d3Array.max)(timeObjects, function (d) {
         return d.column;
-      });
+      }) + 1;
       var columnWidth = width / columnsCount;
 
       this.setState({
