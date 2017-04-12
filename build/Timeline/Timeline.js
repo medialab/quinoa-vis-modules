@@ -64,7 +64,8 @@ var Timeline = function (_React$Component) {
     _this.setViewSpan = _this.setViewSpan.bind(_this);
     _this.selectObject = _this.selectObject.bind(_this);
     _this.resetSelection = _this.resetSelection.bind(_this);
-    _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 300);
+    _this.onUserViewChange = (0, _lodash.debounce)(_this.onUserViewChange, 100);
+    _this.emitViewChange = (0, _lodash.debounce)(_this.emitViewChange, 300);
     _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters || {});
     _this.transition = null;
     return _this;
@@ -126,11 +127,18 @@ var Timeline = function (_React$Component) {
     key: 'componentWillUpdate',
     value: function componentWillUpdate(nextProps, nextState) {
       if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
-        this.props.onUserViewChange({
-          lastEventType: nextState.lastEventType,
-          viewParameters: nextState.viewParameters
-        });
+        this.emitViewChange(nextState);
       }
+    }
+
+
+  }, {
+    key: 'emitViewChange',
+    value: function emitViewChange(state) {
+      this.props.onUserViewChange({
+        lastEventType: state.lastEventType,
+        viewParameters: state.viewParameters
+      });
     }
 
 

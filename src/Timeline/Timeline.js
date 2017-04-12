@@ -41,7 +41,8 @@ class Timeline extends React.Component {
     this.setViewSpan = this.setViewSpan.bind(this);
     this.selectObject = this.selectObject.bind(this);
     this.resetSelection = this.resetSelection.bind(this);
-    this.onUserViewChange = debounce(this.onUserViewChange, 300);
+    this.onUserViewChange = debounce(this.onUserViewChange, 100);
+    this.emitViewChange = debounce(this.emitViewChange, 300);
     this.state = computeDataRelatedState(props.data, props.viewParameters || {});
     this.transition = null;
   }
@@ -111,13 +112,18 @@ class Timeline extends React.Component {
 
   componentWillUpdate(nextProps, nextState) {
     if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
-      this.props.onUserViewChange({
-        lastEventType: nextState.lastEventType,
-        viewParameters: nextState.viewParameters
-      });
+      this.emitViewChange(nextState);
     }
   }
 
+  // this.props.onUserViewChange is wrapped in this function to be wrapped in a lodash/debounce within the constructor of this component class
+  emitViewChange (state) {
+    this.props.onUserViewChange({
+        lastEventType: state.lastEventType,
+        viewParameters: state.viewParameters
+      });
+  }
+  
   /**
    * Lets instance parent to know when user has updated view
    * @param {string} parameters - visualization parameters to update
