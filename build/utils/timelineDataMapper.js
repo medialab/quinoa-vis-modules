@@ -110,7 +110,7 @@ function mapData() {
       });
     })
     .sort(function (a, b) {
-      if (a.startDate.getTime() > b.startDate.getTime()) {
+      if (a.startDate && b.startDate && a.startDate.getTime() > b.startDate.getTime()) {
         return 1;
       }
       return -1;

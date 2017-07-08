@@ -273,7 +273,7 @@ export const computeTicks = (minimumDateDisplay, maximumDateDisplay) => {
 export const computeBoundaries = (data) => {
     const minimumDate = min(data, (d) => d.startDate && d.startDate.getTime());
     const maximumDate = max(data, (d) => {
-      return d.endDate ? d.endDate && d.endDate.getTime() : d.startDate.getTime();
+      return d.endDate ? d.endDate && d.endDate.getTime() : d.startDate && d.startDate.getTime();
     });
     // padding max and min of 1% of total time ambitus
     const ambitus = maximumDate - minimumDate;
@@ -323,15 +323,15 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
   const visiblePeriods = inputPeriods
   .filter(obj =>
     (
-     obj.startDate.getTime() > timeBoundaries[0] &&
+     obj.startDate && obj.startDate.getTime() > timeBoundaries[0] &&
      obj.startDate.getTime() < timeBoundaries[1]
     ) ||
     (
-      obj.endDate.getTime() > timeBoundaries[0] &&
+      obj.endDate && obj.endDate.getTime() > timeBoundaries[0] &&
       obj.endDate.getTime() < timeBoundaries[1]
     ) ||
     (
-      obj.startDate.getTime() < timeBoundaries[0] &&
+      obj.startDate && obj.startDate.getTime() < timeBoundaries[0] &&
       obj.endDate.getTime() > timeBoundaries[1]
     )
   );
@@ -368,6 +368,7 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
   // filter only periods within the display time boundaries
   const visibleEvents = inputEvents
   .filter(obj =>
+      obj.startDate && 
       obj.startDate.getTime() >= timeBoundaries[0] &&
       obj.startDate.getTime() <= timeBoundaries[1]
     );
@@ -381,7 +382,7 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
       event.column = maxPeriodColumn;
       return [...events, event];
     }
-    const findEvent = previousEvent => Math.abs(event.startDate.getTime() - previousEvent.startDate.getTime()) < padding;
+    const findEvent = previousEvent => Math.abs(event.startDate && previousEvent.startDate && event.startDate.getTime() - previousEvent.startDate.getTime()) < padding;
     for (let i = maxPeriodColumn + 1; i <= maxColumn; i++) {
       const slotTaken2 = previousEvents
         .filter(p => p.column === i)
@@ -410,7 +411,7 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
     following = spatializedData.slice(index + 1);
     overflow = following.find(timeObject2 =>
       timeObject.column === timeObject2.column &&
-      Math.abs(timeObject2.startDate.getTime() - timeObject.startDate.getTime()) < padding
+      Math.abs(timeObject.startDate && timeObject2.startDate && timeObject2.startDate.getTime() - timeObject.startDate.getTime()) < padding
     );
     if (overflow) {
       // availableColumns = 0;
@@ -419,8 +420,8 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
       for (let i = timeObject.column + 1; i <= maxColumn; i++) {
         overflow = following.find(other =>
           other.column === i &&
-          (other.endDate === undefined && other.startDate.getTime() - timeObject.startDate.getTime() < padding) ||
-          (other.endDate !== undefined && other.startDate.getTime() <= timeObject.startDate.getTime() && other.endDate.getTime() > timeObject.startDate.getTime())
+          (other.startDate && other.endDate === undefined && other.startDate.getTime() - timeObject.startDate.getTime() < padding) ||
+          (other.startDate && other.endDate !== undefined && other.startDate.getTime() <= timeObject.startDate.getTime() && other.endDate.getTime() > timeObject.startDate.getTime())
         );
         if (overflow) {
           break;

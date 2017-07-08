@@ -242,7 +242,7 @@ var computeBoundaries = exports.computeBoundaries = function computeBoundaries(d
     return d.startDate && d.startDate.getTime();
   });
   var maximumDate = (0, _d3Array.max)(data, function (d) {
-    return d.endDate ? d.endDate && d.endDate.getTime() : d.startDate.getTime();
+    return d.endDate ? d.endDate && d.endDate.getTime() : d.startDate && d.startDate.getTime();
   });
   var ambitus = maximumDate - minimumDate;
   var displacement = ambitus / 100;
@@ -281,7 +281,7 @@ var clusterTimeObjects = exports.clusterTimeObjects = function clusterTimeObject
   var previousEvents = void 0;
   var previousPeriods = void 0;
   var visiblePeriods = inputPeriods.filter(function (obj) {
-    return obj.startDate.getTime() > timeBoundaries[0] && obj.startDate.getTime() < timeBoundaries[1] || obj.endDate.getTime() > timeBoundaries[0] && obj.endDate.getTime() < timeBoundaries[1] || obj.startDate.getTime() < timeBoundaries[0] && obj.endDate.getTime() > timeBoundaries[1];
+    return obj.startDate && obj.startDate.getTime() > timeBoundaries[0] && obj.startDate.getTime() < timeBoundaries[1] || obj.endDate && obj.endDate.getTime() > timeBoundaries[0] && obj.endDate.getTime() < timeBoundaries[1] || obj.startDate && obj.startDate.getTime() < timeBoundaries[0] && obj.endDate.getTime() > timeBoundaries[1];
   });
   var finalPeriods = visiblePeriods.reduce(function (periods, period, index) {
     if (periods.length && index > 0) {
@@ -321,7 +321,7 @@ var clusterTimeObjects = exports.clusterTimeObjects = function clusterTimeObject
   var maxPeriodColumn = maxColumn;
   maxColumn = maxPeriodColumn + 1;
   var visibleEvents = inputEvents.filter(function (obj) {
-    return obj.startDate.getTime() >= timeBoundaries[0] && obj.startDate.getTime() <= timeBoundaries[1];
+    return obj.startDate && obj.startDate.getTime() >= timeBoundaries[0] && obj.startDate.getTime() <= timeBoundaries[1];
   });
   var finalEvents = visibleEvents.reduce(function (events, event, index) {
     if (events.length && index > 0) {
@@ -332,7 +332,7 @@ var clusterTimeObjects = exports.clusterTimeObjects = function clusterTimeObject
       return [].concat(_toConsumableArray(events), [event]);
     }
     var findEvent = function findEvent(previousEvent) {
-      return Math.abs(event.startDate.getTime() - previousEvent.startDate.getTime()) < padding;
+      return Math.abs(event.startDate && previousEvent.startDate && event.startDate.getTime() - previousEvent.startDate.getTime()) < padding;
     };
 
     var _loop2 = function _loop2(i) {
@@ -365,13 +365,13 @@ var clusterTimeObjects = exports.clusterTimeObjects = function clusterTimeObject
     var availableColumns = 1;
     following = spatializedData.slice(index + 1);
     overflow = following.find(function (timeObject2) {
-      return timeObject.column === timeObject2.column && Math.abs(timeObject2.startDate.getTime() - timeObject.startDate.getTime()) < padding;
+      return timeObject.column === timeObject2.column && Math.abs(timeObject.startDate && timeObject2.startDate && timeObject2.startDate.getTime() - timeObject.startDate.getTime()) < padding;
     });
     if (overflow) {
     } else {
       var _loop3 = function _loop3(i) {
         overflow = following.find(function (other) {
-          return other.column === i && other.endDate === undefined && other.startDate.getTime() - timeObject.startDate.getTime() < padding || other.endDate !== undefined && other.startDate.getTime() <= timeObject.startDate.getTime() && other.endDate.getTime() > timeObject.startDate.getTime();
+          return other.column === i && other.startDate && other.endDate === undefined && other.startDate.getTime() - timeObject.startDate.getTime() < padding || other.startDate && other.endDate !== undefined && other.startDate.getTime() <= timeObject.startDate.getTime() && other.endDate.getTime() > timeObject.startDate.getTime();
         });
         if (overflow) {
           return 'break';

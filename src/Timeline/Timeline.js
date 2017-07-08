@@ -123,7 +123,7 @@ class Timeline extends React.Component {
         viewParameters: state.viewParameters
       });
   }
-  
+
   /**
    * Lets instance parent to know when user has updated view
    * @param {string} parameters - visualization parameters to update

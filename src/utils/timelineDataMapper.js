@@ -144,7 +144,7 @@ export default function mapData (normalizedData = {main: []}, inputDataMap = {ma
     })
     // sort by ascending date
     .sort((a, b) => {
-      if (a.startDate.getTime() > b.startDate.getTime()) {
+      if (a.startDate && b.startDate && a.startDate.getTime() > b.startDate.getTime()) {
         return 1;
       }
       return -1;
