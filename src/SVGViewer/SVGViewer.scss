@@ -1,17 +1,40 @@
-.grabbable {
-  cursor: move; /* fallback if grab cursor is unsupported */
-  cursor: grab;
-  cursor: -moz-grab;
-  cursor: -webkit-grab;
+.quinoa-svg
+{
+    position: absolute;
+    top: 0;
+    left: 0;
 
-  width: auto;
-  height: auto;
-  transition: transform 250ms ease-in;
-}
+    overflow: hidden;
 
- /* (Optional) Apply a "closed-hand" cursor during drag operation. */
-.grabbable:active {
-  cursor: grabbing;
-  cursor: -moz-grabbing;
-  cursor: -webkit-grabbing;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    .svg-container
+    {
+        position: relative;
+
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    .grabbable
+    {
+        width: auto;
+        height: auto;
+
+        cursor: move; /* fallback if grab cursor is unsupported */
+        cursor:         grab;
+        cursor:    -moz-grab;
+        cursor: -webkit-grab;
+        transition: transform 250ms ease-in;
+    }
+    /* (Optional) Apply a "closed-hand" cursor during drag operation. */
+    .grabbable:active
+    {
+        cursor:         grabbing;
+        cursor:    -moz-grabbing;
+        cursor: -webkit-grabbing;
+    }
 }

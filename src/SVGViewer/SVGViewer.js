@@ -50,7 +50,7 @@ class SVGViewer extends React.Component {
     );
     this.setState({
       viewParameters: this.props.viewParameters ? {...this.props.viewParameters} : this.state.viewParameters
-    })
+    });
   }
 
   /**
@@ -196,18 +196,20 @@ class SVGViewer extends React.Component {
     };
 
     return (
-      <div className="svg-container"
-        style={svgContainerStyles}
-        onMouseDown={this.props.allowUserViewChange ? this.startDrag : void (0)}
-        onMouseUp={this.props.allowUserViewChange ? this.stopDrag : void (0)}
-        onMouseLeave={this.props.allowUserViewChange ? this.stopDrag : void (0)}>
-        {this.state.svg
-          ? <div className={this.props.allowUserViewChange ? 'grabbable' : ''}
-            onWheel={this.props.allowUserViewChange ? this.mouseWheelHandler : void (0)}
-            style={svgStyles}
-            dangerouslySetInnerHTML={{
-                  __html: new XMLSerializer().serializeToString(this.state.svg.documentElement)}} />
-          : <div>Loading...</div>}
+      <div className="quinoa-svg">
+        <div className="svg-container"
+          style={svgContainerStyles}
+          onMouseDown={this.props.allowUserViewChange ? this.startDrag : void (0)}
+          onMouseUp={this.props.allowUserViewChange ? this.stopDrag : void (0)}
+          onMouseLeave={this.props.allowUserViewChange ? this.stopDrag : void (0)}>
+          {this.state.svg
+            ? <div className={this.props.allowUserViewChange ? 'grabbable' : ''}
+              onWheel={this.props.allowUserViewChange ? this.mouseWheelHandler : void (0)}
+              style={svgStyles}
+              dangerouslySetInnerHTML={{
+                    __html: new XMLSerializer().serializeToString(this.state.svg.documentElement)}} />
+            : <div>Loading...</div>}
+        </div>
       </div>
     );
   }
