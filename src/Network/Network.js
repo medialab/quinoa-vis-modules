@@ -71,10 +71,10 @@ class Network extends Component {
         // const nodes = this.sigma.sigma.graph.nodes();
         // const edges = this.sigma.sigma.graph.edges();
 
-        // const nodesToAdd = nodes.filter(node => visData.nodes.find(node2 => node.id === node2.id) === undefined);
-        // const edgesToAdd = edges.filter(edge => visData.edges.find(edge2 => edge.id === edge2.id) === undefined);
-        // const nodesToDelete = visData.nodes.filter(node => nodes.find(node2 => node.id === node2.id) === undefined);
-        // const edgesToDelete = visData.edges.filter(edge => edges.find(edge2 => edge.id === edge2.id) === undefined);
+        // const nodesToDelete = nodes.filter(node => visData.nodes.find(node2 => node.id === node2.id) === undefined);
+        // const edgesToDelete = edges.filter(edge => visData.edges.find(edge2 => edge.id === edge2.id) === undefined);
+        // const nodesToAdd = visData.nodes.filter(node => nodes.find(node2 => node.id === node2.id) === undefined);
+        // const edgesToAdd = visData.edges.filter(edge => edges.find(edge2 => edge.id === edge2.id) === undefined);
 
         // nodesToAdd.forEach(node => this.sigma.sigma.graph.addNode(node));
         // nodesToDelete.forEach(node => this.sigma.sigma.graph.dropNode(node.id));
