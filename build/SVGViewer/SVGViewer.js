@@ -61,6 +61,9 @@ var SVGViewer = function (_React$Component) {
       this.onUserViewChange = (0, _lodash.debounce)(this.onUserViewChange, 100);
 
       this.zoom = (0, _lodash.debounce)(this.zoom.bind(this), 10, { leading: true, trailing: false });
+      this.setState({
+        viewParameters: this.props.viewParameters ? _extends({}, this.props.viewParameters) : this.state.viewParameters
+      });
     }
 
 

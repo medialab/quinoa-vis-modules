@@ -48,6 +48,9 @@ class SVGViewer extends React.Component {
       this.zoom.bind(this), 10,
       {leading: true, trailing: false}
     );
+    this.setState({
+      viewParameters: this.props.viewParameters ? {...this.props.viewParameters} : this.state.viewParameters
+    })
   }
 
   /**
