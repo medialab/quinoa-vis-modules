@@ -94,7 +94,13 @@ var Network = function (_Component) {
       if (this.props.data !== nextProps.data || this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap || this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories || this.props.viewParameters.colorsMap !== nextProps.viewParameters.colorsMap) {
         var visData = this.buildVisData(nextProps.data, nextProps.viewParameters);
         if (this.sigma) {
+
+
+
+
           this.sigma.sigma.graph.clear();
+          this.sigma.sigma.graph.read(visData);
+          this.sigma.sigma.refresh();
         }
         this.setState({
           visData: visData,

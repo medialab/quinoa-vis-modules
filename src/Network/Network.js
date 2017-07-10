@@ -65,7 +65,36 @@ class Network extends Component {
     ) {
       const visData = this.buildVisData(nextProps.data, nextProps.viewParameters);
       if (this.sigma) {
+        // console.time('update graph');
+
+        // this is a first method to updating graph by mutating its data directly (witness benchmark: 2242 ms)
+        // const nodes = this.sigma.sigma.graph.nodes();
+        // const edges = this.sigma.sigma.graph.edges();
+
+        // const nodesToAdd = nodes.filter(node => visData.nodes.find(node2 => node.id === node2.id) === undefined);
+        // const edgesToAdd = edges.filter(edge => visData.edges.find(edge2 => edge.id === edge2.id) === undefined);
+        // const nodesToDelete = visData.nodes.filter(node => nodes.find(node2 => node.id === node2.id) === undefined);
+        // const edgesToDelete = visData.edges.filter(edge => edges.find(edge2 => edge.id === edge2.id) === undefined);
+
+        // nodesToAdd.forEach(node => this.sigma.sigma.graph.addNode(node));
+        // nodesToDelete.forEach(node => this.sigma.sigma.graph.dropNode(node.id));
+        // edgesToAdd.forEach(edge => this.sigma.sigma.graph.addEdge(edge));
+        // edgesToDelete.forEach(edge => this.sigma.sigma.graph.dropEdge(edge.id));
+        // this.sigma.sigma.graph.nodes().forEach(node => {
+        //   const newNode = visData.nodes.find(n => n.id === node.id);
+        //   node = newNode;
+        // });
+        // this.sigma.sigma.graph.edges().forEach(edge => {
+        //   const newEdge = visData.edges.find(e => e.id === edge.id);
+        //   edge = newEdge;
+        // });
+
+        // this is a second method to updating graph by clearing it and reloading (witness benchmark: 227 ms - adopted)
         this.sigma.sigma.graph.clear();
+        this.sigma.sigma.graph.read(visData);
+        this.sigma.sigma.refresh();
+        // console.timeEnd('update graph');
+
       }
       this.setState({
         visData,

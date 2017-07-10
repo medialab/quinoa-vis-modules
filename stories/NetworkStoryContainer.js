@@ -12,6 +12,7 @@ export default class NetworkStoryContainer extends React.Component {
       allowUserViewChange: props.allowUserViewChange
     }
     this.changeState = this.changeState.bind(this);
+    this.changeColorMap = this.changeColorMap.bind(this);
   }
 
   changeState() {
@@ -30,6 +31,34 @@ export default class NetworkStoryContainer extends React.Component {
     });
   }
 
+  changeColorMap() {
+    const altColorsMap =  {
+      ...this.props.baseParameters.colorsMap,
+      nodes: {
+        ...this.props.baseParameters.colorsMap.nodes,
+        "rgb(255,51,51)": "black",
+        "rgb(0,204,204)": "black",
+        "rgb(255,255,51)": "black",
+        "rgb(204,204,255)": "black",
+      },
+    };
+    if (JSON.stringify(this.state.activeParameters.colorsMap) !== JSON.stringify(altColorsMap)) {
+      this.setState({
+        activeParameters: {
+          ...this.state.activeParameters,
+          colorsMap: altColorsMap
+        }
+      });
+    } else {
+      this.setState({
+        activeParameters: {
+          ...this.state.activeParameters,
+          colorsMap: this.props.baseParameters.colorsMap
+        }
+      });
+    }
+  }
+
   render() {
       return (
         <div style={{
@@ -41,6 +70,7 @@ export default class NetworkStoryContainer extends React.Component {
       }}>
         <aside>
           <button onClick={this.changeState}>Change state</button>
+          <button onClick={this.changeColorMap}>Change color map</button>
         </aside>
         <div style={{
           flex: 5,
