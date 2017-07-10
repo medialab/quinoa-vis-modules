@@ -73,7 +73,7 @@ class SVGViewer extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return this.stateViewParameters !== nextState.viewParameters;
-  } 
+  }
 
   /**
    * Debounced onUserViewChange call
@@ -136,13 +136,12 @@ class SVGViewer extends React.Component {
   }
 
   startDrag (e) {
-    const bounds = e.currentTarget.getBoundingClientRect();
     this.setState({
       isDragEnabled: true,
       perspectiveLevel: 0,
       dragOffset: {
-        x: e.clientX - bounds.left,
-        y: e.clientY - bounds.top,
+        x: e.clientX, // - bounds.left,
+        y: e.clientY, //- bounds.top,
       },
     });
     e.currentTarget.addEventListener('mousemove', this.doDrag);
@@ -155,13 +154,19 @@ class SVGViewer extends React.Component {
 
   doDrag (e) {
     if (!this.state.isDragEnabled) return;
-    const x = e.clientX - this.state.dragOffset.x;
-    const y = e.clientY - this.state.dragOffset.y;
+    const xDiff = e.clientX - this.state.dragOffset.x;
+    const yDiff = e.clientY - this.state.dragOffset.y;
+    const x = this.state.viewParameters.x + xDiff;
+    const y = this.state.viewParameters.y + yDiff;
     this.setState({
       viewParameters: {
         ...this.state.viewParameters,
         x,
         y,
+      },
+      dragOffset: {
+        x: e.clientX,
+        y: e.clientY
       }
     });
     this.onUserViewChange({
@@ -191,7 +196,8 @@ class SVGViewer extends React.Component {
       <div className="svg-container"
         style={svgContainerStyles}
         onMouseDown={this.props.allowUserViewChange ? this.startDrag : void (0)}
-        onMouseUp={this.props.allowUserViewChange ? this.stopDrag : void (0)}>
+        onMouseUp={this.props.allowUserViewChange ? this.stopDrag : void (0)}
+        onMouseLeave={this.props.allowUserViewChange ? this.stopDrag : void (0)}>
         {this.state.svg
           ? <div className={this.props.allowUserViewChange ? 'grabbable' : ''}
             onWheel={this.props.allowUserViewChange ? this.mouseWheelHandler : void (0)}

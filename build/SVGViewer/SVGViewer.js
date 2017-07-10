@@ -152,13 +152,12 @@ var SVGViewer = function (_React$Component) {
   }, {
     key: 'startDrag',
     value: function startDrag(e) {
-      var bounds = e.currentTarget.getBoundingClientRect();
       this.setState({
         isDragEnabled: true,
         perspectiveLevel: 0,
         dragOffset: {
-          x: e.clientX - bounds.left,
-          y: e.clientY - bounds.top
+          x: e.clientX, 
+          y: e.clientY 
         }
       });
       e.currentTarget.addEventListener('mousemove', this.doDrag);
@@ -173,13 +172,19 @@ var SVGViewer = function (_React$Component) {
     key: 'doDrag',
     value: function doDrag(e) {
       if (!this.state.isDragEnabled) return;
-      var x = e.clientX - this.state.dragOffset.x;
-      var y = e.clientY - this.state.dragOffset.y;
+      var xDiff = e.clientX - this.state.dragOffset.x;
+      var yDiff = e.clientY - this.state.dragOffset.y;
+      var x = this.state.viewParameters.x + xDiff;
+      var y = this.state.viewParameters.y + yDiff;
       this.setState({
         viewParameters: _extends({}, this.state.viewParameters, {
           x: x,
           y: y
-        })
+        }),
+        dragOffset: {
+          x: e.clientX,
+          y: e.clientY
+        }
       });
       this.onUserViewChange({
         viewParameters: _extends({}, this.state.viewParameters, {
@@ -207,7 +212,8 @@ var SVGViewer = function (_React$Component) {
         { className: 'svg-container',
           style: svgContainerStyles,
           onMouseDown: this.props.allowUserViewChange ? this.startDrag : void 0,
-          onMouseUp: this.props.allowUserViewChange ? this.stopDrag : void 0 },
+          onMouseUp: this.props.allowUserViewChange ? this.stopDrag : void 0,
+          onMouseLeave: this.props.allowUserViewChange ? this.stopDrag : void 0 },
         this.state.svg ? _react2.default.createElement('div', { className: this.props.allowUserViewChange ? 'grabbable' : '',
           onWheel: this.props.allowUserViewChange ? this.mouseWheelHandler : void 0,
           style: svgStyles,
