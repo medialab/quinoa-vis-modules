@@ -4,9 +4,6 @@
 import React, {PropTypes} from 'react';
 import {debounce} from 'lodash';
 
-require('es6-promise').polyfill();
-require('isomorphic-fetch');
-
 import './SVGViewer.scss';
 
 
@@ -20,57 +17,71 @@ class SVGViewer extends React.Component {
      * svg             object   SVG data, as a DOM Document Object
      * zoomLevel       number   Zoom level on the viewer
      * dragOffset      number   Offset object calculating drag offset (the X/Y offset from mouse X/Y)
-     * dragPosition    number   Current position of dragged object
      * isDragEnabled   boolean  Enable dragging motion if true
      */
     this.state = {
       svg: null,
-      zoomLevel: 0,
+      viewParameters: {
+        zoomLevel: 0,
+        x: 0,
+        y: 0,
+        maxZoomLevel: 1000,
+        minZoomLevel: -2000,
+        zoomFactor: 50,
+        perspectiveLevel: 1000,
+      },
       dragOffset: null,
-      dragPosition: {x: 0, y: 0},
-      isDragEnabled: false
+      isDragEnabled: false,
     };
   }
 
   componentWillMount () {
-    this.loadSVGFromRemoteServer = this.loadSVGFromRemoteServer.bind(this);
     this.parseSVG = this.parseSVG.bind(this);
     this.mouseWheelHandler = this.mouseWheelHandler.bind(this);
     this.startDrag = this.startDrag.bind(this);
     this.stopDrag = this.stopDrag.bind(this);
     this.doDrag = this.doDrag.bind(this);
+    this.onUserViewChange = debounce(this.onUserViewChange, 100);
 
     // Debounce zoom method for user-friendly zoom behavior.
     this.zoom = debounce(
-      this.zoom.bind(this), 50,
+      this.zoom.bind(this), 10,
       {leading: true, trailing: false}
     );
   }
 
   /**
-   * When mount, check whether SVG data is raw, or to be loaded from a remote server.
-   * Remote loading superseds raw data loading if both are specified.
+   * When mounting, load data into state
    */
   componentDidMount () {
-    return this.props.file && this.props.file.indexOf('http') === 0
-      ? this.loadSVGFromRemoteServer()
-      : this.mountSVG(this.parseSVG(this.props.svgString));
+    return this.mountSVG(this.parseSVG(this.props.data));
   }
 
-  loadSVGFromRemoteServer() {
-    fetch(this.props.file)
-      .then(res => {
-        if (res.status >= 400) {
-          throw new Error(`Bad response from server while loading ${this.props.file}`);
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.viewParameters !== this.state.viewParameters) {
+      this.setState({
+        viewParameters: {
+          ...this.state.viewParameters,
+          ...nextProps.viewParameters
         }
-        return res.text();
-      })
-      .then(svg => {
-        this.mountSVG(this.parseSVG(svg));
-      })
-      .catch(err => {
-        throw new Error(`Unknown error occured while loading ${this.props.file} -> ${err.message}`);
       });
+    }
+    if (nextProps.data !== this.props.data) {
+      this.mountSVG(this.mountSVG(this.parseSVG(this.props.data)));
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.stateViewParameters !== nextState.viewParameters;
+  } 
+
+  /**
+   * Debounced onUserViewChange call
+   */
+  onUserViewChange(e) {
+    if (typeof this.props.onUserViewChange === 'function') {
+      this.props.onUserViewChange(e);
+    }
   }
 
   /**
@@ -95,19 +106,30 @@ class SVGViewer extends React.Component {
 
   zoom (amount) {
     if (amount !== 0 && amount !== -0) {
+      const zoomLevel = this.limitZoomLevel(this.state.viewParameters.zoomLevel + amount);
       this.setState({
-        zoomLevel: this.state.zoomLevel + amount
+        viewParameters: {
+          ...this.state.viewParameters,
+          zoomLevel,
+        }
+      });
+      this.onUserViewChange({
+        viewParameters: {
+          ...this.state.viewParameters,
+          zoomLevel
+        },
+        lastEeventType: 'userevent'
       });
     }
   }
 
   limitZoomLevel (level) {
     if (level >= 0) {
-      return level < this.props.maxZoomLevel ? level : this.props.maxZoomLevel;
+      return level < this.props.viewParameters.maxZoomLevel ? level : this.props.viewParameters.maxZoomLevel;
     }
 
     if (level <= -0) {
-      return level > this.props.minZoomLevel ? level : this.props.minZoomLevel;
+      return level > this.props.viewParameters.minZoomLevel ? level : this.props.viewParameters.minZoomLevel;
     }
 
     return level;
@@ -115,14 +137,13 @@ class SVGViewer extends React.Component {
 
   startDrag (e) {
     const bounds = e.currentTarget.getBoundingClientRect();
-
     this.setState({
       isDragEnabled: true,
       perspectiveLevel: 0,
       dragOffset: {
         x: e.clientX - bounds.left,
-        y: e.clientY - bounds.top
-      }
+        y: e.clientY - bounds.top,
+      },
     });
     e.currentTarget.addEventListener('mousemove', this.doDrag);
   }
@@ -134,24 +155,36 @@ class SVGViewer extends React.Component {
 
   doDrag (e) {
     if (!this.state.isDragEnabled) return;
-
+    const x = e.clientX - this.state.dragOffset.x;
+    const y = e.clientY - this.state.dragOffset.y;
     this.setState({
-      dragPosition: {
-        x: e.clientX - this.state.dragOffset.x,
-        y: e.clientY - this.state.dragOffset.y
+      viewParameters: {
+        ...this.state.viewParameters,
+        x,
+        y,
       }
+    });
+    this.onUserViewChange({
+      viewParameters: {
+        ...this.state.viewParameters,
+        x,
+        y,
+      },
+      lastEeventType: 'userevent'
     });
   }
 
   render () {
     const svgContainerStyles = {
-      transform: `translateX(${this.state.dragPosition.x}px)
-                  translateY(${this.state.dragPosition.y}px)`
+      transition: 'all .2s ease',
+      transform: `translateX(${this.state.viewParameters.x}px)
+                  translateY(${this.state.viewParameters.y}px)`
     };
 
     const svgStyles = {
-      transform: `perspective(${this.props.perspectiveLevel}px)
-                  translateZ(${this.limitZoomLevel(this.state.zoomLevel * this.props.zoomFactor)}px)`
+      transition: 'all .2s ease',
+      transform: `perspective(${this.props.viewParameters.perspectiveLevel}px)
+                  translateZ(${this.limitZoomLevel(this.state.viewParameters.zoomLevel * this.props.viewParameters.zoomFactor)}px)`
     };
 
     return (
@@ -174,30 +207,49 @@ class SVGViewer extends React.Component {
 /**
  * PropTypes
  *
- * maxZoomLevel        number   Max zoom value, defaults to 2000
- * minZoomLevel        number   Min zoom value, defaults to 2000
- * perspectiveLevel    number   CSS perspective level in 3D space, 1000(px)
- * zoomFactor          number   Factorize wheel zoom for proper zoom effect, defauls to 250
- * allowUserViewChange boolean  If true, locks interaction on SVGViewer
- * svgString           string   Raw SVG string to load
- * file                string   URL to SVG file to load, superseding `svgString` prop if both are present
  */
-SVGViewer.proptypes = {
-  maxZoomLevel: PropTypes.number,
-  minZoomLevel: PropTypes.number,
-  perspectiveLevel: PropTypes.number,
-  zoomFactor: PropTypes.number,
+SVGViewer.propTypes = {
+  data: PropTypes.string,
+
+  /*
+   * object describing the current view (some being exposed to user interaction like pan and pan params, others not)
+   */
+  viewParameters: PropTypes.shape({
+    /*
+     * maxZoomLevel        number   Max zoom value, defaults to 2000
+     */
+    maxZoomLevel: PropTypes.number,
+    /*
+     * minZoomLevel        number   Min zoom value, defaults to 2000
+     */
+    minZoomLevel: PropTypes.number,
+    /*
+     * perspectiveLevel    number   CSS perspective level in 3D space, 1000(px)
+     */
+    perspectiveLevel: PropTypes.number,
+    /*
+     * zoomFactor          number   Factorize wheel zoom for proper zoom effect, defauls to 250
+     */
+    zoomFactor: PropTypes.number,
+  }),
+  /*
+   * boolean to specify whether the user can pan/pan/interact or not with the view
+   */
   allowUserViewChange: PropTypes.bool,
-  svgString: PropTypes.string,
-  file: PropTypes.string
+  /*
+   * callback fn triggered when user changes view parameters, callbacks data about the triggering interaction and about the new view parameters
+   */
+  onUserViewChange: PropTypes.func
 };
 
 SVGViewer.defaultProps = {
   allowUserViewChange: true,
-  maxZoomLevel: 2000,
-  minZoomLevel: -2000,
-  zoomFactor: 250,
-  perspectiveLevel: 1000
+  viewParameters: {
+    maxZoomLevel: 1000,
+    minZoomLevel: -2000,
+    zoomFactor: 50,
+    perspectiveLevel: 1000
+  },
 };
 
 

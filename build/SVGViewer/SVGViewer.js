@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -23,9 +25,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
 
 
-require('es6-promise').polyfill();
-require('isomorphic-fetch');
-
 var SVGViewer = function (_React$Component) {
   _inherits(SVGViewer, _React$Component);
 
@@ -36,9 +35,16 @@ var SVGViewer = function (_React$Component) {
 
     _this.state = {
       svg: null,
-      zoomLevel: 0,
+      viewParameters: {
+        zoomLevel: 0,
+        x: 0,
+        y: 0,
+        maxZoomLevel: 1000,
+        minZoomLevel: -2000,
+        zoomFactor: 50,
+        perspectiveLevel: 1000
+      },
       dragOffset: null,
-      dragPosition: { x: 0, y: 0 },
       isDragEnabled: false
     };
     return _this;
@@ -47,37 +53,47 @@ var SVGViewer = function (_React$Component) {
   _createClass(SVGViewer, [{
     key: 'componentWillMount',
     value: function componentWillMount() {
-      this.loadSVGFromRemoteServer = this.loadSVGFromRemoteServer.bind(this);
       this.parseSVG = this.parseSVG.bind(this);
       this.mouseWheelHandler = this.mouseWheelHandler.bind(this);
       this.startDrag = this.startDrag.bind(this);
       this.stopDrag = this.stopDrag.bind(this);
       this.doDrag = this.doDrag.bind(this);
+      this.onUserViewChange = (0, _lodash.debounce)(this.onUserViewChange, 100);
 
-      this.zoom = (0, _lodash.debounce)(this.zoom.bind(this), 50, { leading: true, trailing: false });
+      this.zoom = (0, _lodash.debounce)(this.zoom.bind(this), 10, { leading: true, trailing: false });
     }
 
 
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      return this.props.file && this.props.file.indexOf('http') === 0 ? this.loadSVGFromRemoteServer() : this.mountSVG(this.parseSVG(this.props.svgString));
+      return this.mountSVG(this.parseSVG(this.props.data));
     }
   }, {
-    key: 'loadSVGFromRemoteServer',
-    value: function loadSVGFromRemoteServer() {
-      var _this2 = this;
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      if (nextProps.viewParameters !== this.state.viewParameters) {
+        this.setState({
+          viewParameters: _extends({}, this.state.viewParameters, nextProps.viewParameters)
+        });
+      }
+      if (nextProps.data !== this.props.data) {
+        this.mountSVG(this.mountSVG(this.parseSVG(this.props.data)));
+      }
+    }
+  }, {
+    key: 'shouldComponentUpdate',
+    value: function shouldComponentUpdate(nextProps, nextState) {
+      return this.stateViewParameters !== nextState.viewParameters;
+    }
 
-      fetch(this.props.file).then(function (res) {
-        if (res.status >= 400) {
-          throw new Error('Bad response from server while loading ' + _this2.props.file);
-        }
-        return res.text();
-      }).then(function (svg) {
-        _this2.mountSVG(_this2.parseSVG(svg));
-      }).catch(function (err) {
-        throw new Error('Unknown error occured while loading ' + _this2.props.file + ' -> ' + err.message);
-      });
+
+  }, {
+    key: 'onUserViewChange',
+    value: function onUserViewChange(e) {
+      if (typeof this.props.onUserViewChange === 'function') {
+        this.props.onUserViewChange(e);
+      }
     }
 
 
@@ -106,8 +122,17 @@ var SVGViewer = function (_React$Component) {
     key: 'zoom',
     value: function zoom(amount) {
       if (amount !== 0 && amount !== -0) {
+        var zoomLevel = this.limitZoomLevel(this.state.viewParameters.zoomLevel + amount);
         this.setState({
-          zoomLevel: this.state.zoomLevel + amount
+          viewParameters: _extends({}, this.state.viewParameters, {
+            zoomLevel: zoomLevel
+          })
+        });
+        this.onUserViewChange({
+          viewParameters: _extends({}, this.state.viewParameters, {
+            zoomLevel: zoomLevel
+          }),
+          lastEeventType: 'userevent'
         });
       }
     }
@@ -115,11 +140,11 @@ var SVGViewer = function (_React$Component) {
     key: 'limitZoomLevel',
     value: function limitZoomLevel(level) {
       if (level >= 0) {
-        return level < this.props.maxZoomLevel ? level : this.props.maxZoomLevel;
+        return level < this.props.viewParameters.maxZoomLevel ? level : this.props.viewParameters.maxZoomLevel;
       }
 
       if (level <= -0) {
-        return level > this.props.minZoomLevel ? level : this.props.minZoomLevel;
+        return level > this.props.viewParameters.minZoomLevel ? level : this.props.viewParameters.minZoomLevel;
       }
 
       return level;
@@ -128,7 +153,6 @@ var SVGViewer = function (_React$Component) {
     key: 'startDrag',
     value: function startDrag(e) {
       var bounds = e.currentTarget.getBoundingClientRect();
-
       this.setState({
         isDragEnabled: true,
         perspectiveLevel: 0,
@@ -149,23 +173,33 @@ var SVGViewer = function (_React$Component) {
     key: 'doDrag',
     value: function doDrag(e) {
       if (!this.state.isDragEnabled) return;
-
+      var x = e.clientX - this.state.dragOffset.x;
+      var y = e.clientY - this.state.dragOffset.y;
       this.setState({
-        dragPosition: {
-          x: e.clientX - this.state.dragOffset.x,
-          y: e.clientY - this.state.dragOffset.y
-        }
+        viewParameters: _extends({}, this.state.viewParameters, {
+          x: x,
+          y: y
+        })
+      });
+      this.onUserViewChange({
+        viewParameters: _extends({}, this.state.viewParameters, {
+          x: x,
+          y: y
+        }),
+        lastEeventType: 'userevent'
       });
     }
   }, {
     key: 'render',
     value: function render() {
       var svgContainerStyles = {
-        transform: 'translateX(' + this.state.dragPosition.x + 'px)\n                  translateY(' + this.state.dragPosition.y + 'px)'
+        transition: 'all .2s ease',
+        transform: 'translateX(' + this.state.viewParameters.x + 'px)\n                  translateY(' + this.state.viewParameters.y + 'px)'
       };
 
       var svgStyles = {
-        transform: 'perspective(' + this.props.perspectiveLevel + 'px)\n                  translateZ(' + this.limitZoomLevel(this.state.zoomLevel * this.props.zoomFactor) + 'px)'
+        transition: 'all .2s ease',
+        transform: 'perspective(' + this.props.viewParameters.perspectiveLevel + 'px)\n                  translateZ(' + this.limitZoomLevel(this.state.viewParameters.zoomLevel * this.props.viewParameters.zoomFactor) + 'px)'
       };
 
       return _react2.default.createElement(
@@ -192,22 +226,27 @@ var SVGViewer = function (_React$Component) {
 
 
 
-SVGViewer.proptypes = {
-  maxZoomLevel: _react.PropTypes.number,
-  minZoomLevel: _react.PropTypes.number,
-  perspectiveLevel: _react.PropTypes.number,
-  zoomFactor: _react.PropTypes.number,
+SVGViewer.propTypes = {
+  data: _react.PropTypes.string,
+
+  viewParameters: _react.PropTypes.shape({
+    maxZoomLevel: _react.PropTypes.number,
+    minZoomLevel: _react.PropTypes.number,
+    perspectiveLevel: _react.PropTypes.number,
+    zoomFactor: _react.PropTypes.number
+  }),
   allowUserViewChange: _react.PropTypes.bool,
-  svgString: _react.PropTypes.string,
-  file: _react.PropTypes.string
+  onUserViewChange: _react.PropTypes.func
 };
 
 SVGViewer.defaultProps = {
   allowUserViewChange: true,
-  maxZoomLevel: 2000,
-  minZoomLevel: -2000,
-  zoomFactor: 250,
-  perspectiveLevel: 1000
+  viewParameters: {
+    maxZoomLevel: 1000,
+    minZoomLevel: -2000,
+    zoomFactor: 50,
+    perspectiveLevel: 1000
+  }
 };
 
 exports.default = SVGViewer;

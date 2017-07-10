@@ -515,16 +515,26 @@ storiesOf('Network', module)
  */
 
 import SVGViewer from '../src/SVGViewer/SVGViewer';
-import TEST_RAW_SVG from 'raw-loader!./mock_data/svgviewer-test.svg.txt'
-const TEST_SVG_FILE = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/tiger.svg';
+import TEST_RAW_SVG from 'raw-loader!./mock_data/svgviewer-test.svg.txt';
+import SVGStoryContainer from './SVGStoryContainer';
+
+const defaultSVGViewParameters = {
+  maxZoomLevel : 1000,
+  minZoomLevel : -2000,
+  perspectiveLevel : 1000,
+  x : 0,
+  y : 0,
+  zoomFactor : 50,
+  zoomLevel : 1,
+};
 
 storiesOf('SVGViewer', module)
-  .add('default, fetch remote SVG file', () => (
-    <SVGViewer file={TEST_SVG_FILE} />
-  ))
   .add('default, load raw SVG file', () => (
-    <SVGViewer svgString={TEST_RAW_SVG} />
+    <SVGViewer data={TEST_RAW_SVG} onUserViewChange={e => console.log('on user view change', e)} />
   ))
   .add('locked', () => (
-    <SVGViewer file={TEST_SVG_FILE} allowUserViewChange={false} />
+    <SVGViewer data={TEST_RAW_SVG} allowUserViewChange={false} />
+  ))
+  .add('change view from upstream', () => (
+    <SVGStoryContainer data={TEST_RAW_SVG} baseParameters={defaultSVGViewParameters} />
   ))

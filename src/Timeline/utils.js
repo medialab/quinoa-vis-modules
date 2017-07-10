@@ -368,7 +368,7 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
   // filter only periods within the display time boundaries
   const visibleEvents = inputEvents
   .filter(obj =>
-      obj.startDate && 
+      obj.startDate &&
       obj.startDate.getTime() >= timeBoundaries[0] &&
       obj.startDate.getTime() <= timeBoundaries[1]
     );
