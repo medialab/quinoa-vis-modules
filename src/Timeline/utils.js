@@ -1,6 +1,6 @@
 /**
- * Series of timeline-related computing utils
- * @module Timeline
+ * This module exports a series of timeline-related computing utils
+ * @module quinoa-vis-modules/Timeline
  */
 
 import {
@@ -17,7 +17,7 @@ import {
 import {min, max} from 'd3-array';
 
 /*
- * timerelated constants
+ * time-related constants
  */
 const SECOND = 1000;
 const MINUTE = SECOND * 60;
@@ -440,7 +440,7 @@ export const clusterTimeObjects = (data, timeBoundaries) => {
 };
 
 /**
- * Compute multiple timeline-related representations and utils out of a couple of data+dataMap
+ * Computes multiple timeline-related representations and utils out of a couple of data+dataMap
  * @param {array} inputData - initial data
  * @param {object} viewParameters - initial view parameters
  * @return {array} stateRepresentation - invariant timeline-related state elements to be used when initing / reloading data or dataMap into component

@@ -1,3 +1,7 @@
+/**
+ * This module exports a component for displaying the mini (small) timeline
+ * @module quinoa-vis-modules/Timeline
+ */
 import React, {Component} from 'react';
 
 import ObjectsContainer from './TimeObjectsContainer';
@@ -8,7 +12,14 @@ import {
   clusterTimeObjects
 } from './utils';
 
+/**
+ * MiniTimeline main component
+ */
 export default class MiniTimeline extends Component {
+  /**
+   * constructor
+   * @param {object} props - props received by instance at initialization
+   */
   constructor(props) {
     super(props);
     this.updateDimensions = this.updateDimensions.bind(this);
@@ -18,12 +29,17 @@ export default class MiniTimeline extends Component {
       data: clusterTimeObjects(props.data, [props.timeBoundaries.minimumDateDisplay, props.timeBoundaries.maximumDateDisplay])
     };
   }
-
+  /**
+   * Executes code on instance after the component is mounted
+   */
   componentDidMount() {
     const {updateDimensions} = this;
     updateDimensions();
   }
-
+  /**
+   * Executes code when component receives new properties
+   * @param {object} nextProps - the future properties of the component
+   */
   componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.state.data) {
       this.setState({
@@ -31,8 +47,12 @@ export default class MiniTimeline extends Component {
       });
     }
   }
-
+  /**
+   * Executes code on instance after the component has been updated
+   * @param {object} prevProps - the props before update
+   */
   componentDidUpdate(prevProps) {
+    // if dimensions have changed we update dimensions of the component
     if (
       prevProps.parentDimensions.width !== this.props.parentDimensions.width
       || prevProps.parentDimensions.height !== this.props.parentDimensions.height
@@ -40,7 +60,9 @@ export default class MiniTimeline extends Component {
       this.updateDimensions();
     }
   }
-
+  /**
+   * Handles updating the state with new dimensions of the component
+   */
   updateDimensions () {
     if (this.node) {
       const bRect = this.node.getBoundingClientRect();
@@ -50,7 +72,10 @@ export default class MiniTimeline extends Component {
       });
     }
   }
-
+  /**
+   * Renders the component
+   * @return {ReactMarkup} component - react representation of the component
+   */
   render() {
     const {
       viewParameters,

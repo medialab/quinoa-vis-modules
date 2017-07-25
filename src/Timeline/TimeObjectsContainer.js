@@ -1,3 +1,7 @@
+/**
+ * This module exports a component for displaying a group of time objects (point or period)
+ * @module quinoa-vis-modules/Timeline
+ */
 import React, {Component} from 'react';
 
 import {scaleLinear} from 'd3-scale';
@@ -5,7 +9,14 @@ import {max} from 'd3-array';
 
 import TimeObject from './TimeObject';
 
+/**
+ * ObjectsContainer main component
+ */
 export default class ObjectsContainer extends Component {
+  /**
+   * constructor
+   * @param {object} props - props received by instance at initialization
+   */
   constructor(props) {
     super(props);
     this.update = this.update.bind(this);
@@ -14,19 +25,27 @@ export default class ObjectsContainer extends Component {
       timeObjects: []
     };
   }
-
+  /**
+   * Executes code on instance after the component is mounted
+   */
   componentDidMount() {
     const {props, state, update} = this;
     update(props, props, state);
   }
-
+  /**
+   * Executes code when component receives new properties
+   * @param {object} nextProps - the future properties of the component
+   */
   componentWillReceiveProps(next) {
     const {props, update} = this;
     if (props !== next) {
       update(next);
     }
   }
-
+  /**
+   * Updates state with new data by recomputing it
+   * @param {object} next - the next props to consumes
+   */
   update(next) {
     const {width, height, timeBoundaries} = next;
 
@@ -41,7 +60,10 @@ export default class ObjectsContainer extends Component {
       timeObjects
     });
   }
-
+  /**
+   * Renders the component
+   * @return {ReactMarkup} component - react representation of the component
+   */
   render() {
     const {
       viewParameters,

@@ -1,15 +1,51 @@
+/**
+ * Scss elements to be used all along the app
+ * Note: if you need to specify new values/mixins/abstract classes
+ * it must happen here !
+ */
 
-
+// 1. variables
+// 1.1 dimension variables
 $gutter-medium: 1rem;
 $gutter-small: .5rem;
+// 1.2 time variables
+$time-medium: .5s;
+$time-short: .05s;
 
-$time-medium : .5s;
-$time-short : .05s;
+// 2. mixins
+@mixin transition($args...)
+{
+    -webkit-transition: $args;
+       -moz-transition: $args;
+        -ms-transition: $args;
+         -o-transition: $args;
+            transition: $args;
+}
 
-@mixin transition($args...) {
-  -webkit-transition: $args;
-  -moz-transition: $args;
-  -ms-transition: $args;
-  -o-transition: $args;
-  transition: $args;
+@mixin grabbable()
+{
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor:         grab;
+    cursor:    -moz-grab;
+    cursor: -webkit-grab;
+}
+
+@mixin grabbing()
+{
+    cursor:         grabbing;
+    cursor:    -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+// 3. abstract classes
+.absolute-fill
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }

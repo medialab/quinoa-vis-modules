@@ -1,3 +1,7 @@
+/**
+ * This module exports a component for displaying a group of time ticks
+ * @module quinoa-vis-modules/Timeline
+ */
 import React, {Component} from 'react';
 
 import {scaleLinear} from 'd3-scale';
@@ -5,14 +9,24 @@ import {computeTicks} from './utils';
 
 import TimeTick from './TimeTick';
 
+/**
+ * TimeTicks main component
+ */
 export default class TimeTicks extends Component {
+  /**
+   * constructor
+   * @param {object} props - props received by instance at initialization
+   */
   constructor(props) {
     super(props);
     this.state = {
       scaleY: undefined
     };
   }
-
+  /**
+   * Renders the component
+   * @return {ReactMarkup} component - react representation of the component
+   */
   render() {
     const {
       width,

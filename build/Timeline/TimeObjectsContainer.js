@@ -25,7 +25,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
+
 
 var ObjectsContainer = function (_Component) {
   _inherits(ObjectsContainer, _Component);
@@ -43,6 +44,7 @@ var ObjectsContainer = function (_Component) {
     return _this;
   }
 
+
   _createClass(ObjectsContainer, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
@@ -52,6 +54,7 @@ var ObjectsContainer = function (_Component) {
 
       update(props, props, state);
     }
+
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(next) {
@@ -62,6 +65,7 @@ var ObjectsContainer = function (_Component) {
         update(next);
       }
     }
+
   }, {
     key: 'update',
     value: function update(next) {
@@ -83,6 +87,7 @@ var ObjectsContainer = function (_Component) {
         timeObjects: timeObjects
       });
     }
+
   }, {
     key: 'render',
     value: function render() {

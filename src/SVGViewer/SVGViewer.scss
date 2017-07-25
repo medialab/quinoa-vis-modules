@@ -1,40 +1,34 @@
+/**
+ * quinoa-vis-module svg style definitions
+ * ============
+ * Please keep style definitions nested in order to ease
+ * scss code reading accross files
+ */
+@import './../globals.scss';
+
+// root selector of the component styles
 .quinoa-svg
 {
-    position: absolute;
-    top: 0;
-    left: 0;
+    @extend .absolute-fill;
 
     overflow: hidden;
 
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
     .svg-container
     {
+        @extend .absolute-fill;
         position: relative;
-
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        padding: 0;
     }
     .grabbable
     {
         width: auto;
         height: auto;
 
-        cursor: move; /* fallback if grab cursor is unsupported */
-        cursor:         grab;
-        cursor:    -moz-grab;
-        cursor: -webkit-grab;
-        transition: transform 250ms ease-in;
+        @include grabbable();
+        @include transition(transform $time-medium ease-in);
     }
     /* (Optional) Apply a "closed-hand" cursor during drag operation. */
     .grabbable:active
     {
-        cursor:         grabbing;
-        cursor:    -moz-grabbing;
-        cursor: -webkit-grabbing;
+        @include grabbing()
     }
 }

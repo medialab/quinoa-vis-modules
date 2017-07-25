@@ -1,8 +1,18 @@
+/**
+ * This module exports a stateful brush component
+ * @module quinoa-vis-modules/Timeline
+ */
 import React, {Component} from 'react';
 
 import {scaleLinear} from 'd3-scale';
-
-export default class TimeObject extends Component {
+/**
+ * Brush main component
+ */
+export default class Brush extends Component {
+  /**
+   * constructor
+   * @param {object} props - props received by instance at initialization
+   */
   constructor(props) {
     super(props);
     this.onMouseDown = this.onMouseDown.bind(this);
@@ -24,7 +34,10 @@ export default class TimeObject extends Component {
       endPortion
     };
   }
-
+  /**
+   * Executes code when component receives new properties
+   * @param {object} nextProps - the future properties of the component
+   */
   componentWillReceiveProps(next) {
     if (next.from !== this.state.from || next.to !== this.state.to && this.state.state === undefined) {
       const {
@@ -43,7 +56,12 @@ export default class TimeObject extends Component {
       });
     }
   }
-
+  /**
+   * Update brush state with new parameters
+   * @param {object} portions - couple of numbers representing absolute time of the boundaries of the brush
+   * @param {object} state - the state object to use (todo: this is dummy)
+   * @param {object} portion - the current portion of the brush
+   */
   updateBrush({beginPortion, endPortion}, state, portion) {
     let beginPortionInState = beginPortion ? beginPortion : this.state.beginPortion;
     let endPortionInState = endPortion ? endPortion : this.state.endPortion;
@@ -68,7 +86,10 @@ export default class TimeObject extends Component {
       });
     }
   }
-
+  /**
+   * Handles mouse pressed event
+   * @param {object} event - the input event
+   */
   onMouseDown (evt) {
     if (this.props.active === false) {
       return;
@@ -99,7 +120,10 @@ export default class TimeObject extends Component {
       this.updateBrush({beginPortion: portion, endPortion: portion}, state, portion);
     }
   }
-
+  /**
+   * Handles mouse moved event
+   * @param {object} event - the input event
+   */
   onMouseMove (evt) {
     if (this.props.active === false) {
       return;
@@ -128,7 +152,7 @@ export default class TimeObject extends Component {
       }
     // hovering
     }
- else {
+    else {
       const onElement = portion >= this.state.beginPortion && portion <= this.state.endPortion;
       let state;
       if (onElement) {
@@ -136,14 +160,14 @@ export default class TimeObject extends Component {
         if (positionOnElement <= 0.33333) {
           state = 'n-resize';
         }
- else if (positionOnElement >= 0.66666666) {
+        else if (positionOnElement >= 0.66666666) {
           state = 's-resize';
         }
- else {
+        else {
           state = 'move';
         }
       }
- else {
+      else {
         state = 'pointer';
       }
       this.setState({
@@ -151,7 +175,10 @@ export default class TimeObject extends Component {
       });
     }
   }
-
+  /**
+   * Handles mouse up event
+   * @param {object} event - the input event
+   */
   onMouseUp () {
     if (this.props.active === false) {
       return;
@@ -161,7 +188,10 @@ export default class TimeObject extends Component {
       previousPortion: undefined
     });
   }
-
+  /**
+   * Handles mouse wheel event
+   * @param {object} event - the input event
+   */
   onMouseWheel (evt) {
     if (this.props.active === false) {
       return;
@@ -172,7 +202,10 @@ export default class TimeObject extends Component {
     const newEnd = this.state.endPortion + displacement;
     this.updateBrush({beginPortion: newBegin, endPortion: newEnd}, undefined);
   }
-
+  /**
+   * Renders the component
+   * @return {ReactMarkup} component - representation of the component
+   */
   render() {
     const {
       width,

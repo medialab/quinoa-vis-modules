@@ -1,6 +1,6 @@
 /**
  * This module exports a stateful customizable timeline component
- * @module Timeline
+ * @module quinoa-vis-modules/Timeline
  */
 
 import React, {PropTypes} from 'react';
@@ -32,6 +32,7 @@ import {timer} from 'd3-timer';
 class Timeline extends React.Component {
   /**
    * constructor
+   * @param {object} props - props received by instance at initialization
    */
   constructor (props) {
     super(props);
@@ -46,8 +47,12 @@ class Timeline extends React.Component {
     this.state = computeDataRelatedState(props.data, props.viewParameters || {});
     this.transition = null;
   }
-
+  /**
+   * Executes code when component receives new properties
+   * @param {object} nextProps - the future properties of the component
+   */
   componentWillReceiveProps(nextProps) {
+    // date bounds are changed --> update timeline
     if (
       this.props.viewParameters.fromDate !== nextProps.viewParameters.fromDate ||
       this.props.viewParameters.toDate !== nextProps.viewParameters.toDate
@@ -79,7 +84,7 @@ class Timeline extends React.Component {
       if (this.transition === null) {
         this.transition = timer(onTick);
       }
- else {
+      else {
         this.setState({
           viewParameters: {
             ...this.state.viewParameters,
@@ -89,11 +94,8 @@ class Timeline extends React.Component {
           }
         });
       }
-
-      // this.setState({
-      //   viewParameters: nextProps.viewParameters
-      // });
     }
+    // view parameters are changed - todo -> doing this is dirty and should not be necessary
     else if (
       JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)
     ) {
@@ -102,6 +104,7 @@ class Timeline extends React.Component {
       });
     }
 
+    // if data has change, re-compute a part of the state (ticks, ...)
     if (this.props.data !== nextProps.data) {
       const newStateParts = computeDataRelatedState(nextProps.data, nextProps.viewParameters);
       this.setState({
@@ -109,14 +112,21 @@ class Timeline extends React.Component {
       });
     }
   }
-
+  /**
+   * Executes code before component updates
+   * @param {object} nextProps - properties component will have
+   * @param {object} nextState - future state of the component
+   */
   componentWillUpdate(nextProps, nextState) {
     if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
       this.emitViewChange(nextState);
     }
   }
 
-  // this.props.onUserViewChange is wrapped in this function to be wrapped in a lodash/debounce within the constructor of this component class
+  /**
+   * Triggers the callback informing that user changed the view
+   * @param {object} state - the current state of the component
+   */
   emitViewChange (state) {
     this.props.onUserViewChange({
         lastEventType: state.lastEventType,
@@ -224,7 +234,10 @@ class Timeline extends React.Component {
       viewParameters
     });
   }
-
+  /**
+   * Handles the action of selecting (or deselecting) an object in the timeline
+   * @param {string} id - the id of the object to select (can be undefined in case of deselecting)
+   */
   selectObject (id) {
     const viewParameters = {
       ...this.state.viewParameters,
@@ -235,7 +248,9 @@ class Timeline extends React.Component {
       viewParameters
     });
   }
-
+  /**
+   * Disables the selection in state
+   */
   resetSelection () {
     const viewParameters = {
       ...this.state.viewParameters,
@@ -249,6 +264,7 @@ class Timeline extends React.Component {
 
   /**
    * Renders the component
+   * @return {ReactMarkup} component - react representation of the component
    */
   render () {
     const {
@@ -272,10 +288,8 @@ class Timeline extends React.Component {
     /*
      * Step: render component
      */
-
     const ticksParams = setTicks(viewParameters.toDate - viewParameters.fromDate);
     const formatDate = timeFormat(ticksParams.format);
-
 
     return data ? (
       <Measure>
@@ -312,6 +326,9 @@ class Timeline extends React.Component {
   }
 }
 
+/**
+ * Static properties types of the component
+ */
 Timeline.propTypes = {
   /*
    * Incoming data in json format
@@ -331,8 +348,8 @@ Timeline.propTypes = {
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not - like Timeline spatialization algorithm for instance)
    */
   viewParameters: PropTypes.shape({
-    // shownCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
-    // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
+    shownCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
+    colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
     /*
      * parameters related to camera position
      */

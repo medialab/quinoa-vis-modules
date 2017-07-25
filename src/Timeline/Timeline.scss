@@ -1,21 +1,21 @@
+/**
+ * quinoa-vis-module timeline style definitions
+ * ============
+ * Please keep style definitions nested in order to ease
+ * scss code reading accross files
+ */
 @import './../globals.scss';
 
+// root selector of the component styles
 .quinoa-timeline
 {
     /*
      * Layout and layout-specific subcomponents styling
      */
-    position: absolute;
-    top: 0;
-    left: 0;
+    @extend .absolute-fill;
 
     display: flex;
     overflow: hidden;
-
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
 
     user-select: none;
 
@@ -31,27 +31,17 @@
         flex: 1;
         .mini-timeline-container
         {
-            position: absolute;
-            top: 0;
-            left: 0;
-
-            width: 100%;
-            height: 100%;
+            @extend .absolute-fill;
         }
     }
     .main-timeline
     {
         position: relative;
 
-        flex: 5;
+        flex: 5;// todo: parametrize that
         .main-timeline-container
         {
-            position: absolute;
-            top: 0;
-            left: 0;
-
-            width: 100%;
-            height: 100%;
+            @extend .absolute-fill;
         }
         .timeline-captor
         {
@@ -62,19 +52,14 @@
     }
     .time-boundaries-container
     {
-        position: absolute;
-        top: 0;
-        left: 0;
-
-        width: 100%;
-        height: 100%;
+        @extend .absolute-fill;
 
         pointer-events: none;
         #to-date,
         #from-date
         {
             position: absolute;
-            left: $gutter-medium * 8;
+            left: $gutter-medium * 8;// todo: parametrize that
 
             padding: $gutter-small;
 
@@ -91,15 +76,14 @@
     }
     .labels-container
     {
-        // pointer-events: none;
         .label-group
         {
             cursor: pointer;
             .background-rect
             {
-                transition: fill-opacity .2s ease;
+                @include transition(fill-opacity .2s ease);// todo : parametrize that
 
-                fill-opacity: .8;
+                fill-opacity: .8;// todo: parametrize that
             }
             &.hidden
             {
@@ -110,7 +94,7 @@
             }
             &.filtered-out
             {
-                opacity: .1;
+                opacity: .1;// todo: parametrize that
             }
             &:hover,
             &.selected
@@ -118,11 +102,11 @@
                 rect,
                 circle
                 {
-                    stroke: #000;
+                    stroke: #000;// todo: parametrize that
                 }
                 .background-rect
                 {
-                    stroke: #000;
+                    stroke: #000;// todo: parametrize that
                     fill-opacity: 1;
                 }
             }
@@ -135,14 +119,14 @@
         {
             pointer-events: all;
 
-            stroke: #fff;
+            stroke: #fff;// todo: parametrize that
         }
         &.selected
         {
             rect,
             circle
             {
-                stroke: #000;
+                stroke: #000;// todo: parametrize that
             }
         }
         &.hidden:not(.selected)
@@ -164,7 +148,7 @@
             pointer-events: none;
             rect
             {
-                fill: rgba(0,0,0,.3);
+                fill: rgba(0,0,0,.3);// todo: parametrize that
             }
         }
     }
@@ -174,7 +158,7 @@
         {
             line
             {
-                stroke: rgba(0,0,0,.3);
+                stroke: rgba(0,0,0,.3);// todo: parametrize that
             }
         }
     }
@@ -184,28 +168,28 @@
 
         max-width: 0;
 
-        transition: all .5s ease;
+        @include transition(all $time-medium ease);
 
         flex: 1;
         &.active
         {
-            max-width: 60em;
+            max-width: 60em;// todo: this is dirty
             padding: $gutter-medium;
 
-            border-left: 1px solid #333;
+            border-left: 1px solid #333;// todo: parametrize that
         }
         .header
         {
             h2
             {
-                font-size: 1em;
+                font-size: 1em;// todo: parametrize that
             }
         }
         .content
         {
             .source
             {
-                font-size: .9em;
+                font-size: .9em;// todo: parametrize that
             }
         }
     }

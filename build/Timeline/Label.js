@@ -17,7 +17,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
 
 
 var Label = function (_Component) {
@@ -35,12 +35,9 @@ var Label = function (_Component) {
     return _this;
   }
 
+
+
   _createClass(Label, [{
-    key: 'shouldComponentUpdate',
-    value: function shouldComponentUpdate() {
-      return true;
-    }
-  }, {
     key: 'toggleHover',
     value: function toggleHover(target) {
       var hovered = target === undefined ? !this.state.hovered : target;
@@ -49,6 +46,7 @@ var Label = function (_Component) {
       });
       this.props.toggleLabelHover(this.props.timeObject.id, hovered);
     }
+
   }, {
     key: 'render',
     value: function render() {
@@ -72,12 +70,9 @@ var Label = function (_Component) {
       var y = scaleY(timeObject.startDate.getTime());
       var objectWidth = columnWidth > 10 ? 10 : columnWidth;
       var textHeight = screenHeight / 40;
-      var labelWidth = columnWidth * availableColumns - columnWidth * 0.3;
+      var labelWidth = columnWidth * availableColumns - columnWidth * 0.3; 
       labelWidth = labelWidth < 0 ? 0 : labelWidth;
 
-      var bindTextRef = function bindTextRef(text) {
-        _this2.text = text;
-      };
       var availableWidth = screenWidth - x + objectWidth;
       var bgWidth = this.text ? this.text.getBBox().width : 0;
       if (bgWidth > availableWidth) {
@@ -86,7 +81,6 @@ var Label = function (_Component) {
 
       var labelY = timeObject.type === 'event' ? y : y + textHeight / 2;
       labelY = labelY > 0 ? labelY : textHeight;
-
       var onMouseEnter = function onMouseEnter() {
         return _this2.toggleHover(true);
       };
@@ -95,6 +89,9 @@ var Label = function (_Component) {
       };
       var handleClick = function handleClick() {
         return onObjectSelection(timeObject.id);
+      };
+      var bindTextRef = function bindTextRef(text) {
+        _this2.text = text;
       };
       return _react2.default.createElement(
         'g',

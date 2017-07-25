@@ -31,7 +31,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
+
 
 var MainTimeline = function (_Component) {
   _inherits(MainTimeline, _Component);
@@ -57,6 +58,7 @@ var MainTimeline = function (_Component) {
     return _this;
   }
 
+
   _createClass(MainTimeline, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
@@ -64,6 +66,7 @@ var MainTimeline = function (_Component) {
 
       updateDimensions();
     }
+
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
@@ -73,6 +76,7 @@ var MainTimeline = function (_Component) {
         });
       }
     }
+
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps) {
@@ -80,6 +84,7 @@ var MainTimeline = function (_Component) {
         this.updateDimensions();
       }
     }
+
   }, {
     key: 'onMouseDown',
     value: function onMouseDown(evt) {
@@ -92,6 +97,7 @@ var MainTimeline = function (_Component) {
         prevY: y
       });
     }
+
   }, {
     key: 'onMouseMove',
     value: function onMouseMove(evt) {
@@ -108,6 +114,7 @@ var MainTimeline = function (_Component) {
         });
       }
     }
+
   }, {
     key: 'onDoubleClick',
     value: function onDoubleClick(evt) {
@@ -129,6 +136,7 @@ var MainTimeline = function (_Component) {
       var newTo = target + newAmbitus;
       this.props.setViewSpan(newFrom, newTo, false);
     }
+
   }, {
     key: 'onMouseUp',
     value: function onMouseUp() {
@@ -140,11 +148,13 @@ var MainTimeline = function (_Component) {
         prevY: undefined
       });
     }
+
   }, {
     key: 'onLabelsHovered',
     value: function onLabelsHovered() {
-      this.onMouseUp();
+      this.onMouseUp(); 
     }
+
   }, {
     key: 'updateDimensions',
     value: function updateDimensions() {
@@ -156,6 +166,7 @@ var MainTimeline = function (_Component) {
         });
       }
     }
+
   }, {
     key: 'render',
     value: function render() {
@@ -191,17 +202,17 @@ var MainTimeline = function (_Component) {
         if (!allowUserEvents) {
           return;
         }
-        var displacement = e.deltaY / 200;
+        var displacement = e.deltaY / 200; 
         if (displacement > 0.9) {
-          displacement = 0.9;
+          displacement = 0.9; 
         }
         if (displacement < -0.9) {
-          displacement = -0.9;
+          displacement = -0.9; 
         }
         _this2.props.onZoom(1 + displacement);
       };
 
-      var objectsDisplacement = 'scale(.9, 1)translate(' + width * 0.1 + ' 0)';
+      var objectsDisplacement = 'scale(.9, 1)translate(' + width * 0.1 + ' 0)'; 
 
       return _react2.default.createElement(
         'section',

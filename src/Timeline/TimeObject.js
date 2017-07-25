@@ -1,14 +1,28 @@
+/* eslint react/prefer-stateless-function : 0 */
+/* eslint react/require-optimization : 0 */
+/**
+ * This module exports a component for displaying a single time object (point or period)
+ * @module quinoa-vis-modules/Timeline
+ */
 import React, {Component} from 'react';
 
+// todo: turn this component to a pure function
+
+/**
+ * TimeObject main component
+ */
 export default class TimeObject extends Component {
+  /**
+   * constructor
+   * @param {object} props - props received by instance at initialization
+   */
   constructor(props) {
     super(props);
   }
-
-  shouldComponentUpdate() {
-    return true;
-  }
-
+  /**
+   * Renders the component
+   * @return {ReactMarkup} component - react representation of the component
+   */
   render() {
     const {
       color,
@@ -22,7 +36,7 @@ export default class TimeObject extends Component {
     } = this.props;
     const x = scaleX(timeObject.column);
     const y = scaleY(timeObject.startDate.getTime());
-    const objectWidth = columnWidth > 10 ? 10 : columnWidth;
+    const objectWidth = columnWidth > 10 ? 10 : columnWidth;// todo: parametrize that
     const height = timeObject.type === 'period' && scaleY(timeObject.endDate.getTime()) - y;
     return (
       <g

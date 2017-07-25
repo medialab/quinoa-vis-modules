@@ -1,7 +1,7 @@
 /**
  * This module transforms string data to a normalized js representation
  * of network data, able to be subjected to a mapping process
- * @module utils/networkDataParser
+ * @module quinoa-vis-modules/utils/networkDataParser
  */
 import gexf from 'gexf/src/parser';
 import converter from 'xml-js';

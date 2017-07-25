@@ -47,15 +47,14 @@ var _networkDataParser2 = _interopRequireDefault(_networkDataParser);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+
 var Network = exports.Network = _Network2.default;
 var Map = exports.Map = _Map2.default;
 var SVGViewer = exports.SVGViewer = _SVGViewer2.default;
 var Timeline = exports.Timeline = _Timeline2.default;
-
 var parseMapData = exports.parseMapData = _mapDataParser2.default;
 var parseTimelineData = exports.parseTimelineData = _timelineDataParser2.default;
 var parseNetworkData = exports.parseNetworkData = _networkDataParser2.default;
-
 var mapMapData = exports.mapMapData = _mapDataMapper2.default;
 var mapTimelineData = exports.mapTimelineData = _timelineDataMapper2.default;
 var mapNetworkData = exports.mapNetworkData = _networkDataMapper2.default;

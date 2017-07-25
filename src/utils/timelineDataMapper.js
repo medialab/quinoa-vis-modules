@@ -1,6 +1,6 @@
 /**
  * This module consumes normalized data with a data map to build ready-to-visualize data
- * @module utils/timelineDataMapper
+ * @module quinoa-vis-modules/utils/timelineDataMapper
  */
 
 import {

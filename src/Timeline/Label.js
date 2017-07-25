@@ -1,8 +1,17 @@
+/**
+ * This module exports a stateful timeline object label component
+ * @module quinoa-vis-modules/Timeline
+ */
 import React, {Component} from 'react';
 
-// import ReactMarkdown from 'react-markdown';
-
+/**
+ * Label main component
+ */
 export default class Label extends Component {
+  /**
+   * constructor
+   * @param {object} props - props received by instance at initialization
+   */
   constructor(props) {
     super(props);
     this.state = {
@@ -11,10 +20,10 @@ export default class Label extends Component {
     this.toggleHover = this.toggleHover.bind(this);
   }
 
-  shouldComponentUpdate() {
-    return true;
-  }
-
+  /**
+   * Toogles hovering state of the component
+   * @param {boolean} target - the hover state to set
+   */
   toggleHover (target) {
     const hovered = target === undefined ? !this.state.hovered : target;
     this.setState({
@@ -22,7 +31,10 @@ export default class Label extends Component {
     });
     this.props.toggleLabelHover(this.props.timeObject.id, hovered);
   }
-
+  /**
+   * Renders the component
+   * @return {ReactMarkup} component - react representation of the component
+   */
   render() {
     const {
       timeObject,
@@ -44,14 +56,12 @@ export default class Label extends Component {
     } = this.state;
     const x = scaleX(timeObject.column);
     const y = scaleY(timeObject.startDate.getTime());
+    // todo: {:o this is dirty
     const objectWidth = columnWidth > 10 ? 10 : columnWidth;
     const textHeight = screenHeight / 40;
-    let labelWidth = columnWidth * availableColumns - columnWidth * 0.3;
+    let labelWidth = columnWidth * availableColumns - columnWidth * 0.3;// this should be parametrized
     labelWidth = labelWidth < 0 ? 0 : labelWidth;
 
-    const bindTextRef = (text) => {
-      this.text = text;
-    };
     const availableWidth = screenWidth - x + objectWidth;
     let bgWidth = this.text ? this.text.getBBox().width : 0;
     if (bgWidth > availableWidth) {
@@ -61,10 +71,18 @@ export default class Label extends Component {
     let labelY = timeObject.type === 'event' ?
       y : y + textHeight / 2;
     labelY = labelY > 0 ? labelY : textHeight;
-
+    /**
+     * Callbacks
+     */
     const onMouseEnter = () => this.toggleHover(true);
     const onMouseLeave = () => this.toggleHover(false);
     const handleClick = () => onObjectSelection(timeObject.id);
+    /**
+     * Reference binding
+     */
+    const bindTextRef = (text) => {
+      this.text = text;
+    };
     return (
       <g
         className={

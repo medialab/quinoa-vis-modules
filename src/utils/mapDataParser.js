@@ -1,7 +1,7 @@
 /**
  * This module transforms string data to a normalized js representation
  * of map data, able to be subjected to a mapping process
- * @module utils/mapDataParser
+ * @module quinoa-vis-modules/utils/mapDataParser
  */
 import {omit} from 'lodash';
 import {csvParse} from 'd3-dsv';

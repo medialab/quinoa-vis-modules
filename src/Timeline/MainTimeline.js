@@ -1,3 +1,7 @@
+/**
+ * This module exports a component for displaying the main (big) timeline
+ * @module quinoa-vis-modules/Timeline
+ */
 import React, {Component} from 'react';
 
 import ObjectsContainer from './TimeObjectsContainer';
@@ -8,8 +12,14 @@ import TimeTicks from './TimeTicks';
 import {
   clusterTimeObjects
 } from './utils';
-
+/**
+ * MainTimeline main component
+ */
 export default class MainTimeline extends Component {
+  /**
+   * constructor
+   * @param {object} props - props received by instance at initialization
+   */
   constructor(props) {
     super(props);
     this.updateDimensions = this.updateDimensions.bind(this);
@@ -26,12 +36,17 @@ export default class MainTimeline extends Component {
       grabbing: false
     };
   }
-
+  /**
+   * Executes code on instance after the component is mounted
+   */
   componentDidMount() {
     const {updateDimensions} = this;
     updateDimensions();
   }
-
+  /**
+   * Executes code when component receives new properties
+   * @param {object} nextProps - the future properties of the component
+   */
   componentWillReceiveProps(nextProps) {
     if (nextProps.data !== this.state.data) {
       this.setState({
@@ -39,7 +54,10 @@ export default class MainTimeline extends Component {
       });
     }
   }
-
+  /**
+   * Executes code when component receives new properties
+   * @param {object} prevProps - the past properties of the component
+   */
   componentDidUpdate(prevProps) {
     if (
       prevProps.parentDimensions.width !== this.props.parentDimensions.width
@@ -48,7 +66,10 @@ export default class MainTimeline extends Component {
       this.updateDimensions();
     }
   }
-
+  /**
+   * Updates state when mouse is pressed on the component
+   * @param {object} evt - the input event
+   */
   onMouseDown(evt) {
     if (!this.props.allowUserEvents) {
       return;
@@ -59,6 +80,10 @@ export default class MainTimeline extends Component {
       prevY: y
     });
   }
+  /**
+   * Updates state when mouse is moved on the component
+   * @param {object} evt - the input event
+   */
   onMouseMove(evt) {
     if (!this.props.allowUserEvents) {
       return;
@@ -73,7 +98,10 @@ export default class MainTimeline extends Component {
       });
     }
   }
-
+  /**
+   * Updates state when mouse is double-clicked on the component
+   * @param {object} evt - the input event
+   */
   onDoubleClick(evt) {
     if (!this.props.allowUserEvents) {
       return;
@@ -93,6 +121,10 @@ export default class MainTimeline extends Component {
     const newTo = target + newAmbitus;
     this.props.setViewSpan(newFrom, newTo, false);
   }
+  /**
+   * Updates state when mouse is released on the component
+   * @param {object} evt - the input event
+   */
   onMouseUp() {
     if (!this.props.allowUserEvents) {
       return;
@@ -102,11 +134,15 @@ export default class MainTimeline extends Component {
       prevY: undefined
     });
   }
-
+  /**
+   * Updates state when a label is hovered
+   */
   onLabelsHovered() {
-    this.onMouseUp();
+    this.onMouseUp();// todo: is this dirty ?
   }
-
+  /**
+   * Manages to update dimension-related states regarding timeline's DOM component dimensions
+   */
   updateDimensions () {
     if (this.node) {
       const bRect = this.node.getBoundingClientRect();
@@ -116,7 +152,10 @@ export default class MainTimeline extends Component {
       });
     }
   }
-
+  /**
+   * Renders the component
+   * @return {ReactMarkup} component - react representation of the component
+   */
   render() {
     const {
       viewParameters,
@@ -151,17 +190,17 @@ export default class MainTimeline extends Component {
       if (!allowUserEvents) {
         return;
       }
-      let displacement = e.deltaY / 200;
-      if (displacement > 0.9) {
-        displacement = 0.9;
+      let displacement = e.deltaY / 200;// todo: parametrize that
+      if (displacement > 0.9) {// todo: parametrize that
+        displacement = 0.9;// todo: parametrize that
       }
-      if (displacement < -0.9) {
-        displacement = -0.9;
+      if (displacement < -0.9) {// todo: parametrize that
+        displacement = -0.9;// todo: parametrize that
       }
       this.props.onZoom(1 + displacement);
     };
 
-    const objectsDisplacement = 'scale(.9, 1)translate(' + (width * 0.1) + ' 0)';
+    const objectsDisplacement = 'scale(.9, 1)translate(' + (width * 0.1) + ' 0)';// todo: parametrize that
 
     return (
       <section className="main-timeline" onWheel={onWheel}>

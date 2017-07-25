@@ -1,23 +1,30 @@
 /**
- * @module SVGViewer
+ * This module exports a stateful customizable svg viewer component
+ * @module quinoa-vis-modules/SVGViewer
  */
 import React, {PropTypes} from 'react';
 import {debounce} from 'lodash';
 
 import './SVGViewer.scss';
 
-
+/**
+ * SVGViewer class for building network react component instances
+ */
 class SVGViewer extends React.Component {
+  /**
+   * instance constructor
+   * @param {object} props - properties given to instance at instanciation
+   */
   constructor (props) {
     super(props);
 
     /**
      * State
      *
-     * svg             object   SVG data, as a DOM Document Object
-     * zoomLevel       number   Zoom level on the viewer
-     * dragOffset      number   Offset object calculating drag offset (the X/Y offset from mouse X/Y)
-     * isDragEnabled   boolean  Enable dragging motion if true
+     * svg {object}   SVG data, as a DOM Document Object
+     * zoomLevel {number}   Zoom level on the viewer
+     * dragOffset {number}   Offset object calculating drag offset (the X/Y offset from mouse X/Y)
+     * isDragEnabled {boolean}  Enable dragging motion if true
      */
     this.state = {
       svg: null,
@@ -35,6 +42,9 @@ class SVGViewer extends React.Component {
     };
   }
 
+  /**
+   * Executes code before the component is mounted
+   */
   componentWillMount () {
     this.parseSVG = this.parseSVG.bind(this);
     this.mouseWheelHandler = this.mouseWheelHandler.bind(this);
@@ -60,6 +70,10 @@ class SVGViewer extends React.Component {
     return this.mountSVG(this.parseSVG(this.props.data));
   }
 
+  /**
+   * Executes code when component's properties change
+   * @param {object} nextProps - properties given to instance at instanciation
+   */
   componentWillReceiveProps(nextProps) {
     if (nextProps.viewParameters !== this.state.viewParameters) {
       this.setState({
@@ -70,16 +84,24 @@ class SVGViewer extends React.Component {
       });
     }
     if (nextProps.data !== this.props.data) {
+      // remount the svg if data is changed
       this.mountSVG(this.mountSVG(this.parseSVG(this.props.data)));
     }
   }
 
+  /**
+   * decides wether component should be rerendered
+   * @param {object} nextProps - properties to come
+   * @param {object} nextState - state to come
+   * @return {boolean} shouldRender
+   */
   shouldComponentUpdate(nextProps, nextState) {
     return this.stateViewParameters !== nextState.viewParameters;
   }
 
   /**
    * Debounced onUserViewChange call
+   * @param {object} event - the event triggering the view change
    */
   onUserViewChange(e) {
     if (typeof this.props.onUserViewChange === 'function') {
@@ -89,6 +111,7 @@ class SVGViewer extends React.Component {
 
   /**
    * From XML dom string representing the SVG, return a mountable Document object.
+   * @param {string} xmlString - the string to parse as xml/svg data
    */
   parseSVG(xmlString = '') {
     return new DOMParser().parseFromString(xmlString, 'text/xml');
@@ -96,17 +119,25 @@ class SVGViewer extends React.Component {
 
   /**
    * Mount DOM Document (SVG) into the DOM via state setting of the component.
+   * @param {DOMElement} svgDom - the svg document element to mount
    */
   mountSVG(svgDom) {
     this.setState({svg: svgDom});
   }
-
+  /**
+   * Handles mouse wheel events
+   * @param {object} event - the mouse wheel event
+   */
   mouseWheelHandler(e) {
-    e.preventDefault();
+    event.preventDefault();
     const amount = e.deltaY;
     this.zoom(amount);
   }
 
+  /**
+   * Handles zooming in the component
+   * @param {number} amount - the value returned by a wheel event
+   */
   zoom (amount) {
     if (amount !== 0 && amount !== -0) {
       const zoomLevel = this.limitZoomLevel(this.state.viewParameters.zoomLevel + amount);
@@ -126,6 +157,11 @@ class SVGViewer extends React.Component {
     }
   }
 
+  /**
+   * limits a zoom level to bounds stored in view parameters
+   * @param {number} level - the level to limit
+   * @return {number} level - the level after limitation
+   */
   limitZoomLevel (level) {
     if (level >= 0) {
       return level < this.props.viewParameters.maxZoomLevel ? level : this.props.viewParameters.maxZoomLevel;
@@ -137,7 +173,10 @@ class SVGViewer extends React.Component {
 
     return level;
   }
-
+  /**
+   * updates component state when starting to drag the svg
+   * @param {object} e - the drag event to use
+   */
   startDrag (e) {
     this.setState({
       isDragEnabled: true,
@@ -149,18 +188,24 @@ class SVGViewer extends React.Component {
     });
     e.currentTarget.addEventListener('mousemove', this.doDrag);
   }
-
+  /**
+   * updates component state when stopping to drag the svg
+   * @param {object} e - the drag event to use
+   */
   stopDrag (e) {
     this.setState({isDragEnabled: false});
     e.currentTarget.removeEventListener('mousemove', this.doDrag);
   }
-
+  /**
+   * updates component state when dragging the svg
+   * @param {object} e - the drag event to use
+   */
   doDrag (e) {
     if (!this.state.isDragEnabled) return;
     const xDiff = e.clientX - this.state.dragOffset.x;
     const yDiff = e.clientY - this.state.dragOffset.y;
-    const x = this.state.viewParameters.x + xDiff;
-    const y = this.state.viewParameters.y + yDiff;
+    const x = (this.state.viewParameters.x || 0) + xDiff;
+    const y = (this.state.viewParameters.y || 0) + yDiff;
     this.setState({
       viewParameters: {
         ...this.state.viewParameters,
@@ -181,16 +226,19 @@ class SVGViewer extends React.Component {
       lastEeventType: 'userevent'
     });
   }
-
+  /**
+   * renders the component as react markup
+   * @return {ReactMarkup} component - representation of the component
+   */
   render () {
     const svgContainerStyles = {
-      transition: 'all .2s ease',
+      transition: 'all .2s ease', // todo: parametrize that
       transform: `translateX(${this.state.viewParameters.x}px)
                   translateY(${this.state.viewParameters.y}px)`
     };
 
     const svgStyles = {
-      transition: 'all .2s ease',
+      transition: 'all .2s ease', // todo: parametrize that
       transform: `perspective(${this.props.viewParameters.perspectiveLevel}px)
                   translateZ(${this.limitZoomLevel(this.state.viewParameters.zoomLevel * this.props.viewParameters.zoomFactor)}px)`
     };
@@ -216,8 +264,7 @@ class SVGViewer extends React.Component {
 }
 
 /**
- * PropTypes
- *
+ * Static properties types of the component
  */
 SVGViewer.propTypes = {
   data: PropTypes.string,
@@ -252,9 +299,12 @@ SVGViewer.propTypes = {
    */
   onUserViewChange: PropTypes.func
 };
-
+/**
+ * Static default properties of the component
+ */
 SVGViewer.defaultProps = {
   allowUserViewChange: true,
+  // todo: store that elsewhere
   viewParameters: {
     maxZoomLevel: 1000,
     minZoomLevel: -2000,

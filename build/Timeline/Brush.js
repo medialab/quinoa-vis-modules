@@ -19,15 +19,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
 
-var TimeObject = function (_Component) {
-  _inherits(TimeObject, _Component);
 
-  function TimeObject(props) {
-    _classCallCheck(this, TimeObject);
+var Brush = function (_Component) {
+  _inherits(Brush, _Component);
 
-    var _this = _possibleConstructorReturn(this, (TimeObject.__proto__ || Object.getPrototypeOf(TimeObject)).call(this, props));
+  function Brush(props) {
+    _classCallCheck(this, Brush);
+
+    var _this = _possibleConstructorReturn(this, (Brush.__proto__ || Object.getPrototypeOf(Brush)).call(this, props));
 
     _this.onMouseDown = _this.onMouseDown.bind(_this);
     _this.onMouseUp = _this.onMouseUp.bind(_this);
@@ -49,7 +50,8 @@ var TimeObject = function (_Component) {
     return _this;
   }
 
-  _createClass(TimeObject, [{
+
+  _createClass(Brush, [{
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(next) {
       if (next.from !== this.state.from || next.to !== this.state.to && this.state.state === undefined) {
@@ -68,6 +70,7 @@ var TimeObject = function (_Component) {
         });
       }
     }
+
   }, {
     key: 'updateBrush',
     value: function updateBrush(_ref, state, portion) {
@@ -97,6 +100,7 @@ var TimeObject = function (_Component) {
         });
       }
     }
+
   }, {
     key: 'onMouseDown',
     value: function onMouseDown(evt) {
@@ -126,6 +130,7 @@ var TimeObject = function (_Component) {
         this.updateBrush({ beginPortion: portion, endPortion: portion }, state, portion);
       }
     }
+
   }, {
     key: 'onMouseMove',
     value: function onMouseMove(evt) {
@@ -171,6 +176,7 @@ var TimeObject = function (_Component) {
         });
       }
     }
+
   }, {
     key: 'onMouseUp',
     value: function onMouseUp() {
@@ -182,6 +188,7 @@ var TimeObject = function (_Component) {
         previousPortion: undefined
       });
     }
+
   }, {
     key: 'onMouseWheel',
     value: function onMouseWheel(evt) {
@@ -194,6 +201,7 @@ var TimeObject = function (_Component) {
       var newEnd = this.state.endPortion + displacement;
       this.updateBrush({ beginPortion: newBegin, endPortion: newEnd }, undefined);
     }
+
   }, {
     key: 'render',
     value: function render() {
@@ -252,7 +260,7 @@ var TimeObject = function (_Component) {
     }
   }]);
 
-  return TimeObject;
+  return Brush;
 }(_react.Component);
 
-exports.default = TimeObject;
+exports.default = Brush;

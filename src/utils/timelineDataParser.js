@@ -1,7 +1,7 @@
 /**
  * This module transforms string data to a normalized js representation
  * of timeline data, able to be subjected to a mapping process
- * @module utils/timelineDataParser
+ * @module quinoa-vis-modules/utils/timelineDataParser
  */
 import {csvParse} from 'd3-dsv';
 

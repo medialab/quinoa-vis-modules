@@ -36,6 +36,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
 
+
+
 require('gexf');
 
 var Network = function (_Component) {
@@ -59,6 +61,8 @@ var Network = function (_Component) {
     return _this;
   }
 
+
+
   _createClass(Network, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
@@ -74,7 +78,7 @@ var Network = function (_Component) {
           data: _this2.props.data
         });
 
-        var coords = {
+        var coordinates = {
           x: _this2.props.viewParameters.cameraX,
           y: _this2.props.viewParameters.cameraY,
           angle: _this2.props.viewParameters.cameraAngle,
@@ -83,15 +87,18 @@ var Network = function (_Component) {
         if (_this2.sigma) {
           var camera = _this2.sigma.sigma.cameras[0];
           camera.isAnimated = true;
-          camera.goTo(coords);
+          camera.goTo(coordinates);
           camera.bind('coordinatesUpdated', _this2.onCoordinatesUpdate);
         }
       });
     }
+
+
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
-      if (this.props.data !== nextProps.data || this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap || this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories || this.props.viewParameters.colorsMap !== nextProps.viewParameters.colorsMap) {
+      if (
+      this.props.data !== nextProps.data || this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap || this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories || this.props.viewParameters.colorsMap !== nextProps.viewParameters.colorsMap) {
         var visData = this.buildVisData(nextProps.data, nextProps.viewParameters);
         if (this.sigma) {
 
@@ -119,7 +126,7 @@ var Network = function (_Component) {
         if (this.sigma) {
           var camera = this.sigma.sigma.cameras[0];
           sigma.misc.animation.camera(camera, coords, {
-            duration: 500
+            duration: 500 
           });
         }
         this.setState({
@@ -127,6 +134,7 @@ var Network = function (_Component) {
         });
       }
     }
+
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevState) {
@@ -143,6 +151,7 @@ var Network = function (_Component) {
         }
       }
     }
+
   }, {
     key: 'buildVisData',
     value: function buildVisData(data, viewParameters) {
@@ -169,6 +178,7 @@ var Network = function (_Component) {
         })
       };
     }
+
   }, {
     key: 'getNodesPositions',
     value: function getNodesPositions() {
@@ -181,11 +191,12 @@ var Network = function (_Component) {
         };
       });
     }
+
   }, {
     key: 'onCoordinatesUpdate',
     value: function onCoordinatesUpdate(event) {
       var nextCamera = event.target;
-      var coords = {
+      var coordinates = {
         cameraX: nextCamera.x,
         cameraY: nextCamera.y,
         cameraRatio: nextCamera.ratio,
@@ -193,7 +204,7 @@ var Network = function (_Component) {
       };
       if (typeof this.props.onUserViewChange === 'function') {
         this.props.onUserViewChange({
-          viewParameters: _extends({}, this.state.viewParameters, coords),
+          viewParameters: _extends({}, this.state.viewParameters, coordinates),
           lastEeventType: 'userevent'
         });
       }
@@ -224,7 +235,8 @@ var Network = function (_Component) {
       });
 
       if (visData) {
-        return forceAtlasActive ? _react2.default.createElement(
+        return forceAtlasActive ?
+        _react2.default.createElement(
           'figure',
           { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
           _react2.default.createElement(
@@ -241,7 +253,8 @@ var Network = function (_Component) {
               iterationsPerRender: 10,
               linLogMode: true })
           )
-        ) : _react2.default.createElement(
+        ) :
+        _react2.default.createElement(
           'figure',
           { className: 'quinoa-network' + (allowUserViewChange ? '' : ' locked') },
           _react2.default.createElement(_Sigma2.default, {
@@ -257,6 +270,8 @@ var Network = function (_Component) {
 
   return Network;
 }(_react.Component);
+
+
 
 Network.propTypes = {
   data: _react.PropTypes.shape({

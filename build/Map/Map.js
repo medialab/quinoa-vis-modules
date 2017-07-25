@@ -26,7 +26,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
+
+
 
 require('leaflet/dist/leaflet.css');
 
@@ -48,6 +50,8 @@ var Map = function (_Component) {
     return _this;
   }
 
+
+
   _createClass(Map, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
@@ -56,6 +60,8 @@ var Map = function (_Component) {
         this.deactivateMap(map);
       }
     }
+
+
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
@@ -64,13 +70,11 @@ var Map = function (_Component) {
           viewParameters: nextProps.viewParameters
         });
       }
-
       if (this.props.data !== nextProps.data) {
         this.setState({
           data: nextProps.data
         });
       }
-
       if (nextProps.allowUserViewChange !== this.props.allowUserViewChange) {
         var map = this.map.leafletElement;
         if (nextProps.allowUserViewChange) {
@@ -80,6 +84,7 @@ var Map = function (_Component) {
         }
       }
     }
+
   }, {
     key: 'componentWillUpdate',
     value: function componentWillUpdate(nextProps, nextState) {
@@ -160,7 +165,6 @@ var Map = function (_Component) {
           _this2.onUserViewChange(view);
         }
       };
-
       var refMap = function refMap(c) {
         _this2.map = c;
       };
@@ -240,7 +244,8 @@ var Map = function (_Component) {
             }
           })
         )
-      ) : 'Loading';
+      ) :
+      'Loading';
     }
   }]);
 
@@ -258,6 +263,8 @@ Map.propTypes = {
     }))
   }),
   viewParameters: _react.PropTypes.shape({
+    colorsMap: _react.PropTypes.object,
+    shownCategories: _react.PropTypes.object,
     cameraX: _react.PropTypes.number,
     cameraY: _react.PropTypes.number,
     cameraZoom: _react.PropTypes.number,

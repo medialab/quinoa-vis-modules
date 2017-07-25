@@ -71,6 +71,7 @@ var Timeline = function (_React$Component) {
     return _this;
   }
 
+
   _createClass(Timeline, [{
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
@@ -111,18 +112,19 @@ var Timeline = function (_React$Component) {
             })
           });
         }
-
-      } else if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
-        this.setState({
-          viewParameters: _extends({}, nextProps.viewParameters)
-        });
       }
+      else if (JSON.stringify(this.props.viewParameters) !== JSON.stringify(nextProps.viewParameters)) {
+          this.setState({
+            viewParameters: _extends({}, nextProps.viewParameters)
+          });
+        }
 
       if (this.props.data !== nextProps.data) {
         var newStateParts = (0, _utils.computeDataRelatedState)(nextProps.data, nextProps.viewParameters);
         this.setState(_extends({}, newStateParts));
       }
     }
+
   }, {
     key: 'componentWillUpdate',
     value: function componentWillUpdate(nextProps, nextState) {
@@ -231,6 +233,7 @@ var Timeline = function (_React$Component) {
         viewParameters: viewParameters
       });
     }
+
   }, {
     key: 'selectObject',
     value: function selectObject(id) {
@@ -242,6 +245,7 @@ var Timeline = function (_React$Component) {
         viewParameters: viewParameters
       });
     }
+
   }, {
     key: 'resetSelection',
     value: function resetSelection() {
@@ -276,7 +280,6 @@ var Timeline = function (_React$Component) {
       var selectedObject = viewParameters.selectedObjectId ? visData.find(function (obj) {
         return obj.id === viewParameters.selectedObjectId;
       }) : undefined;
-
       var ticksParams = (0, _utils.setTicks)(viewParameters.toDate - viewParameters.fromDate);
       var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
 
@@ -320,6 +323,8 @@ var Timeline = function (_React$Component) {
   return Timeline;
 }(_react2.default.Component);
 
+
+
 Timeline.propTypes = {
   data: _react.PropTypes.shape({
     main: _react.PropTypes.arrayOf(_react.PropTypes.shape({
@@ -333,6 +338,8 @@ Timeline.propTypes = {
     }))
   }),
   viewParameters: _react.PropTypes.shape({
+    shownCategories: _react.PropTypes.object, 
+    colorsMap: _react.PropTypes.object, 
     fromDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
     toDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
     orientation: _react.PropTypes.oneOf(['landscape', 'portrait'])

@@ -1,4 +1,11 @@
+/**
+ * This module exports a stateful customizable map component
+ * @module quinoa-vis-modules/Map
+ */
+
 import React, {Component, PropTypes} from 'react';
+// the module relies heavily on react-leaflet which is used
+// as a map renderer
 import {
   Map as MapComponent,
   Marker,
@@ -9,17 +16,18 @@ import {
 } from 'react-leaflet';
 import {divIcon} from 'leaflet';
 import {debounce} from 'lodash';
-// require leaflet code
+// require leaflet styling code
 require('leaflet/dist/leaflet.css');
 
 import './Map.scss';
 
 /**
- * Map main component
+ * Map class for building map react component instances
  */
 class Map extends Component {
   /**
    * constructor
+   * @param {object} props - properties given to instance at instanciation
    */
   constructor(props) {
     super(props);
@@ -27,11 +35,16 @@ class Map extends Component {
       data: props.data,
       viewParameters: props.viewParameters
     };
+    // we debounce user view change as a quickfix
+    // to leaflet's callback inconsistencies
     this.onUserViewChange = debounce(this.onUserViewChange, 100);
     this.activateMap = this.activateMap.bind(this);
     this.deactivateMap = this.deactivateMap.bind(this);
   }
 
+  /**
+   * Executes code on instance after the component is mounted
+   */
   componentDidMount () {
     const map = this.map.leafletElement;
     // disable leaflet instance interactivity if change is not allowed
@@ -40,22 +53,28 @@ class Map extends Component {
     }
   }
 
+  /**
+   * Executes code when component receives new properties
+   * @param {object} nextProps - the future properties of the component
+   */
   componentWillReceiveProps(nextProps) {
+    // update viewParameters if changed
     if (this.props.viewParameters !== nextProps.viewParameters) {
       this.setState({
         viewParameters: nextProps.viewParameters
       });
     }
-
+    // update data if changed
     if (this.props.data !== nextProps.data) {
       this.setState({
         data: nextProps.data
       });
     }
-
+    // update map state if readOnly mode changes
     if (nextProps.allowUserViewChange !== this.props.allowUserViewChange) {
       const map = this.map.leafletElement;
       if (nextProps.allowUserViewChange) {
+        // we have to manipulate the map component imperatively
         this.activateMap(map);
       }
       else {
@@ -63,7 +82,11 @@ class Map extends Component {
       }
     }
   }
-
+  /**
+   * Executes code before component updates
+   * @param {object} nextProps - properties component will have
+   * @param {object} nextState - future state of the component
+   */
   componentWillUpdate(nextProps, nextState) {
     if (this.state.lastEventDate !== nextState.lastEventDate && typeof this.props.onUserViewChange === 'function') {
       this.props.onUserViewChange({
@@ -74,7 +97,7 @@ class Map extends Component {
   }
 
   /**
-   * Enables interactivity on leaflet map instance
+   * Enables interactivity on leaflet map instance imperatively
    * @param {Leaflet.leafletElement} map - leaflet map instance to manipulate
    */
   activateMap (map) {
@@ -90,7 +113,7 @@ class Map extends Component {
   }
 
   /**
-   * Disables interactivity on leaflet map instance
+   * Disables interactivity on leaflet map instance imperatively
    * @param {Leaflet.leafletElement} map - leaflet map instance to manipulate
    */
   deactivateMap (map) {
@@ -107,6 +130,7 @@ class Map extends Component {
 
   /**
    * Lets instance parent to know when user has updated view
+   * @param {object} newParameters - new view parameters to merge with the existing
    * @param {string} lastEventType - event type of the last event triggered by user
    */
   onUserViewChange (newParameters, lastEventType) {
@@ -121,6 +145,7 @@ class Map extends Component {
   }
   /**
    * Renders the component
+   * @return {ReactMarkup} the component react representation
    */
   render() {
     const {
@@ -135,6 +160,9 @@ class Map extends Component {
     const position = [viewParameters.cameraX, viewParameters.cameraY];
     const zoom = viewParameters.cameraZoom;
 
+    /**
+     * callbacks
+     */
     const onMoveEnd = (evt = {}) => {
       if (evt.target) {
         const coords = evt.target.getCenter();
@@ -146,7 +174,9 @@ class Map extends Component {
         this.onUserViewChange(view);
       }
     };
-
+    /**
+     * references bindings
+     */
     const refMap = (c) => {
       this.map = c;
     };
@@ -163,9 +193,11 @@ class Map extends Component {
 
           {
             data && data.main.map((obj, index) => {
+              // each object on the map is rendered separately
               const shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.find(cat => obj.category + '' === cat + '') !== undefined : true;
               const color = (viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default);
               let coordinates;
+              // object geometry types must comply to the geoJSON specification
               switch (obj.geometry.type) {
                 case 'Point':
                   const thatPosition = obj.geometry.coordinates;
@@ -220,7 +252,9 @@ class Map extends Component {
 
         </MapComponent>
       </figure>
-    ) : 'Loading';
+    )
+    // fallback when no data (todo: harmonize that accross components)
+    : 'Loading';
   }
 }
 
@@ -229,6 +263,8 @@ Map.propTypes = {
    * Incoming data in json format
    */
   data: PropTypes.shape({
+    // for now the component accepts a single "main" collection of data
+    // but we could imagine to allow more and display them as several layers
     main: PropTypes.arrayOf(PropTypes.shape({
       title: PropTypes.string,
       category: PropTypes.string,
@@ -242,8 +278,14 @@ Map.propTypes = {
    * object describing the current view (some being exposed to user interaction like pan and pan params, others not)
    */
   viewParameters: PropTypes.shape({
-    // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
-    // shownCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
+    /*
+     * Colors map - which colors to associate with which value
+     */
+    colorsMap: PropTypes.object,
+    /*
+     * Filters-related object
+     */
+    shownCategories: PropTypes.object,
     /*
      * Camera position related parameters
      */

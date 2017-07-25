@@ -21,7 +21,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } 
+
 
 var TimeTick = function (_Component) {
   _inherits(TimeTick, _Component);
@@ -38,11 +39,13 @@ var TimeTick = function (_Component) {
     return _this;
   }
 
+
   _createClass(TimeTick, [{
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.update(this.state.y, this.props.transitionsDuration);
     }
+
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(next) {
@@ -53,9 +56,7 @@ var TimeTick = function (_Component) {
         });
       }
     }
-  }, {
-    key: 'componentWillUnmount',
-    value: function componentWillUnmount() {}
+
   }, {
     key: 'update',
     value: function update(y, transitionsDuration) {
@@ -83,6 +84,8 @@ var TimeTick = function (_Component) {
         this.transition = (0, _d3Timer.timer)(onTick, transitionsDuration);
       }
     }
+
+
   }, {
     key: 'render',
     value: function render() {

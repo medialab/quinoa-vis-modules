@@ -1,20 +1,31 @@
 /* eslint no-undef: 0 */
+/**
+ * This module exports a stateful customizable network component
+ * @module quinoa-vis-modules/Network
+ */
 
 import React, {Component, PropTypes} from 'react';
 
 import {debounce} from 'lodash';
-
+// component uses sigma and react-sigma as a renderer
 import Sigma from 'react-sigma/lib/Sigma';
 import ForceAtlas2 from 'react-sigma/lib/ForceAtlas2';
 
 import chroma from 'chroma-js';
-
+// gexf is a lib that allows to manipulate xml/gexf data
 require('gexf');
 
 import './Network.scss';
 
+/**
+ * Network class for building network react component instances
+ */
 class Network extends Component {
-
+  /**
+   * constructor
+   * @param {object} props - properties given to instance at instanciation
+   * @param {object} context - context given to instance at instanciation
+   */
   constructor(props, context) {
     super(props, context);
     this.onCoordinatesUpdate = debounce(this.onCoordinatesUpdate.bind(this), 100);
@@ -29,35 +40,48 @@ class Network extends Component {
     this.buildVisData = this.buildVisData.bind(this);
   }
 
+  /**
+   * Executes code after the component was mounted
+   */
   componentDidMount() {
+    // we build data with proper params/data mapping
     const visData = this.buildVisData(this.props.data, this.props.viewParameters);
+    // component mounting has to be wrapped in a timeout
+    // to let sigma initialize a first time
     setTimeout(() => {
+      // for security we first clear the graph
       if (this.sigma) {
         this.sigma.sigma.graph.clear();
       }
+      // vis will be reloaded with correct data
       this.setState({
         visData,
         data: this.props.data
       });
 
-      const coords = {
+      const coordinates = {
         x: this.props.viewParameters.cameraX,
         y: this.props.viewParameters.cameraY,
         angle: this.props.viewParameters.cameraAngle,
         ratio: this.props.viewParameters.cameraRatio,
       };
       if (this.sigma) {
+        // we position the camera to its first position
         const camera = this.sigma.sigma.cameras[0];
         camera.isAnimated = true;
-        camera.goTo(coords);
+        camera.goTo(coordinates);
         camera.bind('coordinatesUpdated', this.onCoordinatesUpdate);
       }
     });
   }
 
-
+  /**
+   * Executes code when props change
+   * @param {nextProps} - props to come
+   */
   componentWillReceiveProps(nextProps) {
     if (
+      // these are all the cases in which the vis data has to be rebuilt
       this.props.data !== nextProps.data ||
       this.props.viewParameters.dataMap !== nextProps.viewParameters.dataMap ||
       this.props.viewParameters.shownCategories !== nextProps.viewParameters.shownCategories ||
@@ -65,9 +89,9 @@ class Network extends Component {
     ) {
       const visData = this.buildVisData(nextProps.data, nextProps.viewParameters);
       if (this.sigma) {
-        // console.time('update graph');
 
         // this is a first method to updating graph by mutating its data directly (witness benchmark: 2242 ms)
+        // (Guillaume told me there is a better way to do that but we did not have the time to see it together)
         // const nodes = this.sigma.sigma.graph.nodes();
         // const edges = this.sigma.sigma.graph.edges();
 
@@ -93,8 +117,6 @@ class Network extends Component {
         this.sigma.sigma.graph.clear();
         this.sigma.sigma.graph.read(visData);
         this.sigma.sigma.refresh();
-        // console.timeEnd('update graph');
-
       }
       this.setState({
         visData,
@@ -103,7 +125,8 @@ class Network extends Component {
       });
     }
     if (
-      // this.props.viewParameters !== nextProps.viewParameters  // ||
+      // we hard compare the view parameters values
+      // (todo: this is an expensive quickfix that should not be necessary)
       JSON.stringify(this.state.viewParameters) !== JSON.stringify(nextProps.viewParameters)
     ) {
       const coords = {
@@ -118,7 +141,7 @@ class Network extends Component {
           camera,
           coords,
           {
-            duration: 500
+            duration: 500// todo: put that elsewhere, as a config variable
           }
         );
       }
@@ -127,7 +150,10 @@ class Network extends Component {
       });
     }
   }
-
+  /**
+   * Executes code after component updated
+   * @param {object} prevState - the state before update
+   */
   componentDidUpdate(prevState) {
     // forcing update for graph settings changes
     if (prevState.viewParameters.labelThreshold !== this.state.viewParameters.labelThreshold) {
@@ -143,7 +169,13 @@ class Network extends Component {
       }
     }
   }
-
+  /**
+   * Builds a js representation of the graph data
+   * that fits with active filters and colors map
+   * @param {object} data - the data to consume
+   * @param {object} viewParameters - the view parameters(including colorsMap and shownCategories) to consume
+   * @return {object} graphData - consumable graph data
+   */
   buildVisData(data, viewParameters) {
     const shownCats = viewParameters.shownCategories;
     return {
@@ -178,7 +210,10 @@ class Network extends Component {
          })
     };
   }
-
+  /**
+   * Extracts from current graph data the position of the nodes
+   * @return {array} nodes --> a representation of the nodes positions (+ their id)
+   */
   getNodesPositions () {
     const nodes = this.sigma.sigma.graph.nodes();
     return nodes.map(node => ({
@@ -187,10 +222,13 @@ class Network extends Component {
       id: node.id
     }));
   }
-
+  /**
+   * Wraps sigma's camera change event and triggers proper callbacks
+   * @param {object} event - the sigma-triggered event
+   */
   onCoordinatesUpdate (event) {
     const nextCamera = event.target;
-    const coords = {
+    const coordinates = {
       cameraX: nextCamera.x,
       cameraY: nextCamera.y,
       cameraRatio: nextCamera.ratio,
@@ -200,7 +238,7 @@ class Network extends Component {
       this.props.onUserViewChange({
         viewParameters: {
           ...this.state.viewParameters,
-          ...coords
+          ...coordinates
         },
         lastEeventType: 'userevent'
       });
@@ -230,7 +268,10 @@ class Network extends Component {
     };
 
     if (visData) {
+      // Component can handle forceAtlas2 spatialization on its data
+      // or not
       return forceAtlasActive ?
+      // with forceAtlas
       (
         <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
           <Sigma
@@ -238,6 +279,10 @@ class Network extends Component {
             graph={visData}
             ref={bindSigInst}
             settings={settings}>
+            {/*
+              react-sigma uses a weird way to specify parameters through children components
+              but that's life.
+             */}
             <ForceAtlas2
               worker
               barnesHutOptimize
@@ -247,6 +292,7 @@ class Network extends Component {
           </Sigma>
         </figure>
       )
+      // without force atlas
       : (
         <figure className={'quinoa-network' + (allowUserViewChange ? '' : ' locked')}>
           <Sigma
@@ -261,6 +307,9 @@ class Network extends Component {
   }
 }
 
+/**
+ * Static properties types of the component
+ */
 Network.propTypes = {
   /*
    * Incoming data

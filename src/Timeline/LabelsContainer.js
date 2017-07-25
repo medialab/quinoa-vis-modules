@@ -1,12 +1,21 @@
+/**
+ * This module exports a labels container component
+ * @module quinoa-vis-modules/Timeline
+ */
 import React, {Component} from 'react';
-
 
 import {scaleLinear} from 'd3-scale';
 import {max} from 'd3-array';
 
 import Label from './Label';
-
+/**
+ * LabelsContainer main component
+ */
 export default class LabelsContainer extends Component {
+  /**
+   * constructor
+   * @param {object} props - props received by instance at initialization
+   */
   constructor(props) {
     super(props);
     this.update = this.update.bind(this);
@@ -17,26 +26,35 @@ export default class LabelsContainer extends Component {
     };
     this.toggleLabelHover = this.toggleLabelHover.bind(this);
   }
-
+  /**
+   * Executes code on instance after the component is mounted
+   */
   componentDidMount() {
     const {props, state, update} = this;
     update(props, props, state);
   }
-
+  /**
+   * Executes code when component receives new properties
+   * @param {object} nextProps - the future properties of the component
+   */
   componentWillReceiveProps(next) {
     const {props, update} = this;
     if (props !== next) {
       update(next);
     }
   }
-
+  /**
+   * Handle toggling the "hover" state of a specific label
+   * @param {string} objectId - the id of the object to toggle
+   * @param {boolean} value - the hover value to set for the targeted object
+   */
   toggleLabelHover (objectId, value) {
     if (!value) {
       this.setState({
         hoveredLabelId: undefined
       });
     }
- else {
+    else {
       let hoveredIndex;
       let hovered;
       this.state.timeObjects.some((timeObject, index) => {
@@ -72,7 +90,10 @@ export default class LabelsContainer extends Component {
       timeObjects
     });
   }
-
+  /**
+   * Renders the component
+   * @return {ReactMarkup} component - representation of the component
+   */
   render() {
     const {
       viewParameters,
@@ -115,6 +136,7 @@ export default class LabelsContainer extends Component {
           })
         }
       </g>
-    ) : null;
+    )
+    : null;
   }
 }

@@ -1,6 +1,17 @@
+/**
+ * This module exports a component for displaying a pannel to display
+ * when a timeline object is selected
+ * @module quinoa-vis-modules/Timeline
+ */
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
+/**
+ * ObjectDetail main component
+ * @param {boolean} active - the pannel is visible or not
+ * @param {object} timeObject - the data point to consume to populate the pannel
+ * @param {string} formatDate - the date pattern to use to display dates
+ */
 const ObjectDetail = ({
   active,
   timeObject,

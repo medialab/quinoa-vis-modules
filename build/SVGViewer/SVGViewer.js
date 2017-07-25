@@ -50,6 +50,8 @@ var SVGViewer = function (_React$Component) {
     return _this;
   }
 
+
+
   _createClass(SVGViewer, [{
     key: 'componentWillMount',
     value: function componentWillMount() {
@@ -72,6 +74,8 @@ var SVGViewer = function (_React$Component) {
     value: function componentDidMount() {
       return this.mountSVG(this.parseSVG(this.props.data));
     }
+
+
   }, {
     key: 'componentWillReceiveProps',
     value: function componentWillReceiveProps(nextProps) {
@@ -84,6 +88,8 @@ var SVGViewer = function (_React$Component) {
         this.mountSVG(this.mountSVG(this.parseSVG(this.props.data)));
       }
     }
+
+
   }, {
     key: 'shouldComponentUpdate',
     value: function shouldComponentUpdate(nextProps, nextState) {
@@ -114,13 +120,16 @@ var SVGViewer = function (_React$Component) {
     value: function mountSVG(svgDom) {
       this.setState({ svg: svgDom });
     }
+
   }, {
     key: 'mouseWheelHandler',
     value: function mouseWheelHandler(e) {
-      e.preventDefault();
+      event.preventDefault();
       var amount = e.deltaY;
       this.zoom(amount);
     }
+
+
   }, {
     key: 'zoom',
     value: function zoom(amount) {
@@ -139,6 +148,8 @@ var SVGViewer = function (_React$Component) {
         });
       }
     }
+
+
   }, {
     key: 'limitZoomLevel',
     value: function limitZoomLevel(level) {
@@ -152,6 +163,7 @@ var SVGViewer = function (_React$Component) {
 
       return level;
     }
+
   }, {
     key: 'startDrag',
     value: function startDrag(e) {
@@ -165,20 +177,22 @@ var SVGViewer = function (_React$Component) {
       });
       e.currentTarget.addEventListener('mousemove', this.doDrag);
     }
+
   }, {
     key: 'stopDrag',
     value: function stopDrag(e) {
       this.setState({ isDragEnabled: false });
       e.currentTarget.removeEventListener('mousemove', this.doDrag);
     }
+
   }, {
     key: 'doDrag',
     value: function doDrag(e) {
       if (!this.state.isDragEnabled) return;
       var xDiff = e.clientX - this.state.dragOffset.x;
       var yDiff = e.clientY - this.state.dragOffset.y;
-      var x = this.state.viewParameters.x + xDiff;
-      var y = this.state.viewParameters.y + yDiff;
+      var x = (this.state.viewParameters.x || 0) + xDiff;
+      var y = (this.state.viewParameters.y || 0) + yDiff;
       this.setState({
         viewParameters: _extends({}, this.state.viewParameters, {
           x: x,
@@ -197,16 +211,17 @@ var SVGViewer = function (_React$Component) {
         lastEeventType: 'userevent'
       });
     }
+
   }, {
     key: 'render',
     value: function render() {
       var svgContainerStyles = {
-        transition: 'all .2s ease',
+        transition: 'all .2s ease', 
         transform: 'translateX(' + this.state.viewParameters.x + 'px)\n                  translateY(' + this.state.viewParameters.y + 'px)'
       };
 
       var svgStyles = {
-        transition: 'all .2s ease',
+        transition: 'all .2s ease', 
         transform: 'perspective(' + this.props.viewParameters.perspectiveLevel + 'px)\n                  translateZ(' + this.limitZoomLevel(this.state.viewParameters.zoomLevel * this.props.viewParameters.zoomFactor) + 'px)'
       };
 
@@ -251,7 +266,6 @@ SVGViewer.propTypes = {
   allowUserViewChange: _react.PropTypes.bool,
   onUserViewChange: _react.PropTypes.func
 };
-
 SVGViewer.defaultProps = {
   allowUserViewChange: true,
   viewParameters: {

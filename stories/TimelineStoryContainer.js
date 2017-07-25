@@ -25,7 +25,6 @@ export default class TimelineStoryContainer extends React.Component {
       }
     });
   }
-
   render() {
       return (
         <div style={{

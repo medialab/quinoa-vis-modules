@@ -1,3 +1,7 @@
+/**
+ * Unit tests for the mapDataParser module
+ */
+
 import {
   reverseCoordinates,
   flattenGeoJSON
