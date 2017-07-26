@@ -153,8 +153,9 @@ class Network extends Component {
   /**
    * Executes code after component updated
    * @param {object} prevState - the state before update
+   * @param {object} prevProps - the props before update
    */
-  componentDidUpdate(prevState) {
+  componentDidUpdate(prevState, prevProps) {
     // forcing update for graph settings changes
     if (prevState.viewParameters.labelThreshold !== this.state.viewParameters.labelThreshold) {
       if (this.sigma) {
@@ -167,6 +168,9 @@ class Network extends Component {
         this.sigma.sigma.renderers[0].settings('minNodeSize', this.state.viewParameters.minNodeSize);
         this.sigma.sigma.refresh();
       }
+    }
+    if (prevProps.allowUserViewChange !== this.props.allowUserViewChange) {
+      this.sigma.sigma.settings('mouseEnabled', this.props.allowUserViewChange);
     }
   }
   /**

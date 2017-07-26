@@ -137,7 +137,7 @@ var Network = function (_Component) {
 
   }, {
     key: 'componentDidUpdate',
-    value: function componentDidUpdate(prevState) {
+    value: function componentDidUpdate(prevState, prevProps) {
       if (prevState.viewParameters.labelThreshold !== this.state.viewParameters.labelThreshold) {
         if (this.sigma) {
           this.sigma.sigma.renderers[0].settings('labelThreshold', this.state.viewParameters.labelThreshold);
@@ -149,6 +149,9 @@ var Network = function (_Component) {
           this.sigma.sigma.renderers[0].settings('minNodeSize', this.state.viewParameters.minNodeSize);
           this.sigma.sigma.refresh();
         }
+      }
+      if (prevProps.allowUserViewChange !== this.props.allowUserViewChange) {
+        this.sigma.sigma.settings('mouseEnabled', this.props.allowUserViewChange);
       }
     }
 

@@ -181,7 +181,7 @@ var Map = function (_Component) {
             animate: true },
           _react2.default.createElement(_reactLeaflet.TileLayer, {
             url: viewParameters.tilesUrl }),
-          data && data.main.map(function (obj, index) {
+          data && data.main && Array.isArray(data.main) ? data.main.map(function (obj, index) {
             var shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.find(function (cat) {
               return obj.category + '' === cat + '';
             }) !== undefined : true;
@@ -242,7 +242,7 @@ var Map = function (_Component) {
                 return '';
 
             }
-          })
+          }) : null
         )
       ) :
       'Loading';
