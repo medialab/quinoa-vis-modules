@@ -115,7 +115,7 @@ class Network extends Component {
 
         // this is a second method to updating graph by clearing it and reloading (witness benchmark: 227 ms - adopted)
         this.sigma.sigma.graph.clear();
-        this.sigma.sigma.graph.read(visData);
+        // this.sigma.sigma.graph.read(visData);
         this.sigma.sigma.refresh();
       }
       this.setState({

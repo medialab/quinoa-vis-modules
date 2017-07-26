@@ -106,7 +106,6 @@ var Network = function (_Component) {
 
 
           this.sigma.sigma.graph.clear();
-          this.sigma.sigma.graph.read(visData);
           this.sigma.sigma.refresh();
         }
         this.setState({
