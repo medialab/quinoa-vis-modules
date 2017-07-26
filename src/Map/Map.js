@@ -6,6 +6,8 @@
 import React, {Component, PropTypes} from 'react';
 // the module relies heavily on react-leaflet which is used
 // as a map renderer
+// see http://leafletjs.com/
+// see https://github.com/PaulLeCam/react-leaflet
 import {
   Map as MapComponent,
   Marker,
@@ -164,6 +166,7 @@ class Map extends Component {
      * callbacks
      */
     const onMoveEnd = (evt = {}) => {
+      // evt.target is the leaflet instance
       if (evt.target) {
         const coords = evt.target.getCenter();
         const view = {
@@ -192,7 +195,10 @@ class Map extends Component {
             url={viewParameters.tilesUrl} />
 
           {
-            data && data.main.map((obj, index) => {
+            data &&
+            data.main &&
+            Array.isArray(data.main) ?
+            data.main.map((obj, index) => {
               // each object on the map is rendered separately
               const shown = viewParameters.shownCategories ? obj.category && viewParameters.shownCategories.main.find(cat => obj.category + '' === cat + '') !== undefined : true;
               const color = (viewParameters.colorsMap.main && viewParameters.colorsMap.main[obj.category]) || (viewParameters.colorsMap.main.default || viewParameters.colorsMap.default);
@@ -248,6 +254,7 @@ class Map extends Component {
 
               }
             })
+            : null
           }
 
         </MapComponent>
