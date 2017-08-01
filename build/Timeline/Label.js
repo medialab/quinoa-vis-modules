@@ -88,7 +88,7 @@ var Label = function (_Component) {
         return _this2.toggleHover(false);
       };
       var handleClick = function handleClick() {
-        return onObjectSelection(timeObject.id);
+        onObjectSelection(timeObject.id);
       };
       var bindTextRef = function bindTextRef(text) {
         _this2.text = text;

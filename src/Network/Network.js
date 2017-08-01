@@ -115,7 +115,7 @@ class Network extends Component {
 
         // this is a second method to updating graph by clearing it and reloading (witness benchmark: 227 ms - adopted)
         this.sigma.sigma.graph.clear();
-        // this.sigma.sigma.graph.read(visData);
+        this.sigma.sigma.graph.read(visData);
         this.sigma.sigma.refresh();
       }
       this.setState({
@@ -169,7 +169,7 @@ class Network extends Component {
         this.sigma.sigma.refresh();
       }
     }
-    if (prevProps.allowUserViewChange !== this.props.allowUserViewChange) {
+    if (prevProps.allowUserViewChange !== this.props.allowUserViewChange && this.sigma) {
       this.sigma.sigma.settings('mouseEnabled', this.props.allowUserViewChange);
     }
   }
@@ -364,8 +364,8 @@ Network.propTypes = {
     cameraY: PropTypes.number,
     cameraRatio: PropTypes.number,
     cameraAngle: PropTypes.number,
-    // colorsMap: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
-    // shownCategories: PropTypes.object, // commented because it cannot be specified a priori, which gets the linter on nerves
+    colorsMap: PropTypes.object,
+    shownCategories: PropTypes.object,
     /*
      * Graph settings parameters
      */

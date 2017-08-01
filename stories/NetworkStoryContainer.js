@@ -13,6 +13,14 @@ export default class NetworkStoryContainer extends React.Component {
     }
     this.changeState = this.changeState.bind(this);
     this.changeColorMap = this.changeColorMap.bind(this);
+
+    this.toggleReadonly = this.toggleReadonly.bind(this);
+  }
+
+  toggleReadonly() {
+    this.setState({
+      allowUserViewChange: !this.state.allowUserViewChange
+    })
   }
 
   changeState() {
@@ -71,6 +79,7 @@ export default class NetworkStoryContainer extends React.Component {
         <aside>
           <button onClick={this.changeState}>Change state</button>
           <button onClick={this.changeColorMap}>Change color map</button>
+          <button onClick={this.toggleReadonly}>{this.state.allowUserViewChange ? 'lock' : 'unlock'}</button>
         </aside>
         <div style={{
           flex: 5,

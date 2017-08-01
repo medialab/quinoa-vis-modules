@@ -106,6 +106,7 @@ var Network = function (_Component) {
 
 
           this.sigma.sigma.graph.clear();
+          this.sigma.sigma.graph.read(visData);
           this.sigma.sigma.refresh();
         }
         this.setState({
@@ -149,7 +150,7 @@ var Network = function (_Component) {
           this.sigma.sigma.refresh();
         }
       }
-      if (prevProps.allowUserViewChange !== this.props.allowUserViewChange) {
+      if (prevProps.allowUserViewChange !== this.props.allowUserViewChange && this.sigma) {
         this.sigma.sigma.settings('mouseEnabled', this.props.allowUserViewChange);
       }
     }
@@ -304,6 +305,8 @@ Network.propTypes = {
     cameraY: _react.PropTypes.number,
     cameraRatio: _react.PropTypes.number,
     cameraAngle: _react.PropTypes.number,
+    colorsMap: _react.PropTypes.object,
+    shownCategories: _react.PropTypes.object,
     labelThreshold: _react.PropTypes.number,
     minNodeSize: _react.PropTypes.number,
     sideMargin: _react.PropTypes.number

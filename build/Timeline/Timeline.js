@@ -107,8 +107,7 @@ var Timeline = function (_React$Component) {
           this.setState({
             viewParameters: _extends({}, this.state.viewParameters, {
               fromDate: newFrom,
-              toDate: newTo,
-              selectedObjectId: nextProps.viewParameters.selectObjectId
+              toDate: newTo
             })
           });
         }
@@ -277,6 +276,7 @@ var Timeline = function (_React$Component) {
 
 
       var visData = (0, _utils.normalizeData)(this.props.data);
+
       var selectedObject = viewParameters.selectedObjectId ? visData.find(function (obj) {
         return obj.id === viewParameters.selectedObjectId;
       }) : undefined;

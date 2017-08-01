@@ -43,7 +43,6 @@ const timelineBaseViewParameters = {
 };
 
 const timelineData = mapTimelineData(parseTimelineData(timelineDataRaw), {main: timelineDataMap});
-
 storiesOf('Timeline', module)
   .add('default', () => (
     <Timeline
@@ -63,6 +62,17 @@ storiesOf('Timeline', module)
         shownCategories: {
           main: ['computation']
         }
+      }}
+    />
+  ))
+  .add('with an object selected', () => (
+    <Timeline
+      allowUserViewChange ={true}
+      data={timelineData}
+      onUserViewChange={(e) => console.log('on view change', e)}
+      viewParameters = {{
+        ...timelineBaseViewParameters,
+        selectedObjectId: 209
       }}
     />
   ))
