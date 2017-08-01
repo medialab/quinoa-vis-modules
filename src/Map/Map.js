@@ -147,7 +147,7 @@ class Map extends Component {
   }
   /**
    * Renders the component
-   * @return {ReactMarkup} the component react representation
+   * @return {ReactElement} the component react representation
    */
   render() {
     const {

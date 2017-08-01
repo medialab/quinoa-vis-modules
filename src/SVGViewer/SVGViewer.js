@@ -228,7 +228,7 @@ class SVGViewer extends React.Component {
   }
   /**
    * renders the component as react markup
-   * @return {ReactMarkup} component - representation of the component
+   * @return {ReactElement} component - representation of the component
    */
   render () {
     const svgContainerStyles = {

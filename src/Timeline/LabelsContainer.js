@@ -92,7 +92,7 @@ export default class LabelsContainer extends Component {
   }
   /**
    * Renders the component
-   * @return {ReactMarkup} component - representation of the component
+   * @return {ReactElement} component - representation of the component
    */
   render() {
     const {

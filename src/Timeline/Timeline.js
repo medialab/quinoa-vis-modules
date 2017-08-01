@@ -90,7 +90,7 @@ class Timeline extends React.Component {
             ...this.state.viewParameters,
             fromDate: newFrom,
             toDate: newTo,
-            selectedObjectId: nextProps.viewParameters.selectObjectId
+            // selectedObjectId: nextProps.viewParameters.selectObjectId
           }
         });
       }
@@ -264,7 +264,7 @@ class Timeline extends React.Component {
 
   /**
    * Renders the component
-   * @return {ReactMarkup} component - react representation of the component
+   * @return {ReactElement} component - react representation of the component
    */
   render () {
     const {
@@ -281,7 +281,9 @@ class Timeline extends React.Component {
       timeBoundaries
     } = this.state;
 
+
     const visData = normalizeData(this.props.data);
+
     const selectedObject = viewParameters.selectedObjectId ?
       visData.find(obj => obj.id === viewParameters.selectedObjectId)
       : undefined;

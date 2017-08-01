@@ -33,7 +33,7 @@ export default class Label extends Component {
   }
   /**
    * Renders the component
-   * @return {ReactMarkup} component - react representation of the component
+   * @return {ReactElement} component - react representation of the component
    */
   render() {
     const {
@@ -76,7 +76,9 @@ export default class Label extends Component {
      */
     const onMouseEnter = () => this.toggleHover(true);
     const onMouseLeave = () => this.toggleHover(false);
-    const handleClick = () => onObjectSelection(timeObject.id);
+    const handleClick = () => {
+      onObjectSelection(timeObject.id);
+    };
     /**
      * Reference binding
      */

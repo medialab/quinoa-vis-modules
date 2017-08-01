@@ -1,3 +1,6 @@
+/**
+ * Webpack configuration for handling the component's source code
+ */
 module.exports = {
   module: {
     loaders: [

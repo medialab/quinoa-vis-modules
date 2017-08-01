@@ -74,7 +74,7 @@ export default class MiniTimeline extends Component {
   }
   /**
    * Renders the component
-   * @return {ReactMarkup} component - react representation of the component
+   * @return {ReactElement} component - react representation of the component
    */
   render() {
     const {
