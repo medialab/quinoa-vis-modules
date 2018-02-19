@@ -12,6 +12,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _lodash = require('lodash');
 
 var _Sigma = require('react-sigma/lib/Sigma');
@@ -277,42 +281,42 @@ var Network = function (_Component) {
 
 
 Network.propTypes = {
-  data: _react.PropTypes.shape({
-    nodes: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-      label: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
-      category: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
-      description: _react.PropTypes.string,
-      size: _react.PropTypes.number,
-      x: _react.PropTypes.number,
-      y: _react.PropTypes.number,
-      id: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number])
+  data: _propTypes2.default.shape({
+    nodes: _propTypes2.default.arrayOf(_propTypes2.default.shape({
+      label: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]),
+      category: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]),
+      description: _propTypes2.default.string,
+      size: _propTypes2.default.number,
+      x: _propTypes2.default.number,
+      y: _propTypes2.default.number,
+      id: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number])
     })),
-    edges: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-      label: _react.PropTypes.string,
-      type: _react.PropTypes.string,
-      category: _react.PropTypes.string,
-      description: _react.PropTypes.string,
-      weight: _react.PropTypes.number,
-      id: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
-      source: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number]),
-      target: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.number])
+    edges: _propTypes2.default.arrayOf(_propTypes2.default.shape({
+      label: _propTypes2.default.string,
+      type: _propTypes2.default.string,
+      category: _propTypes2.default.string,
+      description: _propTypes2.default.string,
+      weight: _propTypes2.default.number,
+      id: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]),
+      source: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number]),
+      target: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.number])
     })),
-    spatialized: _react.PropTypes.bool
+    spatialized: _propTypes2.default.bool
   }),
-  forceAtlasActive: _react.PropTypes.bool,
-  viewParameters: _react.PropTypes.shape({
-    cameraX: _react.PropTypes.number,
-    cameraY: _react.PropTypes.number,
-    cameraRatio: _react.PropTypes.number,
-    cameraAngle: _react.PropTypes.number,
-    colorsMap: _react.PropTypes.object,
-    shownCategories: _react.PropTypes.object,
-    labelThreshold: _react.PropTypes.number,
-    minNodeSize: _react.PropTypes.number,
-    sideMargin: _react.PropTypes.number
+  forceAtlasActive: _propTypes2.default.bool,
+  viewParameters: _propTypes2.default.shape({
+    cameraX: _propTypes2.default.number,
+    cameraY: _propTypes2.default.number,
+    cameraRatio: _propTypes2.default.number,
+    cameraAngle: _propTypes2.default.number,
+    colorsMap: _propTypes2.default.object,
+    shownCategories: _propTypes2.default.object,
+    labelThreshold: _propTypes2.default.number,
+    minNodeSize: _propTypes2.default.number,
+    sideMargin: _propTypes2.default.number
   }),
-  allowUserViewChange: _react.PropTypes.bool,
-  onUserViewChange: _react.PropTypes.func
+  allowUserViewChange: _propTypes2.default.bool,
+  onUserViewChange: _propTypes2.default.func
 };
 
 exports.default = Network;

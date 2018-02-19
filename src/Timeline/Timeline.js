@@ -3,7 +3,8 @@
  * @module quinoa-vis-modules/Timeline
  */
 
-import React, {PropTypes} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import {easeCubic} from 'd3-ease';
 import {debounce} from 'lodash';
 import {timeFormat} from 'd3-time-format';
@@ -296,7 +297,7 @@ class Timeline extends React.Component {
     return data ? (
       <Measure>
         {dimensions =>
-          <figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
+          (<figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
             <MiniTimeline
               viewParameters={viewParameters}
               timeBoundaries={timeBoundaries}
@@ -321,7 +322,7 @@ class Timeline extends React.Component {
               active={viewParameters.selectedObjectId !== undefined}
               timeObject={selectedObject}
               formatDate={formatDate} />
-          </figure>
+          </figure>)
       }
       </Measure>
     ) : 'Loading';

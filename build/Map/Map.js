@@ -12,6 +12,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _reactLeaflet = require('react-leaflet');
 
 var _leaflet = require('leaflet');
@@ -253,25 +257,25 @@ var Map = function (_Component) {
 }(_react.Component);
 
 Map.propTypes = {
-  data: _react.PropTypes.shape({
-    main: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-      title: _react.PropTypes.string,
-      category: _react.PropTypes.string,
-      geometry: _react.PropTypes.shape({
-        type: _react.PropTypes.string
+  data: _propTypes2.default.shape({
+    main: _propTypes2.default.arrayOf(_propTypes2.default.shape({
+      title: _propTypes2.default.string,
+      category: _propTypes2.default.string,
+      geometry: _propTypes2.default.shape({
+        type: _propTypes2.default.string
       })
     }))
   }),
-  viewParameters: _react.PropTypes.shape({
-    colorsMap: _react.PropTypes.object,
-    shownCategories: _react.PropTypes.object,
-    cameraX: _react.PropTypes.number,
-    cameraY: _react.PropTypes.number,
-    cameraZoom: _react.PropTypes.number,
-    tilesUrl: _react.PropTypes.string 
+  viewParameters: _propTypes2.default.shape({
+    colorsMap: _propTypes2.default.object,
+    shownCategories: _propTypes2.default.object,
+    cameraX: _propTypes2.default.number,
+    cameraY: _propTypes2.default.number,
+    cameraZoom: _propTypes2.default.number,
+    tilesUrl: _propTypes2.default.string 
   }),
-  allowUserViewChange: _react.PropTypes.bool,
-  onUserViewChange: _react.PropTypes.func
+  allowUserViewChange: _propTypes2.default.bool,
+  onUserViewChange: _propTypes2.default.func
 };
 
 exports.default = Map;

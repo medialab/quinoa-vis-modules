@@ -3,7 +3,8 @@
  * @module quinoa-vis-modules/Map
  */
 
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 // the module relies heavily on react-leaflet which is used
 // as a map renderer
 // see http://leafletjs.com/

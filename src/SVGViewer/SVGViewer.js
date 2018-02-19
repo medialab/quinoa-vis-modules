@@ -2,7 +2,8 @@
  * This module exports a stateful customizable svg viewer component
  * @module quinoa-vis-modules/SVGViewer
  */
-import React, {PropTypes} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import {debounce} from 'lodash';
 
 import './SVGViewer.scss';
@@ -245,13 +246,15 @@ class SVGViewer extends React.Component {
 
     return (
       <div className="quinoa-svg">
-        <div className="svg-container"
+        <div
+          className="svg-container"
           style={svgContainerStyles}
           onMouseDown={this.props.allowUserViewChange ? this.startDrag : void (0)}
           onMouseUp={this.props.allowUserViewChange ? this.stopDrag : void (0)}
           onMouseLeave={this.props.allowUserViewChange ? this.stopDrag : void (0)}>
           {this.state.svg
-            ? <div className={this.props.allowUserViewChange ? 'grabbable' : ''}
+            ? <div
+              className={this.props.allowUserViewChange ? 'grabbable' : ''}
               onWheel={this.props.allowUserViewChange ? this.mouseWheelHandler : void (0)}
               style={svgStyles}
               dangerouslySetInnerHTML={{

@@ -12,6 +12,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _lodash = require('lodash');
 
 require('./SVGViewer.scss');
@@ -230,12 +234,14 @@ var SVGViewer = function (_React$Component) {
         { className: 'quinoa-svg' },
         _react2.default.createElement(
           'div',
-          { className: 'svg-container',
+          {
+            className: 'svg-container',
             style: svgContainerStyles,
             onMouseDown: this.props.allowUserViewChange ? this.startDrag : void 0,
             onMouseUp: this.props.allowUserViewChange ? this.stopDrag : void 0,
             onMouseLeave: this.props.allowUserViewChange ? this.stopDrag : void 0 },
-          this.state.svg ? _react2.default.createElement('div', { className: this.props.allowUserViewChange ? 'grabbable' : '',
+          this.state.svg ? _react2.default.createElement('div', {
+            className: this.props.allowUserViewChange ? 'grabbable' : '',
             onWheel: this.props.allowUserViewChange ? this.mouseWheelHandler : void 0,
             style: svgStyles,
             dangerouslySetInnerHTML: {
@@ -255,16 +261,16 @@ var SVGViewer = function (_React$Component) {
 
 
 SVGViewer.propTypes = {
-  data: _react.PropTypes.string,
+  data: _propTypes2.default.string,
 
-  viewParameters: _react.PropTypes.shape({
-    maxZoomLevel: _react.PropTypes.number,
-    minZoomLevel: _react.PropTypes.number,
-    perspectiveLevel: _react.PropTypes.number,
-    zoomFactor: _react.PropTypes.number
+  viewParameters: _propTypes2.default.shape({
+    maxZoomLevel: _propTypes2.default.number,
+    minZoomLevel: _propTypes2.default.number,
+    perspectiveLevel: _propTypes2.default.number,
+    zoomFactor: _propTypes2.default.number
   }),
-  allowUserViewChange: _react.PropTypes.bool,
-  onUserViewChange: _react.PropTypes.func
+  allowUserViewChange: _propTypes2.default.bool,
+  onUserViewChange: _propTypes2.default.func
 };
 SVGViewer.defaultProps = {
   allowUserViewChange: true,

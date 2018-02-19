@@ -12,6 +12,10 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
 var _d3Ease = require('d3-ease');
 
 var _lodash = require('lodash');
@@ -326,26 +330,26 @@ var Timeline = function (_React$Component) {
 
 
 Timeline.propTypes = {
-  data: _react.PropTypes.shape({
-    main: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-      category: _react.PropTypes.string,
-      title: _react.PropTypes.string,
-      description: _react.PropTypes.string,
-      source: _react.PropTypes.string,
-      startDate: _react.PropTypes.instanceOf(Date),
-      endDate: _react.PropTypes.instanceOf(Date),
-      selectedObjectId: _react.PropTypes.string
+  data: _propTypes2.default.shape({
+    main: _propTypes2.default.arrayOf(_propTypes2.default.shape({
+      category: _propTypes2.default.string,
+      title: _propTypes2.default.string,
+      description: _propTypes2.default.string,
+      source: _propTypes2.default.string,
+      startDate: _propTypes2.default.instanceOf(Date),
+      endDate: _propTypes2.default.instanceOf(Date),
+      selectedObjectId: _propTypes2.default.string
     }))
   }),
-  viewParameters: _react.PropTypes.shape({
-    shownCategories: _react.PropTypes.object, 
-    colorsMap: _react.PropTypes.object, 
-    fromDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
-    toDate: _react.PropTypes.oneOfType([_react.PropTypes.instanceOf(Date), _react.PropTypes.number]),
-    orientation: _react.PropTypes.oneOf(['landscape', 'portrait'])
+  viewParameters: _propTypes2.default.shape({
+    shownCategories: _propTypes2.default.object, 
+    colorsMap: _propTypes2.default.object, 
+    fromDate: _propTypes2.default.oneOfType([_propTypes2.default.instanceOf(Date), _propTypes2.default.number]),
+    toDate: _propTypes2.default.oneOfType([_propTypes2.default.instanceOf(Date), _propTypes2.default.number]),
+    orientation: _propTypes2.default.oneOf(['landscape', 'portrait'])
   }),
-  allowUserViewChange: _react.PropTypes.bool,
-  onUserViewChange: _react.PropTypes.func
+  allowUserViewChange: _propTypes2.default.bool,
+  onUserViewChange: _propTypes2.default.func
 };
 
 exports.default = Timeline;
