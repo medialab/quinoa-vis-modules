@@ -72,6 +72,13 @@ var Timeline = function (_React$Component) {
     _this.emitViewChange = (0, _lodash.debounce)(_this.emitViewChange, 300);
     _this.state = (0, _utils.computeDataRelatedState)(props.data, props.viewParameters || {});
     _this.transition = null;
+
+    _this.state = _extends({}, _this.state, {
+      dimensions: {
+        width: -1,
+        height: -1
+      }
+    });
     return _this;
   }
 
@@ -276,7 +283,8 @@ var Timeline = function (_React$Component) {
           data = _state.data,
           miniScale = _state.miniScale,
           viewParameters = _state.viewParameters,
-          timeBoundaries = _state.timeBoundaries;
+          timeBoundaries = _state.timeBoundaries,
+          dimensions = _state.dimensions;
 
 
       var visData = (0, _utils.normalizeData)(this.props.data);
@@ -284,16 +292,25 @@ var Timeline = function (_React$Component) {
       var selectedObject = viewParameters.selectedObjectId ? visData.find(function (obj) {
         return obj.id === viewParameters.selectedObjectId;
       }) : undefined;
+
+      var onResize = function onResize(contentRect) {
+        _this3.setState({ dimensions: contentRect.bounds });
+      };
       var ticksParams = (0, _utils.setTicks)(viewParameters.toDate - viewParameters.fromDate);
       var formatDate = (0, _d3TimeFormat.timeFormat)(ticksParams.format);
 
       return data ? _react2.default.createElement(
         _reactMeasure2.default,
-        null,
-        function (dimensions) {
+        {
+          bounds: true,
+          onResize: onResize },
+        function (_ref) {
+          var measureRef = _ref.measureRef;
           return _react2.default.createElement(
             'figure',
-            { className: 'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape') },
+            {
+              ref: measureRef,
+              className: 'quinoa-timeline ' + (orientation === 'portrait' ? ' portrait' : ' landscape') },
             _react2.default.createElement(_MiniTimeline2.default, {
               viewParameters: viewParameters,
               timeBoundaries: timeBoundaries,

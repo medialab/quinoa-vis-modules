@@ -10,7 +10,7 @@ import {debounce} from 'lodash';
 import {timeFormat} from 'd3-time-format';
 
 
-import Measure from 'react-measure';
+import Measure from 'react-measure'
 
 import {
   normalizeData,
@@ -47,6 +47,14 @@ class Timeline extends React.Component {
     this.emitViewChange = debounce(this.emitViewChange, 300);
     this.state = computeDataRelatedState(props.data, props.viewParameters || {});
     this.transition = null;
+
+    this.state = {
+      ...this.state,
+      dimensions: {
+        width: -1,
+        height: -1
+      },
+    };
   }
   /**
    * Executes code when component receives new properties
@@ -279,7 +287,8 @@ class Timeline extends React.Component {
       // note: viewParameters is present both in component props and in component state to allow temporary displacements between
       // the view parameters being provided by parent through props and internal viewParameters
       viewParameters,
-      timeBoundaries
+      timeBoundaries,
+      dimensions
     } = this.state;
 
 
@@ -288,6 +297,10 @@ class Timeline extends React.Component {
     const selectedObject = viewParameters.selectedObjectId ?
       visData.find(obj => obj.id === viewParameters.selectedObjectId)
       : undefined;
+
+    const onResize = (contentRect) => {
+      this.setState({ dimensions: contentRect.bounds })
+    };
     /*
      * Step: render component
      */
@@ -295,9 +308,15 @@ class Timeline extends React.Component {
     const formatDate = timeFormat(ticksParams.format);
 
     return data ? (
-      <Measure>
-        {dimensions =>
-          (<figure className={'quinoa-timeline' + (orientation === 'portrait' ? ' portrait' : ' landscape')}>
+      <Measure
+        bounds
+        onResize={onResize}
+      >
+        {({ measureRef }) =>
+          (<figure 
+              ref={measureRef} 
+              className={`quinoa-timeline ${(orientation === 'portrait' ? ' portrait' : ' landscape')}`}
+            >
             <MiniTimeline
               viewParameters={viewParameters}
               timeBoundaries={timeBoundaries}
@@ -325,7 +344,8 @@ class Timeline extends React.Component {
           </figure>)
       }
       </Measure>
-    ) : 'Loading';
+    ) 
+    : 'Loading';
   }
 }
 
